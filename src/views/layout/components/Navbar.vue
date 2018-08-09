@@ -106,13 +106,16 @@ export default {
 }
 </script>
 <style lang='css'>
-  .international .short-item-icon .international-icon {
-    width: 48px;
-    height: 48px;
-  }
+
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+  .international /deep/ .international-icon {
+    height: 48px;
+    width:48px;
+    color: #fff;
+    margin: 16px;
+  }
   .sub-navbar{
     background-color: #28313c;
     height: 80px;

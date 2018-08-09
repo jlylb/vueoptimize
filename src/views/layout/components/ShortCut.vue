@@ -8,6 +8,7 @@
     <el-tooltip effect="dark" :content="'权限设置'" placement="bottom">
       <div class='short-cut-item' v-ability='"api.permission.index"'>
         <svg-icon icon-class="privillege" class-name="short-cut-icon" @click.native='openShort("/permission/index")'/>
+        <!-- <span class='short-cut-title'>权限设置</span> -->
       </div>
     </el-tooltip>
       <el-tooltip effect="dark" :content="'修改密码'" placement="bottom">  
@@ -37,7 +38,7 @@ export default{
   }
 }
 </script>
-<style lang='scss'>
+<style lang='scss' scoped>
 
 .short-cut{
   float: left;
@@ -50,10 +51,20 @@ export default{
     margin: 16px;
     cursor: pointer;
   }
-  .short-cut-icon{
-    width: 48px;
-    height: 48px;
+  /deep/ .svg-icon {
+      width: 48px;
+      height: 48px;
+  }
+  .short-cut-title {
+    display: block;
+    line-height: 16px;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
   }
 }
-
+// .short-cut /deep/ .svg-icon {
+//         width: 48px;
+//     height: 48px;
+// }
 </style>

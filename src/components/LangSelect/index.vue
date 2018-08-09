@@ -39,12 +39,6 @@ export default {
   width:100%;
   height: 100%;
 }
-.short-item-icon{
-    height: 48px;
-    width:48px;
-    color: #fff;
-    margin: 16px;
-}
 
 </style>
 

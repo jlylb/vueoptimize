@@ -248,9 +248,7 @@ export default {
     },
     saveData(data) {
       const method = data.id ? updateUser : createUser
-      if(this.company_id) {
-        data.company_id = this.company_id
-      }
+      data.company_id = this.company_id
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {
