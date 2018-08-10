@@ -4,6 +4,7 @@ export default {
   mounted() {
     this.__resizeHanlder = debounce(() => {
       if (this.chart) {
+        console.log('resize')
         this.chart.resize()
       }
     }, 100)

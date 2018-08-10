@@ -1,48 +1,22 @@
 <template>
-  <div :class="className" :id="id" :style="{height:height,width:width}"></div>
+<div>
+  <my-echart v-model='echartsData' ></my-echart>
+</div>
 </template>
 
 <script>
 import echarts from 'echarts'
+import MyEchart from '@/components/Charts/myechart'
 
 export default {
-
-  props: {
-    className: {
-      type: String,
-      default: 'chart'
-    },
-    id: {
-      type: String,
-      default: 'chart'
-    },
-    width: {
-      type: String,
-      default: '100%'
-    },
-    height: {
-      type: String,
-      default: '200px'
-    }
-  },
+  components: { MyEchart },
   data() {
     return {
-      chart: null
+      echartsData: this.getData()
     }
-  },
-  mounted() {
-    this.initChart()
-  },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
   },
   methods: {
-    initChart() {
-      this.chart = echarts.init(document.getElementById(this.id))
+    getData() {
 
       const hours = function() {
         const data = []
@@ -60,7 +34,7 @@ export default {
         return data
       }
 
-      this.chart.setOption({
+      return {
         backgroundColor: 'rgb(40, 49, 60)',
         title: {
           top: 20,
@@ -155,7 +129,8 @@ export default {
           },
           data: datas()
         }]
-      })
+      }
+
     }
   }
 }

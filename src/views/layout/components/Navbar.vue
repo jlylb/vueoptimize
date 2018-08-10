@@ -7,7 +7,7 @@
       <hamburger class="short-cut-menu" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
     </el-tooltip>
 
-    <short-cut></short-cut>
+    <short-cut class="short-cut-left"></short-cut>
  </div>  
     <!-- <breadcrumb class="breadcrumb-container"></breadcrumb> -->
 
@@ -15,17 +15,20 @@
 
     <div class='layout-right'>
 
-    <div class="right-menu">
+    <div class="right-menu short-cut-right">
       <!-- <error-log class="errLog-container right-menu-item"></error-log> -->
 
+  
+        <div class='short-cut-item'>
+        <screenfull class="short-cut-icon"></screenfull>
+        <span class='short-cut-title'>{{ $t('navbar.screenfull') }}</span>
+        </div>
 
-      <el-tooltip effect="dark" :content="$t('navbar.screenfull')" placement="bottom">
-        <screenfull class="short-cut-menu"></screenfull>
-      </el-tooltip>
+        <div class='short-cut-item'>
+          <lang-select class="international"></lang-select>
+          <span class='short-cut-title'>语言切换</span>
+        </div>
 
-      <el-tooltip effect="dark" :content="'语言切换'" placement="bottom">
-        <lang-select class="international"></lang-select>
-      </el-tooltip>
       <!-- <el-tooltip effect="dark" :content="$t('navbar.theme')" placement="bottom">
         <theme-picker class="theme-switch right-menu-item"></theme-picker>
       </el-tooltip> -->
@@ -110,12 +113,47 @@ export default {
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .international /deep/ .international-icon {
-    height: 48px;
-    width:48px;
-    color: #fff;
-    margin: 16px;
+%cut {
+  .short-cut-item{
+    width: 64px;
+    margin: 13px 16px;
+    cursor: pointer;
   }
+  /deep/ .svg-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    display: block;
+    color: #fff;
+  }
+  .short-cut-icon {
+    height: 32px;
+    width: 32px;
+    color: #fff;
+    margin: 0 auto;
+    display: block;
+  }
+  .short-cut-title {
+    display: block;
+    line-height: 16px;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 6px;
+  }
+}
+.short-cut-right{
+  @extend %cut
+}
+.short-cut-left {
+  float: left;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  /deep/ {
+    @extend %cut 
+  }
+}
+
   .sub-navbar{
     background-color: #28313c;
     height: 80px;
@@ -186,6 +224,7 @@ export default {
     }
     .international{
       vertical-align: top;
+      display: block;
     }
     .theme-switch {
       vertical-align: 15px;

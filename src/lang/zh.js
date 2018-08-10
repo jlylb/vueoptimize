@@ -69,7 +69,7 @@ export default {
     logOut: '退出登录',
     dashboard: '首页',
     github: '项目地址',
-    screenfull: '全屏',
+    screenfull: '全屏显示',
     theme: '换肤',
     profile: '个人中心'
   },

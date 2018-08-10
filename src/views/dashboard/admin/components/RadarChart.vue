@@ -1,57 +1,23 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}"></div>
+  <my-echart v-model='echartsData' ></my-echart>
 </template>
 
 <script>
 import echarts from 'echarts'
-// require('echarts/theme/macarons') // echarts theme
-import { debounce } from '@/utils'
-
-const animationDuration = 3000
+import MyEchart from '@/components/Charts/myechart'
 
 export default {
-  props: {
-    className: {
-      type: String,
-      default: 'chart'
-    },
-    width: {
-      type: String,
-      default: '100%'
-    },
-    height: {
-      type: String,
-      default: '100%'
-    }
-  },
+  components: { MyEchart },
   data() {
     return {
-      chart: null
+      echartsData: this.getData()
     }
-  },
-  mounted() {
-    this.initChart()
-    this.__resizeHanlder = debounce(() => {
-      if (this.chart) {
-        this.chart.resize()
-      }
-    }, 100)
-    window.addEventListener('resize', this.__resizeHanlder)
-  },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    window.removeEventListener('resize', this.__resizeHanlder)
-    this.chart.dispose()
-    this.chart = null
   },
   methods: {
-    initChart() {
-      this.chart = echarts.init(this.$el, 'macarons')
+    getData() {
+      // this.chart = echarts.init(this.$el, 'macarons')
 
-      const option = {
-
+      return {
         tooltip: {
           trigger: 'item',
           backgroundColor: 'rgba(0,0,250,0.2)'
@@ -162,7 +128,6 @@ export default {
         }
       }
 
-      this.chart.setOption(option)
     }
   }
 }
