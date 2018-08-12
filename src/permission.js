@@ -14,13 +14,19 @@ function hasPermission(roles, permissionRoles) {
   return roles.some(role => permissionRoles.indexOf(role) >= 0)
 }
 
+const logged = window.laravel.logged;
+
+const islogined = () => {
+  return logged
+}
+
 const whiteList = ['/login', '/authredirect']// no redirect whitelist
 
 // router.addRoutes([{ path: '/408', component: () => import('@/views/errorPage/401'), hidden: true }])
 
 router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-  if (getToken()) { // determine if there has token
+  if (islogined()) { // determine if there has token
     /* has token*/
     if (to.path === '/login') {
       next({ path: '/' })
@@ -52,10 +58,13 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     /* has no token*/
+    console.log(66666666666)
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
       next()
     } else {
-      next('/login') // 否则全部重定向到登录页
+      next({path: '/login', replace: true }) // 否则全部重定向到登录页
+      console.log(33333333333)
+      //window.location.replace('/login');
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }

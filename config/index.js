@@ -6,7 +6,11 @@ const path = require('path')
 
 module.exports = {
   dev: {
+    filename: path.resolve(__dirname, '../../apilaravel/resources/views/home1.blade.php'),
 
+    // Paths
+    template: path.resolve(__dirname, '../../apilaravel/resources/views/home.blade.php'),
+    assetsRoot: path.resolve(__dirname, '../../apilaravel/public'),
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
@@ -67,10 +71,10 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
-
+    index: path.resolve(__dirname, '../../apilaravel/resources/views/home1.blade.php'),
+    template: path.resolve(__dirname, '../../apilaravel/resources/views/home.blade.php'),
     // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot: path.resolve(__dirname, '../../apilaravel/public'),
     assetsSubDirectory: 'static',
 
     /**

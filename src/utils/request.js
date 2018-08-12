@@ -3,6 +3,10 @@ import { Message, MessageBox } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
+const { baseURL, api, token } = window.laravel
+
+console.log(token)
+
 // create an axios instance
 const service = axios.create({
   baseURL: '/api', // api的base_url
@@ -12,10 +16,10 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(config => {
   // Do something before request is sent
-  if (store.getters.token) {
+  //if (store.getters.token) {
     // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-    config.headers['Authorization'] = 'Bearer ' + getToken()
-  }
+    config.headers['Authorization'] = `Bearer ${token}`
+  //}
   return config
 }, error => {
   // Do something with request error
