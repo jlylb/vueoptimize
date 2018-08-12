@@ -8,16 +8,16 @@
     </el-row>
 
     <el-row :gutter="20">
-      <el-col :lg='9'>
-            <div class="chart-wrapper" style="height:800px;">
-              <radar-chart></radar-chart>
-            </div>
+      <el-col :lg='9' :md='24'>
+        <div class="chart-wrapper">
+          <radar-chart :style='{width:"100%", height: "800px"}'></radar-chart>
+        </div>
       </el-col>
-      <el-col :lg='15'>
+      <!-- <el-col :lg='15' :md='24'>
         <div class="chart-wrapper" style="height:800px">
           <map-chart id='map'  width='100%' height='100%'></map-chart>
         </div>
-      </el-col>
+      </el-col> -->
     </el-row>
     
   </div>

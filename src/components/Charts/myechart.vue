@@ -4,6 +4,8 @@
 
 <script>
   import echarts from 'echarts'
+  import { debounce } from '@/utils'
+  import { mapGetters } from 'vuex'
 
   export default {
     props: {
@@ -17,10 +19,23 @@
     },
     data () {
       return {
-        chart: null
+        chart: null,
+        lastArea: 0
       }
     },
+    computed: {
+    ...mapGetters([
+      'sidebar'
+    ]),
+
+    },
+    methods: {
+    getArea () {
+        return this.$el.offsetWidth * this.$el.offsetHeight
+      },
+    },
     mounted () {
+      console.log(this.$el.offsetWidth, 'init', this.sidebar.opened)
       const value = this.value
       if (!value) {
         console.error('没有绑定图表数据!')
@@ -50,6 +65,7 @@
       }
       // 注册echarts
       if (this.value) {
+        this.lastArea = this.getArea()
         setTimeout(() => {
           const renderer = this.renderer
           this.chart = echarts.init(this.$el, this.theme, {width, height, renderer})
@@ -57,16 +73,40 @@
           this.chart.setOption(this.value)
           // 将chart对象暴露给父组件
           this.$emit('init', this.chart)
-            this.__resizeHanlder = () => {
+          this.__resizeHanlder = debounce(() => {
             if (this.chart) {
-                this.chart.resize()
+              console.log('resize')
+              this.chart.resize()
             }
-            }
+            this.lastArea = this.getArea()
+            console.log(this.lastArea)
+          }, 100)
             window.addEventListener('resize', this.__resizeHanlder)
         }, 0)
       }
     },
     watch: {
+      'sidebar.opened': function (val) {
+        console.log(val)
+        let offw = 144
+        console.log(this.$el.offsetWidth,'sidebar')
+        this.chart.resize({
+          //width: val ? (this.$el.offsetWidth - offw) : (this.$el.offsetWidth + offw),
+         width: this.$el.offsetWidth,
+          height: this.$el.offsetHeight
+        })
+      },
+      lastArea: {
+        handler: function(val,oldVal) {
+          if (this.chart) {
+            console.log('resize watch')
+            this.chart.resize({
+              width: this.$el.offsetWidth,
+              height: this.$el.offsetHeight
+            })
+          }
+        }
+      },
       size: {
         handler: function (val, oldVal) {
           // 避免不正常调用导致报错
