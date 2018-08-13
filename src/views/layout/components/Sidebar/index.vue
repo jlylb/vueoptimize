@@ -6,9 +6,9 @@
       :show-timeout="200"
       :default-active="$route.path"
       :collapse="isCollapse"
-      background-color="#28313c"
-      text-color="#bfcbd9"
-      active-text-color="#409EFF"
+      background-color="#76a025"
+      text-color="#fff"
+      active-text-color="#6fed07"
     >
     <div class='logo-container'>
         <img :src='companyLogo' class='logo' v-if='companyLogo'/>

@@ -11,7 +11,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
-  background-color: rgb(48, 65, 86);
+  background-color: lighten($baseColor, 45%);
 }
 
 label {
@@ -203,7 +203,7 @@ code {
 .table-layout{
   padding: 20px;
   margin: 20px;
-  background-color: #28313c;
+  background-color: $subMenuBg;
   min-height: 900px;
 }
 

@@ -66,9 +66,10 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+@import "src/styles/variables.scss";
 .running{
   font-size: 20px;
-  color: green;
+  color: lighten($subMenuBg,20);
 }
 .panel-group {
   margin-top: 18px;
@@ -82,7 +83,7 @@ export default {
     position: relative;
     overflow: hidden;
     color: #fff;
-    background:rgb(40, 49, 60);
+    background: $subMenuBg;
     box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
     border-color: rgba(0, 0, 0, .05);
     &:hover {

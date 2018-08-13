@@ -35,7 +35,7 @@ export default {
       }
 
       return {
-        backgroundColor: 'rgb(40, 49, 60)',
+        backgroundColor: '#418b04',
         title: {
           top: 20,
           text: '每小时报警统计',
@@ -66,7 +66,7 @@ export default {
           boundaryGap: false,
           axisLine: {
             lineStyle: {
-              color: '#57617B'
+              color: '#ccc'
             }
           },
           data: hours()
@@ -79,7 +79,7 @@ export default {
           },
           axisLine: {
             lineStyle: {
-              color: '#57617B'
+              color: '#ccc'
             }
           },
           axisLabel: {
@@ -90,7 +90,7 @@ export default {
           },
           splitLine: {
             lineStyle: {
-              color: '#57617B'
+              color: '#ccc'
             }
           }
         }],

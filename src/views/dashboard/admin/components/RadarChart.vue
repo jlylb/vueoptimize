@@ -24,8 +24,8 @@ export default {
         },
         legend: {
           show: true,
-          bottom: 5,
-          left: 16,
+          bottom: '5%',
+          left: '10%',
           itemWidth: 14,
           itemHeight: 10,
           itemGap: 10,
@@ -53,7 +53,7 @@ export default {
           itemHeight: 165,
           align: 'left',
           color: ['#3f4199', '#5d54b5', '#a0589e', '#e76281', '#fe846d', '#feda5b'],
-          right: 0,
+          right: '5%',
           top: 0,
           textStyle: {
             color: '#4ac7f5',
@@ -61,8 +61,8 @@ export default {
           }
         },
         radar: {
-          center: ['290', '350'], // 中心（圆心）坐标
-          radius: 235, // 半径
+          center: ['45%', '45%'], // 中心（圆心）坐标
+          radius: '70%', // 半径
           startAngle: 90, // 坐标系起始角度，也就是第一个指示器轴的角度。
           nameGap: 16, // 指示器名称和指示器轴的距离。
           splitNumber: 4, // 指示器轴的分割段数

@@ -229,7 +229,7 @@ export default {
       this.editDialog = true
       this.dialogTitle = '编辑'
       console.log(data.company)
-      this.company_id = null
+      this.company_id = data.company_id
       data.company_name = data.company&&data.company.name||''
       this.editUserFormModel = data
       this.$nextTick(() => {
@@ -261,6 +261,7 @@ export default {
       })
     },
     dialogOpen(val) {
+      this.company_id = null
       this.$nextTick(() => {
         this.$refs.dialogForm.clearValidate()
       })

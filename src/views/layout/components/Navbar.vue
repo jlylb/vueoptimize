@@ -113,6 +113,8 @@ export default {
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+
+@import "src/styles/variables.scss";
 %cut {
   .short-cut-item{
     width: 64px;
@@ -155,7 +157,7 @@ export default {
 }
 
   .sub-navbar{
-    background-color: #28313c;
+    background-color: $baseColor;
     height: 80px;
     background-image: none;
     // padding-left: 20px;
@@ -188,7 +190,7 @@ export default {
   height: 80px;
   line-height: 50px;
   border-radius: 0px !important;
-  background-color: rgb(48, 65, 86);
+  background-color: $baseColor;
   color: #fff;
   border-bottom: none;
   margin-bottom: 20px;

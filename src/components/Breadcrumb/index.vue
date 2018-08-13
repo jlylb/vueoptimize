@@ -43,13 +43,15 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+
+  @import "src/styles/variables.scss";
   .app-breadcrumb.el-breadcrumb {
     display: block;
     font-size: 14px;
     line-height: 40px;
     margin:0 20px;
     padding: 0 20px;
-    background-color: #28313c;
+    background-color: $subMenuBg;
     .no-redirect {
       color: #fff;
       cursor: text;

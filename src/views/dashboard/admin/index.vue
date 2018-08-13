@@ -92,11 +92,12 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+ @import "src/styles/variables.scss";
 .dashboard-editor-container {
   padding: 0 20px 32px;
-  background-color: rgb(48, 65, 86);
+  //background-color: $baseColor;
   .chart-wrapper {
-    background: rgb(40, 49, 60);
+    background: $subMenuBg;
     padding: 16px 16px 0;
     margin-bottom: 32px;
   }

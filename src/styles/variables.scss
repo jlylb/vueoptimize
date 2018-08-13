@@ -7,8 +7,12 @@ $tiffany: #4AB7BD;
 $yellow:#FEC171;
 $panGreen: #30B08F;
 
+
+$baseColor: hsl(80, 62%, 39%);
+$baseColor1:  hsl(93, 94%, 33%);
 //sidebar
-$menuBg:#304156;
-$menuBg:#28313c;
-$subMenuBg:#1f2d3d;
-$menuHover:#001528;
+// $menuBg:#304156;
+$menuBg: $baseColor1;
+$subMenuBg: darken($menuBg,5%);
+$menuHover: darken($menuBg,10%);
+
