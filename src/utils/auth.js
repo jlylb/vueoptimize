@@ -1,9 +1,10 @@
 import Cookies from 'js-cookie'
-
+const { token } = window.laravel
 const TokenKey = 'Admin-Token'
 
 export function getToken() {
-  return Cookies.get(TokenKey)
+  return token
+  // return Cookies.get(TokenKey)
 }
 
 export function setToken(token) {

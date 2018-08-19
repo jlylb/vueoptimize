@@ -1,12 +1,25 @@
 <template>
-    <el-form  :model="formModel" class="my-form" :rules='rules'  label-width="100px"  :ref="formName" v-bind="formProps">
-        <el-form-item 
-        :label="myitem.label || myitem.name" 
-        v-for='myitem in formColumns' 
-        :key='myitem.name' 
-        :prop='myitem.name'>
-<slot :name='myitem.name' :data='myitem' :fmodel='formModel'>
-            <el-input v-model="formModel[myitem.name]" v-if='!myitem.type || myitem.type=="input"' v-bind='myitem.props||{}' :type='myitem.inputType||"text"'></el-input>
+
+<div>
+      <el-form-item 
+      :label="getLabel(myitem.label, myitem.name, myitem.type)" 
+      v-for='myitem in formColumns'
+      v-if='myitem.type!=="formbutton"' 
+      :key='myitem.name'
+      :class='"form-box-item form-box-" + myitem.name' 
+      :prop='myitem.name'>
+
+      <slot 
+      :name='myitem.name' 
+      :data='myitem' 
+      :fmodel='formModel'>
+
+            <el-input 
+            v-model="formModel[myitem.name]" 
+            v-if='!myitem.type || myitem.type=="input"' 
+            v-bind='myitem.props||{}' 
+            :type='myitem.inputType||"text"'>
+            </el-input>
 
             <el-select 
             v-model="formModel[myitem.name]" 
@@ -35,8 +48,6 @@
             <el-switch
                 v-model="formModel[myitem.name]"
                 v-if='myitem.type=="switch"'
-                active-color="#13ce66"
-                inactive-color="#ff4949"
                 :active-value='1'
                 :inactive-value='0'
                 v-bind='myitem.props||{}'>
@@ -73,7 +84,6 @@
               node-key='id'
               :ref='myitem.ref'
               accordion
-              @node-click="handleNodeClick"
               v-model="formModel[myitem.name]"
               v-if='myitem.type=="tree"'
               v-bind='myitem.props||{}'>
@@ -94,46 +104,120 @@
                 :file-list='pics'
                 :upload-props='myitem.props || {}'>
             </upload-form-column>
-</slot>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click="onSubmit">保存</el-button>
-        </el-form-item>
-    </el-form>
+
+            <el-button 
+            v-if='myitem.type=="button"'
+            v-on='myitem.events||{}'
+            type="primary"
+            v-bind='myitem.props||{}'>
+            {{ myitem.label||myitem.name }}
+            </el-button>
+
+            <tinymce
+            v-if='myitem.type=="richtext"'
+            :ref='myitem.ref||"tinymce1"'
+            v-model="formModel[myitem.name]"
+            v-on='myitem.events||{}'
+            v-bind='myitem.props||{}'>
+            </tinymce>            
+        </slot>
+      </el-form-item>
+
+      <div v-if='formButtons.type=="formbutton"' class='form-button'>
+        <el-button 
+        v-for='(button, buttonKey) in formButtons.buttons'
+        :key='buttonKey'
+        v-on='button.events||{}'
+        type="primary"
+        v-bind='button.props||{}'>
+        {{ button.label||button.name }}
+        </el-button>  
+      </div>
+
+</div>
+
 </template>
 <script>
 import uploadFormColumn from './uploadFormColumn'
-import FormMix from '../mixins/formmix'
+import Tinymce from '@/components/Tinymce'
 export default {
-  mixins: [ FormMix ],
-  components: { uploadFormColumn },
+  components: { uploadFormColumn, Tinymce },
   data() {
     return {
-
+      formModel: this.pformModel,
+      formColumns: this.pformColumns,
+      pics: this.defaultFiles,
+      formButtons: {}
     }
   },
   props: {
+    pformColumns: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    pformModel: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
 
+    defaultFiles: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
   },
   watch: {
-
+    pformModel(newVal) {
+      this.formModel = newVal
+    },
+    pformColumns(newVal) {
+      this.formColumns = newVal
+    },
+    defaultFiles(newVal) {
+      this.pics = newVal
+    }
   },
   methods: {
-
+    uploadSuccess(file, props) {
+      const fieldName = props.name || 'file'
+      console.log(file)
+      this.formModel[fieldName] = file.data.location
+    },
+    removeSuccess(file, props) {
+      const fieldName = props.name || 'file'
+      this.formModel[fieldName] = ''
+      this.pics = []
+    },
+    setFormModel(data) {
+      this.formModel = Object.assign({},this.formModel, data)
+    },
+    getFormModel() {
+      return this.formModel
+    },
+    getLabel(label, name, type) {
+      if(type!=='button' || type!=='formbutton') {
+        return label
+      }
+      return ''
+    }
   },
   created() {
-    console.log(this.$refs)
     const items = {}
+    console.log(this.formColumns, 'created')
     this.formColumns.forEach((item) => {
-      if(!item.hidden){
+      if(!item.hidden || item.type!=='formbutton'){
         items[item.name] = item.default || ''
+      }
+      if(item.type==='formbutton') {
+        this.formButtons = item
       }   
     })
-
-    console.log(items, this.formModel,"before")
     this.formModel = Object.assign(items, this.formModel)
-    console.log(this.formModel,"after")
-    
   }
 }
 </script>
@@ -146,6 +230,10 @@ export default {
      .el-input {
          width: auto;
      }
+     .form-button {
+       text-align: center
+     }
+
  }
 </style>
 

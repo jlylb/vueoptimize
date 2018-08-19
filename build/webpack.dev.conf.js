@@ -50,6 +50,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   //     poll: config.dev.poll,
   //   }
   // },
+  watch: true,
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000,
+    ignored: /node_modules/
+  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
