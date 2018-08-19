@@ -8,7 +8,6 @@ export function fetchList(query) {
   })
 }
 
-
 export function createPost(data) {
   return request({
     url: 'post',
@@ -32,10 +31,9 @@ export function deletePost(data) {
   })
 }
 
-
 export function fetchCategory() {
   return request({
     url: 'category/create',
-    method: 'get',
+    method: 'get'
   })
 }

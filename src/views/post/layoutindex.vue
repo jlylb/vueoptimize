@@ -56,7 +56,7 @@
 <script>
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/layoutform'
-import { fetchList,  createPost, updatePost, deletePost } from '@/api/post'
+import { fetchList, createPost, updatePost, deletePost } from '@/api/post'
 import { fetchCategory } from '@/api/category'
 import axios from 'axios'
 import { getImageUrl } from '@/utils'
@@ -70,37 +70,37 @@ export default {
       data: [],
       logo: [],
       formColumns: [
-        { 
-          name: 'action', 
-          type: 'formbutton', 
+        {
+          name: 'action',
+          type: 'formbutton',
           tab: 'action',
           layout: 'bottom',
           buttons: {
             save: {
-              label: '保存', 
+              label: '保存',
               events: {
                 click: function() {
                   alert(1111)
                 }
-              },
+              }
             },
-            reset: { 
-              label: '重置', 
+            reset: {
+              label: '重置',
               events: {
 
-              }, 
-            },
-          } 
-          
+              }
+            }
+          }
+
         },
-        { name: 'title', label: '标题', tab:'content' },
-        { name: 'author', label: '作者', tab:'content' },
+        { name: 'title', label: '标题', tab: 'content' },
+        { name: 'author', label: '作者', tab: 'content' },
         {
           name: 'category_id',
           label: '分类',
           type: 'cascader',
           ref: 'cascader1',
-          
+
           props: {
             class: 'cascader-category_id',
             changeOnSelect: true
@@ -108,10 +108,10 @@ export default {
           data: [
 
           ],
-          default: [0]
-          , tab:'content'
+          default: [0],
+          tab: 'content'
         },
-        { name: 'content', label: '内容', inputType: 'textarea', type: 'richtext', tab:'content' },
+        { name: 'content', label: '内容', inputType: 'textarea', type: 'richtext', tab: 'content' },
         {
           name: 'first_img',
           label: '封面图',
@@ -123,13 +123,13 @@ export default {
             data: {
               field: 'first_img'
             }
-          }
-          , tab:'content'
+          },
+          tab: 'content'
         },
-        { name: 'comment_status', label: '是否允许评论', type: 'switch', tab:'content'},
-        { name: 'seo_title', label: 'seo标题' , tab: 'seo', layout: 'seo'},
-        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo', layout: 'seo'},
-        { name: 'seo_desc', label: 'seo描述', tab: 'seo', layout: 'seo'},
+        { name: 'comment_status', label: '是否允许评论', type: 'switch', tab: 'content' },
+        { name: 'seo_title', label: 'seo标题', tab: 'seo', layout: 'seo' },
+        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo', layout: 'seo' },
+        { name: 'seo_desc', label: 'seo描述', tab: 'seo', layout: 'seo' }
       ],
       searchColumns: [
         { name: 'title', label: '标题', props: { clearable: true }},
@@ -168,7 +168,7 @@ export default {
           hidden: true
         },
         first_img: {
-           label: '封面图'
+          label: '封面图'
         },
         comment_status: {
           label: '是否允许评论'
@@ -183,10 +183,10 @@ export default {
           label: 'seo描述'
         },
         created_at: {
-           label: '创建时间'
+          label: '创建时间'
         },
         updated_at: {
-           label: '更新时间'
+          label: '更新时间'
         },
         action: {
           'min-width': '150',
@@ -223,8 +223,7 @@ export default {
       //     category_id: [0]
       //   }
       // })
-      this.$router.push({name: 'api.post.layoutadd'})
-
+      this.$router.push({ name: 'api.post.layoutadd' })
     },
     handleDelete(data) {
       deletePost(data).then((res) => {
@@ -259,7 +258,7 @@ export default {
 
     //     this.$refs.dialogForm.setFormModel(data)
     //   })
-     this.$router.push({name: 'api.post.layoutedit', params:{...data}})
+      this.$router.push({ name: 'api.post.layoutedit', params: { ...data }})
     },
     getList(query) {
       fetchList(query || this.search).then((res) => {
@@ -270,7 +269,7 @@ export default {
       })
     },
     saveData(data) {
-      const method = this.isAdd !==true ? updatePost : createPost
+      const method = this.isAdd !== true ? updatePost : createPost
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {

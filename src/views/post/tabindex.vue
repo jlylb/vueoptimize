@@ -48,7 +48,7 @@
 <script>
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/tabform'
-import { fetchList,  createPost, updatePost, deletePost } from '@/api/post'
+import { fetchList, createPost, updatePost, deletePost } from '@/api/post'
 import { fetchCategory } from '@/api/category'
 import axios from 'axios'
 import { getImageUrl } from '@/utils'
@@ -61,14 +61,14 @@ export default {
       data: [],
       logo: [],
       formColumns: [
-        { name: 'title', label: '标题', tab:'content' },
-        { name: 'author', label: '作者', tab:'content' },
+        { name: 'title', label: '标题', tab: 'content' },
+        { name: 'author', label: '作者', tab: 'content' },
         {
           name: 'category_id',
           label: '分类',
           type: 'cascader',
           ref: 'cascader1',
-          
+
           props: {
             class: 'cascader-category_id',
             changeOnSelect: true
@@ -76,10 +76,10 @@ export default {
           data: [
 
           ],
-          default: [0]
-          , tab:'content'
+          default: [0],
+          tab: 'content'
         },
-        { name: 'content', label: '内容', inputType: 'textarea', type: 'input', tab:'content' },
+        { name: 'content', label: '内容', inputType: 'textarea', type: 'input', tab: 'content' },
         {
           name: 'first_img',
           label: '封面图',
@@ -91,13 +91,13 @@ export default {
             data: {
               field: 'first_img'
             }
-          }
-          , tab:'content'
+          },
+          tab: 'content'
         },
-        { name: 'comment_status', label: '是否允许评论', type: 'switch', tab:'content'},
-        { name: 'seo_title', label: 'seo标题' , tab: 'seo'},
-        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo'},
-        { name: 'seo_desc', label: 'seo描述', tab: 'seo'},
+        { name: 'comment_status', label: '是否允许评论', type: 'switch', tab: 'content' },
+        { name: 'seo_title', label: 'seo标题', tab: 'seo' },
+        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo' },
+        { name: 'seo_desc', label: 'seo描述', tab: 'seo' }
       ],
       searchColumns: [
         { name: 'title', label: '标题', props: { clearable: true }},
@@ -136,7 +136,7 @@ export default {
           hidden: true
         },
         first_img: {
-           label: '封面图'
+          label: '封面图'
         },
         comment_status: {
           label: '是否允许评论'
@@ -151,10 +151,10 @@ export default {
           label: 'seo描述'
         },
         created_at: {
-           label: '创建时间'
+          label: '创建时间'
         },
         updated_at: {
-           label: '更新时间'
+          label: '更新时间'
         },
         action: {
           'min-width': '150',
@@ -186,7 +186,6 @@ export default {
           category_id: [0]
         }
       })
-
     },
     handleDelete(data) {
       deletePost(data).then((res) => {
@@ -202,21 +201,21 @@ export default {
       this.dialogTitle = '编辑'
       this.isAdd = false
       this.tabactive = 'content'
-      if(data.first_img){
+      if (data.first_img) {
         this.logo = [
           { url: getImageUrl(data.first_img), name: 'first_img' }
         ]
-      }else{
+      } else {
         this.logo = []
       }
-     // this.editUserFormModel = data
+      // this.editUserFormModel = data
       this.$nextTick(() => {
         console.log(data.path)
-        if(data.path) {
+        if (data.path) {
           const pid = data.path.split('-')
           data.category_id = pid.map((item) => +item)
-        }else{
-           data.category_id = [0]
+        } else {
+          data.category_id = [0]
         }
 
         this.$refs.dialogForm.setFormModel(data)
@@ -231,7 +230,7 @@ export default {
       })
     },
     saveData(data) {
-      const method = this.isAdd !==true ? updatePost : createPost
+      const method = this.isAdd !== true ? updatePost : createPost
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {

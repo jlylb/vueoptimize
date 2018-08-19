@@ -47,7 +47,7 @@
 <script>
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/myform'
-import { fetchList,  createPost, updatePost, deletePost } from '@/api/post'
+import { fetchList, createPost, updatePost, deletePost } from '@/api/post'
 import { fetchCategory } from '@/api/category'
 import axios from 'axios'
 import { getImageUrl } from '@/utils'
@@ -90,10 +90,10 @@ export default {
             }
           }
         },
-        { name: 'comment_status', label: '是否允许评论', type: 'switch'},
-        { name: 'seo_title', label: 'seo标题'},
-        { name: 'seo_keyword', label: 'seo关键字'},
-        { name: 'seo_desc', label: 'seo描述'},
+        { name: 'comment_status', label: '是否允许评论', type: 'switch' },
+        { name: 'seo_title', label: 'seo标题' },
+        { name: 'seo_keyword', label: 'seo关键字' },
+        { name: 'seo_desc', label: 'seo描述' }
       ],
       searchColumns: [
         { name: 'title', label: '标题', props: { clearable: true }},
@@ -132,7 +132,7 @@ export default {
           hidden: true
         },
         first_img: {
-           hidden: true,
+          hidden: true
         },
         comment_status: {
           label: '是否允许评论'
@@ -147,10 +147,10 @@ export default {
           label: 'seo描述'
         },
         created_at: {
-           label: '创建时间'
+          label: '创建时间'
         },
         updated_at: {
-           label: '更新时间'
+          label: '更新时间'
         },
         action: {
           'min-width': '150',
@@ -190,14 +190,14 @@ export default {
       this.editDialog = true
       this.dialogTitle = '编辑'
       this.isAdd = false
-      if(data.first_img){
+      if (data.first_img) {
         this.logo = [
           { url: getImageUrl(data.first_img), name: 'first_img' }
         ]
-      }else{
+      } else {
         this.logo = []
       }
-     // this.editUserFormModel = data
+      // this.editUserFormModel = data
       this.$nextTick(() => {
         const pid = data.path.split('-')
         data.category_id = pid.map((item) => +item)
@@ -213,7 +213,7 @@ export default {
       })
     },
     saveData(data) {
-      const method = this.isAdd !==true ? updatePost : createPost
+      const method = this.isAdd !== true ? updatePost : createPost
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {
@@ -241,7 +241,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.dialogForm.clearValidate()
       })
-    },
+    }
 
   },
   created() {

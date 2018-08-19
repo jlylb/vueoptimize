@@ -105,7 +105,7 @@
 import uploadFormColumn from './uploadFormColumn'
 import FormMix from '../mixins/formmix'
 export default {
-  mixins: [ FormMix ],
+  mixins: [FormMix],
   components: { uploadFormColumn },
   data() {
     return {
@@ -125,15 +125,14 @@ export default {
     console.log(this.$refs)
     const items = {}
     this.formColumns.forEach((item) => {
-      if(!item.hidden){
+      if (!item.hidden) {
         items[item.name] = item.default || ''
-      }   
+      }
     })
 
-    console.log(items, this.formModel,"before")
+    console.log(items, this.formModel, 'before')
     this.formModel = Object.assign(items, this.formModel)
-    console.log(this.formModel,"after")
-    
+    console.log(this.formModel, 'after')
   }
 }
 </script>

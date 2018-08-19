@@ -36,14 +36,14 @@ export default {
       data: [],
       formColumns: [
 
-        { name: 'title', label: '标题', tab:'content' },
-        { name: 'author', label: '作者', tab:'content' },
+        { name: 'title', label: '标题', tab: 'content' },
+        { name: 'author', label: '作者', tab: 'content' },
         {
           name: 'category_id',
           label: '分类',
           type: 'cascader',
           ref: 'cascader1',
-          
+
           props: {
             class: 'cascader-category_id',
             changeOnSelect: true
@@ -51,34 +51,34 @@ export default {
           data: [
 
           ],
-          default: [0]
-          , tab:'content'
+          default: [0],
+          tab: 'content'
         },
-        { name: 'content', label: '内容',  type: 'richtext', tab:'content' },
+        { name: 'content', label: '内容', type: 'richtext', tab: 'content' },
 
-        { name: 'comment_status', label: '是否允许评论', type: 'switch', tab:'content'},
-        { 
-          name: 'action', 
-          type: 'formbutton', 
+        { name: 'comment_status', label: '是否允许评论', type: 'switch', tab: 'content' },
+        {
+          name: 'action',
+          type: 'formbutton',
           tab: 'action',
           layout: 'seo',
           buttons: {
             save: {
-              label: '保存', 
+              label: '保存',
               events: {
                 click: function() {
                   alert(1111)
                 }
-              },
+              }
             },
-            reset: { 
-              label: '重置', 
+            reset: {
+              label: '重置',
               events: {
 
-              }, 
-            },
-          } 
-          
+              }
+            }
+          }
+
         },
         {
           name: 'first_img',
@@ -91,13 +91,13 @@ export default {
             data: {
               field: 'first_img'
             }
-          }
-          , tab:'first_img'
-          , layout: 'seo'
+          },
+          tab: 'first_img',
+          layout: 'seo'
         },
-        { name: 'seo_title', label: 'seo标题' , tab: 'seo', layout: 'seo'},
-        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo', layout: 'seo'},
-        { name: 'seo_desc', label: 'seo描述', tab: 'seo', layout: 'seo'},
+        { name: 'seo_title', label: 'seo标题', tab: 'seo', layout: 'seo' },
+        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo', layout: 'seo' },
+        { name: 'seo_desc', label: 'seo描述', tab: 'seo', layout: 'seo' }
       ],
 
       formRules: {
@@ -137,24 +137,23 @@ export default {
           category_id: [0]
         }
       })
-
     },
 
     handleEdit(data) {
-      if(data.first_img){
+      if (data.first_img) {
         this.logo = [
           { url: getImageUrl(data.first_img), name: 'first_img' }
         ]
-      }else{
+      } else {
         this.logo = []
       }
       this.$nextTick(() => {
         console.log(data.path)
-        if(data.path) {
+        if (data.path) {
           const pid = data.path.split('-')
           data.category_id = pid.map((item) => +item)
-        }else{
-           data.category_id = [0]
+        } else {
+          data.category_id = [0]
         }
 
         this.$refs.dialogForm.setFormModel(data)
@@ -164,7 +163,7 @@ export default {
       this.$router.go(-1)
     },
     saveData(data) {
-      const method = this.isAdd !==true ? updatePost : createPost
+      const method = this.isAdd !== true ? updatePost : createPost
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {
@@ -173,12 +172,11 @@ export default {
       }).catch((res) => {
         console.log(res)
       })
-    },
-
+    }
 
   },
   created() {
-      fetchCategory().then((res) => {
+    fetchCategory().then((res) => {
       console.log(res)
       const cascader = [{ label: '根目录', value: 0 }]
       const columns = this.formColumns
@@ -191,17 +189,17 @@ export default {
       })
       this.formColumns = columns
     })
-    console.log(this.$route.params,5666677, this.isAdd)
-    if(this.isAdd) {
+    console.log(this.$route.params, 5666677, this.isAdd)
+    if (this.isAdd) {
       this.handleAdd()
-    }else{
+    } else {
       this.handleEdit(this.$route.params)
     }
-      // this.$nextTick(() => {
-      //   this.userFormModel = {
-      //     category_id: [0]
-      //   }
-      // })
+    // this.$nextTick(() => {
+    //   this.userFormModel = {
+    //     category_id: [0]
+    //   }
+    // })
     // this.$nextTick(() => {
     //   this.$refs.dialogForm.clearValidate()
     // })

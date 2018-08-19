@@ -7,7 +7,7 @@
 import PostForm from './layoutadd'
 
 export default {
-  components: { PostForm },
+  components: { PostForm }
 
 }
 </script>

@@ -2,7 +2,7 @@
  * Created by jiachenpan on 16/11/18.
  */
 export function getImageUrl(path) {
-  return path?'/upload/' + path:''
+  return path ? '/upload/' + path : ''
 }
 
 export function parseTime(time, cFormat) {

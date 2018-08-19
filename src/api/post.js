@@ -8,7 +8,6 @@ export function fetchList(query) {
   })
 }
 
-
 export function createPost(data) {
   return request({
     url: 'post',

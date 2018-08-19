@@ -38,11 +38,11 @@ import MyFormitem from './myformitem'
 import FormBox from './formbox'
 import FormMix from '../mixins/formmix'
 export default {
-  mixins: [ FormMix ],
+  mixins: [FormMix],
   components: { uploadFormColumn, MyFormitem, FormBox },
   data() {
     return {
-      tabs: {},
+      tabs: {}
     }
   },
   props: {
@@ -62,28 +62,28 @@ export default {
     let curTab = 'default'
     let curLayout = 'default'
     this.formColumns.map((item) => {
-      if(!item.hidden || item.type!=='formbutton'){
+      if (!item.hidden || item.type !== 'formbutton') {
         items[item.name] = item.default || ''
       }
-      if(item.type==='formbutton') {
+      if (item.type === 'formbutton') {
         if (item.buttons && item.buttons.save) {
           item.buttons.save.events.click = this.onSubmit
         }
       }
-      if(item.layout) {
+      if (item.layout) {
         curLayout = item.layout
-      }else{
+      } else {
         curLayout = 'default'
       }
-      if(item.tab) {
+      if (item.tab) {
         curTab = item.tab
-      }else{
+      } else {
         curTab = 'default'
       }
-      if(!tabs[curLayout]) {
+      if (!tabs[curLayout]) {
         tabs[curLayout] = {}
       }
-      if(!tabs[curLayout][curTab]) {
+      if (!tabs[curLayout][curTab]) {
         tabs[curLayout][curTab] = []
       }
       tabs[curLayout][curTab].push(item)
@@ -92,7 +92,6 @@ export default {
     this.tabs = tabs
     console.log(tabs)
     this.formModel = Object.assign(items, this.formModel)
-    
   }
 }
 </script>

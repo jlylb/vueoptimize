@@ -22,24 +22,24 @@
 
 <script>
 export default {
-    data() {
-        return {
-            isShow: true,
-            icon: 'el-icon-minus'
-        }
-    },
-    methods: {
-        toggelBody() {
-            this.isShow = !this.isShow
-            this.icon = this.isShow ? 'el-icon-minus' : 'el-icon-plus'
-        },
-        setButtonIcon(icon) {
-            this.icon = icon
-        },
-        setShow(isShow) {
-            this.isShow = isShow
-        }
+  data() {
+    return {
+      isShow: true,
+      icon: 'el-icon-minus'
     }
+  },
+  methods: {
+    toggelBody() {
+      this.isShow = !this.isShow
+      this.icon = this.isShow ? 'el-icon-minus' : 'el-icon-plus'
+    },
+    setButtonIcon(icon) {
+      this.icon = icon
+    },
+    setShow(isShow) {
+      this.isShow = isShow
+    }
+  }
 
 }
 </script>

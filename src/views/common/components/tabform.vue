@@ -24,11 +24,11 @@ import MyFormitem from './myformitem'
 import FormMix from '../mixins/formmix'
 
 export default {
-  mixins: [ FormMix ],
+  mixins: [FormMix],
   components: { uploadFormColumn, MyFormitem },
   data() {
     return {
-      tabs: {},
+      tabs: {}
     }
   },
   props: {
@@ -37,7 +37,7 @@ export default {
       default() {
         return ''
       }
-    },
+    }
   },
   watch: {
 
@@ -51,22 +51,21 @@ export default {
     const tabs = {}
     let curTab = 'default'
     this.formColumns.forEach((item) => {
-      if(!item.hidden){
+      if (!item.hidden) {
         items[item.name] = item.default || ''
       }
 
-      if(item.tab) {
+      if (item.tab) {
         curTab = item.tab
       }
-      if(!tabs[curTab]) {
+      if (!tabs[curTab]) {
         tabs[curTab] = []
       }
-      tabs[curTab].push(item)   
+      tabs[curTab].push(item)
     })
     this.tabs = tabs
     console.log(tabs)
     this.formModel = Object.assign(items, this.formModel)
-    
   }
 }
 </script>

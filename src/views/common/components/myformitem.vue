@@ -194,13 +194,13 @@ export default {
       this.pics = []
     },
     setFormModel(data) {
-      this.formModel = Object.assign({},this.formModel, data)
+      this.formModel = Object.assign({}, this.formModel, data)
     },
     getFormModel() {
       return this.formModel
     },
     getLabel(label, name, type) {
-      if(type!=='button' || type!=='formbutton') {
+      if (type !== 'button' || type !== 'formbutton') {
         return label
       }
       return ''
@@ -210,12 +210,12 @@ export default {
     const items = {}
     console.log(this.formColumns, 'created')
     this.formColumns.forEach((item) => {
-      if(!item.hidden || item.type!=='formbutton'){
+      if (!item.hidden || item.type !== 'formbutton') {
         items[item.name] = item.default || ''
       }
-      if(item.type==='formbutton') {
+      if (item.type === 'formbutton') {
         this.formButtons = item
-      }   
+      }
     })
     this.formModel = Object.assign(items, this.formModel)
   }
