@@ -2,31 +2,31 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: 'post',
+    url: 'category',
     method: 'get',
     params: query
   })
 }
 
-export function createPost(data) {
+export function createCategory(data) {
   return request({
-    url: 'post',
+    url: 'category',
     method: 'post',
     data
   })
 }
 
-export function updatePost(data) {
+export function updateCategory(data) {
   return request({
-    url: 'post/' + data.id,
+    url: 'category/' + data.id,
     method: 'put',
     data
   })
 }
 
-export function deletePost(data) {
+export function deleteCategory(data) {
   return request({
-    url: 'post/' + data.id,
+    url: 'category/' + data.id,
     method: 'delete'
   })
 }
@@ -34,6 +34,13 @@ export function deletePost(data) {
 export function fetchCategory() {
   return request({
     url: 'category/create',
+    method: 'get'
+  })
+}
+
+export function fetchEdit(id) {
+  return request({
+    url: 'category/' + id,
     method: 'get'
   })
 }
