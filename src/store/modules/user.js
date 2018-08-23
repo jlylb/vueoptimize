@@ -17,7 +17,9 @@ const user = {
     companyName: '',
     companyLogo: '',
     isget: false,
-    notification: 0
+    notification: 0,
+    company: null,
+    companyId: null
   },
 
   mutations: {
@@ -25,7 +27,9 @@ const user = {
       state.code = code
     },
     SET_TOKEN: (state, token) => {
-      state.token = token
+      if (token) {
+        state.token = token
+      }
     },
     SET_INTRODUCTION: (state, introduction) => {
       state.introduction = introduction
@@ -56,6 +60,12 @@ const user = {
     },
     SET_NOTIFICATION: (state, val) => {
       state.notification = val
+    },
+    SET_COMPANY: (state, val) => {
+      state.company = val
+    },
+    SET_COMPANY_ID: (state, val) => {
+      state.companyId = val
     }
   },
 
@@ -67,6 +77,10 @@ const user = {
         loginByUsername(username, userInfo.password).then(response => {
           console.log(response)
           const data = response.data
+          if (data.status === 0) {
+            reject(response)
+            return
+          }
           commit('SET_TOKEN', data.token)
           setToken(response.data.token)
           resolve()
@@ -91,13 +105,23 @@ const user = {
           } // else {
           //   reject('getInfo: roles must be a non-null array !')
           // }
+          let logo, cname
+          if (!data.company) {
+            logo = null
+            cname = null
+          } else {
+            logo = data.company.Co_Logo
+            cname = data.company.Co_Name
+          }
           commit('SET_IS_GET', true)
-          commit('SET_NAME', data.name)
+          commit('SET_NAME', data.username)
           commit('SET_AVATAR', data.avatar)
           commit('SET_INTRODUCTION', data.introduction)
-          commit('SET_COMPANY_LOGO', data.company_logo)
-          commit('SET_COMPANY_NAME', data.company_name)
           commit('SET_NOTIFICATION', data.notification)
+          commit('SET_COMPANY', data.company)
+          commit('SET_COMPANY_LOGO', logo)
+          commit('SET_COMPANY_NAME', cname)
+          commit('SET_COMPANY_ID', data.Co_ID)
           resolve(response)
         }).catch(error => {
           reject(error)

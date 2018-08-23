@@ -19,6 +19,8 @@ const getters = {
   abilities: state => state.permission.abilities,
   meta: state => state.permission.meta,
   isget: state => state.user.isget,
-  notification: state => state.user.notification
+  notification: state => state.user.notification,
+  companyId: state => state.user.companyId,
+  company: state => state.user.company
 }
 export default getters

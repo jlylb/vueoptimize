@@ -3,7 +3,9 @@ export default {
     return {
       search: this.searchData,
       columns: [],
-      data: []
+      data: [],
+      showColumns: [],
+      showlength: 8
     }
   },
   methods: {
@@ -45,13 +47,14 @@ export default {
     },
     setColumns() {
       this.columns = []
+      this.showColumns = []
       if (this.data.length === 0) {
         return
       }
       if (Object.keys(this.customColumns).length === 0) {
         const firstData = this.data[0]
-        firstData.action = ''
         let extract
+        let i = 1
         for (const item in firstData) {
           if (this.customColumns[item]) {
             extract = this.customColumns[item]
@@ -59,27 +62,47 @@ export default {
             extract = {}
           }
           if (extract.hidden !== true) {
-            this.columns.push(
-              Object.assign(
-                { prop: item, label: item },
-                extract
-              )
+            const column = Object.assign(
+              { prop: item, label: item },
+              extract, this.labels[item] || {}
             )
+            this.columns.push(column)
+            if (i <= this.showlength) {
+              this.showColumns.push(column)
+            }
+            i++
           }
         }
+        this.addAction()
       } else {
+        let i = 1
         for (const item in this.customColumns) {
-          if (this.customColumns[item].hidden !== true) {
-            this.columns.push(
-              Object.assign(
-                { prop: item }, this.customColumns[item]
-              )
+          if (this.customColumns[item].hidden !== true && item !== 'action') {
+            const column = Object.assign(
+              { prop: item }, this.customColumns[item], this.labels[item] || {}
             )
+            this.columns.push(column)
+            if (i <= this.showlength) {
+              this.showColumns.push(column)
+            }
+            i++
           }
         }
+        this.addAction()
       }
 
       console.log(this.columns)
+    },
+    addAction() {
+      if (this.hideAction === true) {
+        return
+      }
+      const action = Object.assign(
+        { prop: 'action', label: 'action' },
+        this.customColumns['action'] || {}
+      )
+      this.columns.push(action)
+      this.showColumns.push(action)
     },
     handleExport(columns) {
       console.log(columns)

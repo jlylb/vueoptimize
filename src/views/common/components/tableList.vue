@@ -10,11 +10,23 @@
     </search-form>
 </div>
 
+<div v-if='data.length > 0'>
   <el-table
     :data='data' 
     stripe
     style="width: 100%">
-    <el-table-column v-for='item in columns' :key='item.prop' v-bind="item" >
+    <el-table-column type="expand" >
+      <template slot-scope="scope">
+        <el-form label-position="left" inline >
+          <el-form-item v-for='item in columns' :key='item.prop' v-bind="item" v-if='item.prop!="action"'>
+             <slot :name='"expand-"+item.prop' :data='scope.row' >
+                <span> {{ scope.row[item.prop] }}</span>
+             </slot>
+          </el-form-item>
+        </el-form>
+    </template>
+  </el-table-column>
+    <el-table-column v-for='item in showColumns' :key='item.prop' v-bind="item" >
         <template slot-scope="scope">
             <slot :name='item.prop' :data='scope.row' v-if='item.prop!="action"'>
                 {{ scope.row[item.prop] }}
@@ -34,8 +46,10 @@
       </template>
     </el-table-column>
   </el-table>
+</div>
 
-  <div class='page-container'>
+
+  <div class='page-container' v-if='data.length > 0'>
     <el-pagination 
     background 
     @size-change="handleSizeChange" 
@@ -59,6 +73,12 @@ export default {
   components: { SearchForm },
   props: {
     customColumns: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    labels: {
       type: Object,
       default() {
         return {}
@@ -96,6 +116,10 @@ export default {
           pageSize: 10
         }
       }
+    },
+    hideAction: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -111,5 +135,13 @@ export default {
     margin: 15px 0 0 0;
     background-color: #fff;
     padding: 10px;
+}
+.not-found {
+  display: inline-block;
+  font-size: 24px;
+  & i {
+    color: #e6a23c;
+    margin-right: 10px;
+  }
 }
 </style>

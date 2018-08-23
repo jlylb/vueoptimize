@@ -15,11 +15,8 @@
             icon='el-icon-circle-plus-outline'
             @click="handleAdd">添加</el-button>
         </template>
-        <template slot-scope="{ data }" slot='status'>
-            <el-tag> {{ data.status }} </el-tag>
-        </template>
-        <template slot-scope="{ data }" slot='logo'>
-            <img :src="getImageUrl(data.logo)" class="logo-img" v-if='data.logo'>
+        <template slot-scope="{ data }" slot='Co_Logo'>
+            <img :src="getImageUrl(data.Co_Logo)" class="logo-img" v-if='data.Co_Logo'>
         </template>
         </table-list>
         <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false'>
@@ -31,16 +28,6 @@
                 :default-files='logo'
                 :pform-model='formModel'
                 :pform-columns='formColumns'>
-                <template slot='area'>
-                  <v-distpicker 
-                  :province="selectarea.province" 
-                  :city="selectarea.city" 
-                  :area="selectarea.district"
-                  @province='selectProvince'
-                  @city='selectCity' 
-                  @area='selectArea'
-                  @selected="onSelected"></v-distpicker>
-                </template>
                 </my-form>
         </el-dialog>
     </div>
@@ -50,17 +37,16 @@
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/myform'
 import { fetchList, createCompany, updateCompany, deleteCompany } from '@/api/company'
-import VDistpicker from 'v-distpicker'
 import { getImageUrl } from '@/utils'
 export default {
-  components: { tableList, MyForm, VDistpicker },
+  components: { tableList, MyForm },
   data() {
     return {
       data: [],
       logo: [],
       dialogTitle: '',
       formColumns: [
-        { name: 'name', label: '公司名' },
+        { name: 'Co_Name', label: '公司名' },
         {
           name: 'logo',
           label: '上传LOGO',
@@ -68,18 +54,18 @@ export default {
           props: {
             action: '/api/upload',
             limit: 1,
-            name: 'logo',
+            name: 'Co_Logo',
             data: {
-              field: 'logo'
+              field: 'Co_Logo'
             }
           },
           default: []
         },
-        { name: 'area', label: '区域', hidden: true },
-        { name: 'address', label: '公司地址' },
+        { name: 'Co_ConnectionsNumber', label: '联系电话', hidden: true },
+
       ],
       searchColumns: [
-        { name: 'name', label: '公司名', props: { clearable: true }},
+        { name: 'Co_Name', label: '公司名', props: { clearable: true }},
         {
           name: 'created_at',
           label: '时间',
@@ -87,37 +73,22 @@ export default {
         }
       ],
       formRules: {
-        name: [
+        Co_Name: [
           { required: true, message: '请输入公司名', trigger: 'blur' }
         ]
       },
       columns: {
-        id: {
+        Co_ID: {
           label: '编号'
         },
-        name: {
+        Co_Name: {
           label: '公司名称'
         },
-        province: {
-          label: '省'
+        Co_Logo: {
+          label: '公司图标'
         },
-        city: {
-          label: '市'
-        },
-        district: {
-          label: '区'
-        },
-        address: {
-          label: '公司地址'
-        },
-        logo: {
-          label: '公司logo'
-        },
-        created_at: {
-           label: '创建时间',
-        },
-        updated_at: {
-           label: '更新时间'
+        Co_ConnectionsNumber: {
+          label: '联系电话'
         },
         action: {
           'min-width': '100',
@@ -129,16 +100,11 @@ export default {
         page: 1,
         pageSize: 10
       },
-      selectarea: {
-        province: '',
-        city: '',
-        district: ''
-      },
-      area: {},
       formModel: {
 
       },
-      editDialog: false
+      editDialog: false,
+      isAdd: true
     }
   },
   methods: {
@@ -155,31 +121,27 @@ export default {
       })
     },
     handleAdd() {
-      this.setRules()
       this.editDialog = true
       this.dialogTitle = '添加'
+      this.isAdd = true
       this.logo = []
       this.formModel = {}
-      this.selectarea = { province: "", city: "", district: "" }
       this.$nextTick(() => {
         
-        //this.formModel = {}  
       })
     },
     handleEdit(data) {
-      this.setRules()
       this.editDialog = true
       this.dialogTitle = '编辑'
+      this.isAdd = false
       console.log(data)
-      if(data.logo){
+      if(data.Co_Logo){
         this.logo = [
-          { url: getImageUrl(data.logo), name: 'logo' }
+          { url: getImageUrl(data.Co_Logo), name: 'logo' }
         ]
       }else{
         this.logo = []
       }
-      let { province, city, district } = data
-      this.selectarea = { province, city, district }
       //this.formModel = data
       this.$nextTick(() => {
         //this.$refs.dialogForm.resetForm()
@@ -198,7 +160,7 @@ export default {
     },
     saveData(data) {
       this.editDialog = false
-      const method = data.id ? updateCompany : createCompany
+      const method = this.isAdd !== true ? updateCompany : createCompany
       method(data)
         .then((res) => {
           this.$message({
@@ -215,49 +177,6 @@ export default {
         console.log(this.$refs)
         this.$refs.dialogForm.clearValidate()
       })
-    },
-    onSelected(data) {
-      console.log(data)
-      this.$refs.dialogForm.setFormModel(this.setArea(data))
-    },
-    setArea(data) {
-      return {
-        province: data.province.value,
-        city: data.city.value,
-        district: data.area.value,
-        province_code: data.province.code,
-        city_code: data.city.code,
-        district_code: data.area.code
-      }
-    },
-    selectProvince(val) {
-      console.log(val)
-      this.selectarea.province = val.code?val.value:''
-      this.$refs.dialogForm.validateField('area')
-    },
-    selectCity(val) {
-      console.log(val)
-      this.selectarea.city = val.code?val.value:''
-      this.$refs.dialogForm.validateField('area')
-    },
-    selectArea(val) {
-      console.log(val)
-      this.selectarea.district = val.code?val.value:''
-      this.$refs.dialogForm.validateField('area')
-    },
-    setRules() {
-      console.log(this.$refs.dialogForm, 'aaa')
-      var validArea = (rule, value, callback) => {
-        if(!this.selectarea.province||!this.selectarea.city||!this.selectarea.district){
-          callback(new Error('请选择区域'))
-        }else{
-          callback()
-        }
-        
-      }
-      this.formRules.area = [
-        {required: true, trigger: 'blur', validator: validArea}
-      ]
     }
   },
   created() {
@@ -266,9 +185,6 @@ export default {
 }
 </script>
 <style lang="scss" >
-   .table-layout .permission-form .el-input{
-        width: 50%;
-    }
     .logo-img{
       width: 100px;
       height: 100px;

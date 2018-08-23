@@ -58,7 +58,14 @@ service.interceptors.request.use(config => {
 // respone interceptor
 service.interceptors.response.use(
   response => {
-    console.log(response)
+    // const res = response.data
+    // if (res.code !== 4001) {
+    //   Message({
+    //     message: res.msg,
+    //     type: 'error',
+    //     duration: 5 * 1000
+    //   })
+    // }
     return response
   },
 

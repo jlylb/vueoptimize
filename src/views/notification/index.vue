@@ -165,8 +165,6 @@ export default {
 }
 </script>
 <style lang="scss">
-   .table-layout .my-form .el-input{
-        width: 50%;
-    }
+
 </style>
 

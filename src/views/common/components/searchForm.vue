@@ -4,7 +4,7 @@
 
             <el-input v-model="formModel[myitem.name]" v-if='!myitem.type || myitem.type=="input"' v-bind='myitem.props||{}'></el-input>
 
-            <el-select v-model="formModel[myitem.name]" v-if='myitem.type=="select"'  v-bind='myitem.props||{}'>
+            <el-select v-model="formModel[myitem.name]" v-if='myitem.type=="select"' v-on="myitem.events||{}"  v-bind='myitem.props||{}'>
                 <el-option
                 v-for="item in myitem.data"
                 :key="item.value"
@@ -26,11 +26,15 @@
 
         </el-form-item>
         <el-form-item>
+          <template v-if='isSearch'>
             <el-button type="primary" @click="onSubmit" icon='el-icon-search'>查询</el-button>
-            <el-button 
-            type="primary" 
-            icon="el-icon-download" 
-            @click="handleDownload">{{$t('table.export')}}</el-button>
+          </template>  
+            <template v-if='isExport'>
+              <el-button 
+              type="primary" 
+              icon="el-icon-download" 
+              @click="handleDownload">{{$t('table.export')}}</el-button>
+            </template>
         </el-form-item>
         <slot name='add_button'></slot>
     </el-form>
@@ -39,7 +43,7 @@
 export default {
   data() {
     return {
-      formModel: {}
+      formModel: this.pformModel
     }
   },
   props: {
@@ -48,6 +52,26 @@ export default {
       default() {
         return []
       }
+    },
+    pformModel: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    isExport: {
+      type: Boolean,
+      default: true
+    },
+    isSearch: {
+      type: Boolean,
+      default: true
+    }
+  },
+  watch: {
+    pformModel(newval) {
+      console.log(newval, 55555)
+      this.formModel = newval
     }
   },
   methods: {
@@ -63,7 +87,7 @@ export default {
     this.formColumns.forEach((item) => {
       items[item.name] = ''
     })
-    this.formModel = items
+    this.formModel = Object.assign({}, items, this.formModel)
   }
 }
 </script>

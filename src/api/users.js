@@ -18,7 +18,7 @@ export function fetchRoles(id, query) {
 
 export function saveRoles(data) {
   return request({
-    url: 'user/roles/',
+    url: 'user/roles',
     method: 'put',
     data
   })
@@ -42,7 +42,7 @@ export function createUser(data) {
 
 export function updateUser(data) {
   return request({
-    url: 'users/' + data.id,
+    url: 'users/' + data.userid,
     method: 'put',
     data
   })
@@ -50,7 +50,7 @@ export function updateUser(data) {
 
 export function deleteUser(data) {
   return request({
-    url: 'users/' + data.id,
+    url: 'users/' + data.userid,
     method: 'delete'
   })
 }

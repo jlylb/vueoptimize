@@ -5,7 +5,9 @@
     
       <sidebar class="sidebar-container"></sidebar>
       <div class="main-container">
+        <!-- <sticky> -->
        <navbar></navbar>
+       <!-- </sticky> -->
         <!-- <tags-view></tags-view> -->
         <breadcrumb class="breadcrumb-container"></breadcrumb>
         <app-main></app-main>
@@ -18,6 +20,7 @@
 import { Navbar, Sidebar, AppMain, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import Breadcrumb from '@/components/Breadcrumb'
+import Sticky from '@/components/Sticky'
 export default {
   name: 'layout',
   components: {
@@ -25,7 +28,8 @@ export default {
     Sidebar,
     AppMain,
     TagsView,
-    Breadcrumb
+    Breadcrumb,
+    Sticky
   },
   mixins: [ResizeMixin],
   computed: {

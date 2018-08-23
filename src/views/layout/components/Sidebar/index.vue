@@ -11,7 +11,7 @@
       active-text-color="#6fed07"
     >
     <div class='logo-container'>
-        <img :src='companyLogo' class='logo' v-if='companyLogo'/>
+        <img :src='getImageUrl(companyLogo)' class='logo' v-if='companyLogo'/>
         <img :src='logo()' v-else>
     </div>
       <sidebar-item v-for="route in permission_routers" :key="route.name" :item="route" :base-path="route.path"></sidebar-item>
@@ -23,6 +23,7 @@
 import { mapGetters } from 'vuex'
 import SidebarItem from './SidebarItem'
 import Logo from '@/assets/logo/logo.png'
+import { getImageUrl } from '@/utils'
 
 export default {
   components: { SidebarItem },
@@ -38,6 +39,7 @@ export default {
     }
   },
   methods: {
+    getImageUrl,
     logo() {
       return Logo
     }
@@ -49,6 +51,10 @@ export default {
 
 .logo-container{
   height: 80px;
+  & img {
+    height: 80px;
+    width: 180px
+  }
 }
 
 </style>

@@ -22,7 +22,7 @@ export default {
       this.$i18n.locale = lang
       this.$store.dispatch('setLanguage', lang)
       this.$message({
-        message: 'switch language success',
+        message: '语言切换成功',
         type: 'success'
       })
     }
@@ -36,8 +36,8 @@ export default {
   cursor: pointer;
   /* vertical-align: -5px!important; */
   fill: #fff;
-  width:100%;
-  height: 100%;
+  /* width:100%;
+  height: 100%; */
 }
 
 </style>

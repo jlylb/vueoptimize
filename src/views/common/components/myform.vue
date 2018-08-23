@@ -6,7 +6,18 @@
         :key='myitem.name' 
         :prop='myitem.name'>
 <slot :name='myitem.name' :data='myitem' :fmodel='formModel'>
-            <el-input v-model="formModel[myitem.name]" v-if='!myitem.type || myitem.type=="input"' v-bind='myitem.props||{}' :type='myitem.inputType||"text"'></el-input>
+
+            <el-input 
+            v-model="formModel[myitem.name]" 
+            v-if='(!myitem.type || myitem.type=="input") && myitem.isnumber!==true' 
+            v-bind='myitem.props||{}' 
+            :type='myitem.inputType||"text"'></el-input>
+
+            <el-input 
+            v-model.number="formModel[myitem.name]" 
+            v-if='myitem.isnumber===true && (!myitem.type || myitem.type=="input")' 
+            v-bind='myitem.props||{}' 
+            :type='myitem.inputType||"text"'></el-input>
 
             <el-select 
             v-model="formModel[myitem.name]" 
@@ -35,8 +46,6 @@
             <el-switch
                 v-model="formModel[myitem.name]"
                 v-if='myitem.type=="switch"'
-                active-color="#13ce66"
-                inactive-color="#ff4949"
                 :active-value='1'
                 :inactive-value='0'
                 v-bind='myitem.props||{}'>
@@ -96,9 +105,11 @@
             </upload-form-column>
 </slot>
         </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click="onSubmit">保存</el-button>
-        </el-form-item>
+        <slot name='button'>
+          <el-form-item>
+              <el-button type="primary" @click="onSubmit">保存</el-button>
+          </el-form-item>
+        </slot>
     </el-form>
 </template>
 <script>

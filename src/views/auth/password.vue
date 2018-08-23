@@ -13,9 +13,12 @@
 </template>
 
 <script>
+
 import MyForm from '../common/components/myform'
 import { modifyPassword } from '@/api/login'
 import { mapGetters } from 'vuex'
+import openMessage from '@/utils/message.js'
+
 export default {
   components: { MyForm },
   data() {
@@ -52,12 +55,10 @@ export default {
     saveData(data) {
       modifyPassword(data)
       .then((res) => {
-        this.$message({
-          type: 'success',
-          message: res.data.msg
-        })
-        this.$store.dispatch('FedLogOut').then(() => {
-            this.$router.push({path:'/login'})
+          openMessage(res).then(() => {
+            this.$store.dispatch('FedLogOut').then(() => {
+                this.$router.push({path:'/login'})
+              })
           })
       })
       .catch((res) => {

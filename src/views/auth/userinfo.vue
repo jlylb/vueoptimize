@@ -99,7 +99,7 @@ export default {
     background-color: #fff;
     padding: 20px 0;
 }
-.table-layout-inner .profile-form .el-input {
+.table-layout-inner /deep/ .profile-form .el-input {
     width: 30%;
 }
 </style>

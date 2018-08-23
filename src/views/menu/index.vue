@@ -27,7 +27,7 @@
         </table-list>
         <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false'>
             <my-form
-                class="permission-form"
+                class="my-form"
                 ref='dialogForm'
                 @do-form='saveData'
                 :form-rules='formRules'
@@ -38,8 +38,8 @@
                       <el-input type="text" v-model="fmodel.meta.title" placeholder="请输入标题" class='meta' ></el-input>
                       <el-input type="text" v-model="fmodel.meta.icon" placeholder="请输入图标" class='meta'></el-input>
                   </template>
-             <template slot='route_name' slot-scope='{ data, fmodel }'>
-                <el-select 
+             <template slot='route_path' slot-scope='{ data, fmodel }'>
+                <!-- <el-select 
                 v-model="fmodel[data.name]" 
                 v-if='data.type=="select"' 
                 @change='selectChange($event,data.data)'
@@ -51,7 +51,7 @@
                     :label="item.label"
                     :value="item.value">
                     </el-option>
-                </el-select>
+                </el-select> -->
               </template>
                 </my-form>
         </el-dialog>
@@ -94,20 +94,24 @@ export default {
         {
           name: 'route_name',
           label: '路由名称',
-          type: 'select',
-          props: {
-            filterable: true,
-            remote: true,
-            remoteMethod: this.remoteRoute,
-            placeholder: '请输入路由名称',
-            class: 'select-route_name',
-            clearable: true,
-            allowCreate: true
-          },
-          data: [
-
-          ]
         },
+        // {
+        //   name: 'route_name',
+        //   label: '路由名称',
+        //   type: 'select',
+        //   props: {
+        //     filterable: true,
+        //     remote: true,
+        //     remoteMethod: this.remoteRoute,
+        //     placeholder: '请输入路由名称',
+        //     class: 'select-dropdown',
+        //     clearable: true,
+        //     allowCreate: true
+        //   },
+        //   data: [
+
+        //   ]
+        // },
         { name: 'route_path', label: '路由路径' },
         {
           name: 'component',
@@ -128,7 +132,7 @@ export default {
           type: 'cascader',
           ref: 'cascader1',
           props: {
-            class: 'cascader-pid',
+            class: 'select-dropdown',
             changeOnSelect: true
           },
           data: [
@@ -239,7 +243,8 @@ export default {
           title: '',
           icon: ''
         },
-        component: 'layout/Layout'
+        component: 'layout/Layout',
+        always_show: 0
       }
       })
     },
@@ -347,14 +352,9 @@ export default {
 }
 </script>
 <style lang="scss" >
-   .table-layout .permission-form .el-input{
-        width: 50%;
-    }
     .meta {
       margin-bottom: 10px;  width: 30%;
     }
-    .cascader-pid, .select-route_name {
-      width: 100%;
-    }
+
 </style>
 

@@ -5,6 +5,10 @@
         <svg-icon icon-class="setting" class-name="short-cut-icon" />
       </div>
     </el-tooltip> -->
+      <div class='short-cut-item' v-ability='"api.company.edit"' v-if='companyId'>
+        <svg-icon icon-class="company" class-name="short-cut-icon" @click.native='openShort("/company/" + companyId +"/edit")'/>
+        <span class='short-cut-title'>公司设置</span>
+      </div>
       <div class='short-cut-item' v-ability='"api.permission.index"'>
         <svg-icon icon-class="privillege" class-name="short-cut-icon" @click.native='openShort("/permission/index")'/>
         <span class='short-cut-title'>权限设置</span>
@@ -28,10 +32,17 @@
 </template>
 
 <script>
+
 import ability from '@/directive/ability/index.js'
+import { mapGetters } from 'vuex'
 
 export default{
   directives: { ability },
+  computed: {
+    ...mapGetters([
+      'companyId'
+    ]),
+  },
   methods: {
     openShort(name) {
       this.$router.push({ path: name })

@@ -19,7 +19,7 @@
             <el-tag> {{ data.status }} </el-tag>
         </template>
         <template slot-scope="{ data }" slot='company'>
-             {{ data.company && data.company.name ||'' }}
+             {{ data.company && data.company.Co_Name ||'' }}
         </template>
           <template slot-scope="{ data }" slot='avatar'>
             <img :src="getImageUrl(data.avatar)" v-if='data.avatar' :style='{width: "100px", height: "100px"}'/>
@@ -53,7 +53,7 @@
 
         <el-dialog title="用户授权" :visible.sync="roleDialog" @open='roleDialogOpen' :close-on-click-modal='false'>
             <my-form
-                class="my-form"
+                class="my-form role-form"
                 ref='roleForm'
                 @do-form='saveRoleData'
                 :pform-model='roleFormModel'
@@ -77,12 +77,11 @@ export default {
       data: [],
       logo: [],
       formColumns: [
-        { name: 'name', label: '用户名' },
-        { name: 'email', label: '邮箱' },
-        { name: 'password', label: '密码', inputType: 'password', type: 'input' },
-        { name: 'password_confirmation', label: '确认密码', inputType: 'password', type: 'input' },
+        { name: 'username', label: '用户名' },
+        { name: 'userpwd', label: '密码', inputType: 'password', type: 'input' },
+        { name: 'userpwd_confirmation', label: '确认密码', inputType: 'password', type: 'input' },
         {
-          name: 'company_id',
+          name: 'company_name',
           label: '所属公司',
           type: 'select',
           props: {
@@ -90,9 +89,12 @@ export default {
             remote: true,
             remoteMethod: this.remoteRoute,
             placeholder: '请输入公司名称',
-            class: 'select-company_id',
+            class: 'select-dropdown',
             clearable: true,
             allowCreate: false
+          },
+          events: {
+            change: this.editChange
           },
           data: [
 
@@ -100,8 +102,7 @@ export default {
         },
       ],
       editFormColumns: [
-        { name: 'name', label: '用户名' },
-        { name: 'email', label: '邮箱' },
+        { name: 'username', label: '用户名' },
         {
           name: 'company_name',
           label: '所属公司',
@@ -111,7 +112,7 @@ export default {
             remote: true,
             remoteMethod: this.remoteEditRoute,
             placeholder: '请输入公司名称',
-            class: 'select-company_id',
+            class: 'select-dropdown',
             clearable: true,
             allowCreate: false
           },
@@ -132,38 +133,30 @@ export default {
         }
       ],
       formRules: {
-        name: [
+        username: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        email: [
-          { required: true, message: '邮箱不能为空', trigger: 'blur' },
-          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
-        ],
-        password: [
+        userpwd: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
       },
       editFormRules: {
-        name: [
+        username: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
-        email: [
-          { required: true, message: '邮箱不能为空', trigger: 'blur' },
-          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
-        ],
+        ]
       },
       columns: {
-        id: {
+        userid: {
           label: '编号'
         },
-        name: {
+        username: {
           label: '用户名称'
-        },
-        email: {
-          label: '用户邮箱'
         },
         avatar: {
           label: '用户头像'
+        },
+        Co_ID: {
+          label: '公司编号'
         },
         company: {
           label: '所属公司'
@@ -177,9 +170,6 @@ export default {
         action: {
           'min-width': '150',
           label: '操作'
-        },
-        company_id: {
-          hidden: true
         }
       },
       total: 0,
@@ -203,7 +193,8 @@ export default {
         }
       ],
       dialogTitle: '',
-      company_id: null
+      company_id: null,
+      isAdd: true
     }
   },
   methods: {
@@ -212,6 +203,7 @@ export default {
       this.addDialog = true
       this.dialogTitle = '添加'
       this.userFormModel = {}
+      this.isAdd = true
       this.editId = 0
 
     },
@@ -225,15 +217,16 @@ export default {
       })
     },
     handleEdit(data) {
-      // console.log(data)
+       console.log(data, 999997)
       this.editDialog = true
+      this.isAdd = false
       this.dialogTitle = '编辑'
       console.log(data.company)
-      this.company_id = data.company_id
-      data.company_name = data.company&&data.company.name||''
+      this.company_id = data.Co_ID
+      data.company_name = data.company && data.company.Co_Name||''
       this.editUserFormModel = data
       this.$nextTick(() => {
-
+        
       })
     },
     getList(query) {
@@ -247,8 +240,8 @@ export default {
       })
     },
     saveData(data) {
-      const method = data.id ? updateUser : createUser
-      data.company_id = this.company_id
+      const method = this.isAdd === false ? updateUser : createUser
+      data.Co_ID = this.company_id
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {
@@ -274,11 +267,12 @@ export default {
     },
     handleRole(data) {
       this.roleDialog = true
-      fetchRoles(data.id).then((res) => {
+      this.roleFormModel = { }
+      fetchRoles(data.userid).then((res) => {
         const columns = this.roleColumns
         columns[0].data = res.data.data.allRoles
         this.roleColumns = columns
-        this.roleFormModel = { roles: res.data.data.myRoles, id: data.id }
+        this.roleFormModel = { roles: res.data.data.myRoles, id: data.userid }
       }).catch((res) => {
         console.log(res)
       })
@@ -289,6 +283,7 @@ export default {
       })
     },
     saveRoleData(data) {
+      console.log(data, 99999955)
       saveRoles(data).then((res) => {
         openMessage(res).then(() => {
           this.roleDialog = false
@@ -304,7 +299,7 @@ export default {
         console.log(res)
         const columns = this.formColumns
         columns.map((item) => {
-          if (item.name == 'company_id') {
+          if (item.name == 'company_name') {
             item.data = res.data.data
             return item
           }
@@ -344,11 +339,9 @@ export default {
 }
 </script>
 <style lang="scss">
-   .table-layout .my-form .el-input{
-        width: 50%;
-    }
-    .select-company_id {
-      width: 100%;
-    }
+  .table-layout .role-form .el-checkbox {
+    margin-left: 0;
+    margin-right: 10px;
+  }
 </style>
 

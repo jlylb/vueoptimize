@@ -205,6 +205,16 @@ code {
   margin: 20px;
   background-color: $subMenuBg;
   min-height: 900px;
+  .el-dialog {
+    width: 30%;
+  }
+  .select-dropdown {
+    width: 100%;
+  }
+}
+
+.table-layout .my-form .el-input{
+  width: 90%;
 }
 
 .search-form-layout{
@@ -215,3 +225,4 @@ code {
     margin-bottom: 0;
   }
 }
+

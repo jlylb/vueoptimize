@@ -21,7 +21,7 @@
         </table-list>
         <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false'>
             <my-form
-                class="permission-form"
+                class="my-form"
                 ref='dialogForm'
                 @do-form='saveData'
                 :form-rules='formRules'
@@ -184,8 +184,6 @@ export default {
 }
 </script>
 <style lang="scss" >
-   .table-layout .permission-form .el-input{
-        width: 50%;
-    }
+
 </style>
 
