@@ -46,7 +46,7 @@ export default {
         backgroundColor: '#dfefbd',
         title: {
           left: 'center',
-          text: '空气温湿度趋势图',
+          text: '光照强度趋势图',
           subtext: '设备编号: ' + this.title
         },
         tooltip: {
@@ -55,7 +55,7 @@ export default {
         legend: {
           left: 'center',
           bottom:'0',
-          data: ["温度", "湿度"]
+          data: ["光照"]
         },
         toolbox: {
           show: true,
@@ -86,7 +86,7 @@ export default {
          },
         series: [
           {
-            name: "温度",
+            name: "光照",
             type: "line",
             data: this.wendu,
             markPoint: {
@@ -97,37 +97,6 @@ export default {
             },
             markLine: {
               data: [{ type: "average", name: "平均值" }]
-            }
-          },
-          {
-            name: "湿度",
-            type: "line",
-            data: this.shidu,
-            markPoint: {
-              data: [{ name: "周最低", value: -2, xAxis: 1, yAxis: -1.5 }]
-            },
-            markLine: {
-              data: [
-                { type: "average", name: "平均值" },
-                [
-                  {
-                    symbol: "none",
-                    x: "90%",
-                    yAxis: "max"
-                  },
-                  {
-                    symbol: "circle",
-                    label: {
-                      normal: {
-                        position: "start",
-                        formatter: "最大值"
-                      }
-                    },
-                    type: "max",
-                    name: "最高点"
-                  }
-                ]
-              ]
             }
           }
         ]
