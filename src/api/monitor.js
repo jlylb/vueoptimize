@@ -23,3 +23,11 @@ export function fetchDeviceData(data) {
     data
   })
 }
+
+export function fetchDeviceRealData(data) {
+  return request({
+    url: 'monitor/realdata',
+    method: 'post',
+    data
+  })
+}

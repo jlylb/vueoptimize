@@ -33,7 +33,7 @@
                 :key='item.pdi_index' 
                 @click='handleDevice(index, item)'>
                     <div class='icon-wraper'>
-                        <svg-icon icon-class="shebei"  class='icon-panel'/>
+                        <svg-icon :icon-class="typeIcon[item.dpt_id]"  class='icon-panel'/>
                     </div>
                     
                     <div class="card-panel-text" v-if='item.types' >{{ item.types.dt_typename }} </div>
@@ -43,53 +43,30 @@
                 <div v-if='devices.length===0'> 无数据</div>
             </div>
 
-            <div class='dapeng-wrapper'>
-                <div>选择日期: </div>
-                <div style='padding: 0 5px;'>
-                    <el-radio-group v-model="selectDate" @change='changeDate' class='selectDate'>
-                        <el-radio :label="'day'" border>当天</el-radio>
-                        <el-radio :label="'week'" border>本周</el-radio>
-                        <el-radio :label="'month'" border>本月</el-radio>
-                        <el-radio :label="'year'" border>本年</el-radio>
-                    </el-radio-group>
-                    <el-date-picker
-                        v-model="searchDate"
-                        type="daterange"
-                        :value-format='"yyyy-MM-dd"'
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        @change='dateOnPick'
-                        :picker-options="poption"
-                        :default-time="['00:00:00', '23:59:59']">
-                    </el-date-picker>
-                </div>
-            </div>    
-            <div class='chart-block'>
 
-                <template v-if='deviceType==110'>
-                    <monitor-line 
-                    :style='{width:"48%", height: "450px"}' 
-                    class='chart-item' v-for='(item, index) in deviceData' 
-                    :key='index' 
-                    :wendu='item.temp'
-                    :shidu='item.wet'  
-                    :title='index'></monitor-line>
-                </template>
-                <template v-if='deviceType==11'>
-                    <co-line :style='{width:"48%", height: "400px"}' class='chart-item'></co-line>
-                </template>
-                <template v-if='deviceType==112'>
-                    <light-line 
-                        :style='{width:"48%", height: "450px"}' 
-                        class='chart-item' v-for='(item, index) in deviceData' 
-                        :key='index' 
-                        :wendu='item.light'  
-                        :title='index'></light-line>
-                </template>
-                <template v-if='deviceType==4'>
-                    <soil-line :style='{width:"48%", height: "400px"}' class='chart-item'></soil-line>
-                </template>
+            <div class='running-type'>
+
+                <device-component v-for='(item, index) in deviceData' :key='index' :status='getRunningStatusClass(item)' :icon-name="typeIcon[deviceType]">
+                    <template slot='params'>
+                        <p> 运行状态: {{ getRunningStatus(item) }}</p>
+                        <p v-for='(params, index) in  item.params' :key='index'> {{ params[1] }}: {{ params[0] }} °C</p>
+                    </template>
+                     设备编号: {{ item.pdi_index }}
+                </device-component>
+
+                <device-component>
+                    <template slot='icon'>
+                        <svg-icon icon-class="temp"  class='running-icon-panel'/>
+                    </template>
+                    <template slot='params'>
+                        <p> 运行状态: 正常</p>
+                        <p> 温度: 35 °C</p>
+                        <p> 湿度: 35 °C</p>
+                    </template>
+                    设备编号: 1111111
+                </device-component>
             </div>
+
         </div>
     </div>    
 </template>
@@ -97,18 +74,13 @@
 <script>
 
 import SearchForm from '@/views/common/components/searchForm'
-import { fetchList, fetchDevice, fetchDeviceData } from '@/api/monitor'
-import MonitorLine  from './Line'
-import CoLine  from './coLine'
-import LightLine  from './lightLine'
-import SoilLine  from './soilLine'
+import { fetchList, fetchDevice, fetchDeviceRealData } from '@/api/monitor'
+import DeviceComponent from '@/components/deviceComponent'
 
 export default {
-    components: {  SearchForm, MonitorLine, CoLine, LightLine, SoilLine },
+    components: {  SearchForm, DeviceComponent },
     data() {
         return {
-            searchDate: [],
-            selectDate: 'day',
             dapeng: [],
             province: [],
             city: [],
@@ -138,8 +110,13 @@ export default {
             deviceType: null,
             currentDevice: null,
             timer: null,
-            poption: {
-                onPick: this.onPick
+            typeIcon: {
+                110: 'temp',
+                111: 'co2',
+                112: 'light',
+                114: 'soil',
+                115: 'liquid',
+                116: 'video',
             }
         }
     },
@@ -154,7 +131,7 @@ export default {
                 this.dapeng = this.city[val]
                 this.currentDapeng = this.dapeng[0]
                 this.getDevice(this.dapeng[0])
-                this.resetDate()
+
             }else{
                 this.dapeng = []
                 this.devices = []
@@ -173,7 +150,6 @@ export default {
             }
             this.currentDapeng = item
             this.catchError()
-            this.resetDate()
             this.getDevice(item)
         },
         handleDevice(index, item) {
@@ -184,7 +160,6 @@ export default {
             this.deviceType = item.dpt_id
             this.currentDevice = item
             this.catchError()
-            this.resetDate()
             this.getData(item)
         },
         getDevice(data) {
@@ -211,7 +186,7 @@ export default {
             }).catch(this.catchError)
         },
         getData(data) {
-            fetchDeviceData({...data, selectDate: this.selectDate, searchDate: this.searchDate })
+            fetchDeviceRealData({...data })
             .then((res2) => {
                 console.log(res2)
                 this.deviceData = res2.data.devices
@@ -226,11 +201,6 @@ export default {
             } 
         },
         startTimer() {
-            console.log(this.selectDate, this.searchDate)
-            if(this.selectDate!=='day' || this.searchDate.length > 0) {
-                this.catchError()
-                return
-            }
             if(this.timer) {
                 return
             }
@@ -242,33 +212,14 @@ export default {
             if(!this.currentDevice) {
                 return
             }
-            this.getData(this.currentDevice)
+            this.getData(this.currentDDevice)
         },
-        changeDate(val) {
-            if(!this.currentDevice) {
-                return
-            }
-            this.searchDate = []
-            this.getData(this.currentDevice)
+        getRunningStatus(device) {
+            return device.device_status && device.device_status.rs_status==1?'正常':'停止'
         },
-        dateOnPick(val) {
-            if(!val) {
-                this.selectDate = 'day'
-            }
-            if(!this.currentDevice) {
-                return
-            }
-            this.getData(this.currentDevice)
+        getRunningStatusClass(device) {
+            return device.device_status && device.device_status.rs_status==1?'success':'error'
         },
-        onPick(dates) {
-            if(dates.maxDate) {
-                this.selectDate = null
-            }
-        },
-        resetDate() {
-            this.selectDate = 'day'
-            this.searchDate = []
-        }
     },
     created() {
         fetchList().then((res) => {
@@ -302,74 +253,71 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-    $activeColor: #E6A23C;
-    .table-layout-inner{
-        background-color: #fff;
-        padding: 20px 0;
-        min-height: 800px;
-        position: relative;
-    }
-    .dapeng-wrapper {
-        padding: 0 10px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items:center;
-    }
-    .card-panel {
-        background-color: #67C23A;
-        text-align: center;
-        width: 200px;
-        height: 100px;
-        margin: 5px;
-        cursor: pointer;
-        
-        &:hover, &.active {
-            background-color: $activeColor;
-            .icon-panel {
-                fill: #fff;
-            }
-            .card-panel-text{
-                color: #fff;
-            }
-        }
-    }
+$activeColor: #e6a23c;
+.table-layout-inner {
+  background-color: #fff;
+  padding: 20px 0;
+  min-height: 800px;
+  position: relative;
+}
+.dapeng-wrapper {
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.card-panel {
+  background-color: #67c23a;
+  text-align: center;
+  width: 200px;
+  height: 100px;
+  margin: 5px;
+  cursor: pointer;
+
+  &:hover,
+  &.active {
+    background-color: $activeColor;
     .icon-panel {
-        width: 60px;
-        height: 60px;
-        fill: #ccc;
-    }
-    .icon-wraper {
-        display: inline-block;
-        padding-top: 8px;
+      fill: #fff;
     }
     .card-panel-text {
-        color: #ccc
+      color: #fff;
     }
-    .chart-block {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .chart-item {
-        // padding: 5px;
-        margin: 15px;
-        position: relative;
-    }
-    .card-panel-device {
-        @extend .card-panel;
-        height: 120px;
+  }
+}
+.icon-panel {
+  width: 60px;
+  height: 60px;
+  fill: #ccc;
+}
+.icon-wraper {
+  display: inline-block;
+  padding-top: 8px;
+}
+.card-panel-text {
+  color: #ccc;
+}
+.chart-block {
+  display: flex;
+  flex-wrap: wrap;
+}
+.chart-item {
+  // padding: 5px;
+  margin: 15px;
+  position: relative;
+}
+.card-panel-device {
+  @extend .card-panel;
+  height: 120px;
+}
 
-    }
-    .selectDate /deep/ {
-        & .el-radio__input.is-checked+.el-radio__label {
-        color: $activeColor;
-        }
-        & .el-radio__input.is-checked .el-radio__inner {
-            border-color: $activeColor;
-            background: $activeColor;
-        }
-        & .el-radio.is-bordered.is-checked {
-            border-color: $activeColor;
-        }
-    }
+.running-type {
+  margin-top: 20px;
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  color: #fff;
+  align-items: center;
+}
 </style>
 
