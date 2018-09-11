@@ -240,7 +240,7 @@ export default {
                 this.updateStatus({pdi_index: item.pdi_index, [typeStatus]: val})
             })
             .catch(() => {
-                item.device_status[typeStatus] = !val
+                item.device_status[typeStatus] = val==0?1:0
                 this.$message({
                     type: 'info',
                     message: '已取消删除'
