@@ -77,6 +77,7 @@ import SearchForm from '@/views/common/components/searchForm'
 import { fetchList, fetchDevice, fetchDeviceRealData } from '@/api/monitor'
 import DeviceComponent from '@/components/deviceComponent'
 
+
 export default {
     components: {  SearchForm, DeviceComponent },
     data() {
@@ -247,6 +248,15 @@ export default {
         .catch(this.catchError)
 
         this.startTimer()
+    },
+    destoryed() {
+        console.log('monitor destoryed')
+        this.catchError();
+    },
+    beforeDestroy() {
+        console.log('monitor destoryed')
+        // clearInterval(this.timer)
+        this.catchError();
     }
 
 }

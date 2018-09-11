@@ -93,7 +93,7 @@
             </div>
 
             <div class='chart-block' v-if='showType===2'>
-                表格显示
+                <table-component :params='searchParams' class='table-list'></table-component>
             </div>
         </div>
     </div>    
@@ -107,9 +107,10 @@ import MonitorLine  from './Line'
 import CoLine  from './coLine'
 import LightLine  from './lightLine'
 import SoilLine  from './soilLine'
+import TableComponent from './table'
 
 export default {
-    components: {  SearchForm, MonitorLine, CoLine, LightLine, SoilLine },
+    components: {  SearchForm, MonitorLine, CoLine, LightLine, SoilLine, TableComponent },
     data() {
         return {
             searchDate: [],
@@ -166,7 +167,8 @@ export default {
             timer: null,
             poption: {
                 onPick: this.onPick
-            }
+            },
+            searchParams: {}
         }
     },
     methods: {
@@ -194,6 +196,8 @@ export default {
         },
         selectTypeChange(val) {
             this.showType = val;
+            // this.searchParams.showType = val
+            this.getData(this.currentDevice);
         },
         selectTypeClear() {},
         handleClick(index, item) {
@@ -241,12 +245,17 @@ export default {
             }).catch(this.catchError)
         },
         getData(data) {
-            fetchDeviceData({...data, selectDate: this.selectDate, searchDate: this.searchDate })
+            console.log(this.showType)
+            this.searchParams = {...data, selectDate: this.selectDate, searchDate: this.searchDate, showType: this.showType };
+            if(this.showType===2) {
+                return;
+            }
+            fetchDeviceData(this.searchParams)
             .then((res2) => {
                 console.log(res2)
                 this.deviceData = res2.data.devices
             }).catch(this.catchError)
-            this.startTimer()
+            // this.startTimer()
         },
         catchError() {
             console.log(this.timer, 66666666666)
@@ -391,6 +400,10 @@ $activeColor: #e6a23c;
   & .el-radio.is-bordered.is-checked {
     border-color: $activeColor;
   }
+}
+.table-list {
+  width: 100%;
+  margin-top: 20px;
 }
 </style>
 

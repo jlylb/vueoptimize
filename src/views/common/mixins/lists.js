@@ -36,14 +36,16 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.$emit('list-delete', row)
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
+        .then(() => {
+          this.$emit('list-delete', row)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     setColumns() {
       this.columns = []
@@ -53,25 +55,17 @@ export default {
       }
       if (Object.keys(this.customColumns).length === 0) {
         const firstData = this.data[0]
-        let extract
+        const extract = {}
         let i = 1
         for (const item in firstData) {
-          if (this.customColumns[item]) {
-            extract = this.customColumns[item]
-          } else {
-            extract = {}
+          const column = Object.assign({ prop: item, label: item }, extract, {
+            label: this.labels[item] || item
+          })
+          this.columns.push(column)
+          if (i <= this.showlength) {
+            this.showColumns.push(column)
           }
-          if (extract.hidden !== true) {
-            const column = Object.assign(
-              { prop: item, label: item },
-              extract, this.labels[item] || {}
-            )
-            this.columns.push(column)
-            if (i <= this.showlength) {
-              this.showColumns.push(column)
-            }
-            i++
-          }
+          i++
         }
         this.addAction()
       } else {
@@ -79,7 +73,9 @@ export default {
         for (const item in this.customColumns) {
           if (this.customColumns[item].hidden !== true && item !== 'action') {
             const column = Object.assign(
-              { prop: item }, this.customColumns[item], this.labels[item] || {}
+              { prop: item },
+              this.customColumns[item],
+              this.labels[item] || {}
             )
             this.columns.push(column)
             if (i <= this.showlength) {
@@ -118,12 +114,12 @@ export default {
       })
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        return v[j]
-      }))
+      return jsonData.map(v =>
+        filterVal.map(j => {
+          return v[j]
+        })
+      )
     }
   },
-  created() {
-
-  }
+  created() {}
 }
