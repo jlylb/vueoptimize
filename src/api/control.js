@@ -7,3 +7,11 @@ export function updateStatus(data) {
     data
   })
 }
+
+export function fetchDevice(query) {
+  return request({
+    url: 'control/device',
+    method: 'get',
+    params: query
+  })
+}

@@ -169,7 +169,7 @@ export default {
                 const data = ress.data
                 this.devices = data.devices
                 if(this.devices.length===0) {
-                    this.deviceTyp = null
+                    this.deviceType = null
                     this.currentDevice = null
                 }else{
                     this.deviceType = this.devices[0].dpt_id

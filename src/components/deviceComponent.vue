@@ -1,5 +1,8 @@
 <template>
-    <div :class="`running-type-wrapper running-${status}`" > 
+    <div :class="`running-type-wrapper running-${status}`" >
+      <div class='running-type-header'>
+        <slot name='header'></slot>
+      </div> 
       <div class='running-type-item'>
           <div class='running-icon'>
             <svg-icon v-if='iconName' :icon-class="iconName"  class='running-icon-panel'/>
@@ -77,5 +80,8 @@ export default {
   width: 100%;
   padding: 5px 0;
   text-align: center;
+}
+.running-type-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 </style>

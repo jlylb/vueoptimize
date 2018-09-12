@@ -19,6 +19,12 @@
             v-bind='myitem.props||{}' 
             :type='myitem.inputType||"text"'></el-input>
 
+            <el-input-number
+            v-model.number="formModel[myitem.name]" 
+            v-if='myitem.type=="el-input-number"' 
+            :controls-position='"right"'
+            v-bind='myitem.props||{}'></el-input-number>
+
             <el-select 
             v-model="formModel[myitem.name]" 
             v-if='myitem.type=="select"' 
@@ -256,13 +262,13 @@ export default {
 </script>
 
 <style lang="scss">
- .my-form {
-     .el-form-item__label {
-        color: #606266
-     }
-     .el-input {
-         width: auto;
-     }
- }
+.my-form {
+  .el-form-item__label {
+    color: #606266;
+  }
+  .el-input {
+    width: auto;
+  }
+}
 </style>
 

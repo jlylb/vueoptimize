@@ -7,9 +7,11 @@ export default function openMessage(res) {
     type: status,
     duration: 5 * 1000
   })
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     if (res.data.status === 1) {
       resolve()
+    } else {
+      reject()
     }
   })
 }

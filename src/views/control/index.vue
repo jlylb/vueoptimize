@@ -9,6 +9,7 @@
                 @search-form='handleFilter'>
             </search-form>  
         </div>
+
         <div class='table-layout-inner'>
             <div class='dapeng-wrapper'>
                 <div>选择大棚: </div>
@@ -27,26 +28,31 @@
             <div class='dapeng-wrapper'>
                 <div>选择类型: </div>
                 <div class='card-panel-device' 
-                v-if='devices.length>0' 
+                v-if='!isEmptyObject(deviceCurrentType)' 
                 v-bind:class="{ active:index==deviceIndex}" 
-                v-for='(item, index) in devices' 
-                :key='item.pdi_index' 
+                v-for='(item, index) in deviceCurrentType' 
+                :key='index' 
                 @click='handleDevice(index, item)'>
                     <div class='icon-wraper'>
-                        <svg-icon :icon-class="typeIcon[item.dpt_id]"  class='icon-panel'/>
+                        <svg-icon :icon-class="typeIcon[item.dt_typeid]"  class='icon-panel'/>
                     </div>
                     
-                    <div class="card-panel-text" v-if='item.types' >{{ item.types.dt_typename }} </div>
-                    <div class="card-panel-text" v-if='item.types' > {{ item.types.dt_typememo }}</div>
+                    <div class="card-panel-text"  >{{ item.dt_typename }} </div>
+                    <div class="card-panel-text" > {{ item.dt_typememo }}</div>
                 </div>
                 
-                <div v-if='devices.length===0'> 无数据</div>
+                <div v-if='isEmptyObject(deviceCurrentType)'> 无数据</div>
             </div>
 
 
             <div class='running-type'>
 
-                <device-component v-for='(item, index) in deviceData' :key='index' :status='getRunningStatusClass(item)' :icon-name="typeIcon[deviceType]">
+                <device-component v-for='(item, index) in currentDevice' :key='index' :status='getRunningStatusClass(item)' :icon-name="typeIcon[deviceType]">
+                    <template slot='header'>
+                        <div class='running-setting'>
+                            <svg-icon  icon-class="running"  @click.native='openSetting(item)' />
+                        </div>
+                    </template>
                     <template slot='params'>
                         <p> 运行状态:
                             <el-switch
@@ -63,15 +69,26 @@
                             @change="deviceChange($event,item)"
                             :active-value='1'
                             :inactive-value='0'
-                            v-model="item.device_status.work_status">
+                            v-model="item.device_status.device_status">
                         </el-switch>
                         </p>
-
                     </template>
                      设备编号: {{ item.pdi_index }}
                 </device-component>
 
             </div>
+
+        <el-dialog :title="deviceTitle" :visible.sync="settingDialog" @open='dialogOpen' :close-on-click-modal='false'>
+            <my-form
+                class="my-setting-form"
+                ref='dialogForm'
+                @do-form='saveData'
+                :form-rules='formRules'
+                :pform-model='userFormModel'
+                :form-props='formProps'
+                :pform-columns='settingFormColumns'>
+                </my-form>
+            </el-dialog>
 
         </div>
     </div>    
@@ -80,13 +97,14 @@
 <script>
 
 import SearchForm from '@/views/common/components/searchForm'
-import { fetchList, fetchDevice, fetchDeviceRealData } from '@/api/monitor'
-import { updateStatus } from '@/api/control'
+import { fetchList } from '@/api/monitor'
+import { updateStatus, fetchDevice } from '@/api/control'
 import DeviceComponent from '@/components/deviceComponent'
-
+import openMessage from '@/utils/message.js'
+import MyForm from '../common/components/myform'
 
 export default {
-    components: {  SearchForm, DeviceComponent },
+    components: {  SearchForm, DeviceComponent, MyForm },
     data() {
         return {
             dapeng: [],
@@ -111,12 +129,14 @@ export default {
                 data: [] }
             ],
             current: 0,
-            currentDapeng: null,
+            currentDapeng: {},
             deviceIndex: 0,
             devices: [],
             deviceData: {},
-            deviceType: null,
-            currentDevice: null,
+            deviceType: 0, //设备分类当前类型
+            deviceTypeArr: {}, //设备分类
+            deviceCurrentType: {}, //设备分类
+            currentDevice: {},
             timer: null,
             typeIcon: {
                 110: 'temp',
@@ -126,7 +146,25 @@ export default {
                 115: 'liquid',
                 116: 'video',
             },
-
+            settingDialog: false,
+            formProps: {
+                labelWidth: '120px'
+            },
+            userFormModel: {
+                level4: 100,
+                level3: 200,
+                level2: 300,
+                level1: 400,
+            },
+            formRules: {
+            },
+            settingFormColumns: [
+                { label: '四级告警', name: 'level4', type: 'el-input-number' },
+                { label: '三级告警', name: 'level3', type: 'el-input-number' },
+                { label: '二级告警', name: 'level2', type: 'el-input-number' },
+                { label: '一级告警', name: 'level1', type: 'el-input-number' },
+            ],
+            deviceTitle: ''
         }
     },
     methods: {
@@ -145,8 +183,8 @@ export default {
                 this.dapeng = []
                 this.devices = []
                 this.deviceData = {}
-                this.currentDapeng = null
-                this.currentDevice = null
+                this.currentDapeng = {}
+                this.currentDevice = {}
             }
         },
         selectClear() {
@@ -159,30 +197,48 @@ export default {
             }
             this.currentDapeng = item
             this.catchError()
-            this.getDevice(item)
+            this.selectDevice(item)
         },
         handleDevice(index, item) {
             this.deviceIndex = index
-            if(item.dpt_id===this.deviceType) {
+            if(item.dt_typeid===this.deviceType) {
                 return
             }
-            this.deviceType = item.dpt_id
-            this.currentDevice = item
+            this.deviceType = item.dt_typeid
+            this.currentDevice = this.devices[this.currentDapeng.value][item.dt_typeid]
             this.catchError()
-            this.getData(item)
+
+        },
+        selectDevice(item) {
+            const areaId = item.value
+            if(this.deviceTypeArr[areaId]) {
+                this.deviceCurrentType = this.deviceTypeArr[areaId]
+                const deviceType = Object.keys(this.deviceCurrentType)[0]
+                this.deviceType = deviceType
+                this.deviceIndex = deviceType
+                this.currentDevice = this.devices[areaId][deviceType]
+            }else{
+                this.deviceCurrentType = {}
+                this.deviceType = 0
+                this.deviceIndex = 0
+                this.currentDevice = {}
+            }
+
         },
         getDevice(data) {
+            console.log(data, 'device')
             fetchDevice(data).then((ress) => {
                 console.log(ress)
                 const data = ress.data
                 this.devices = data.devices
-                if(this.devices.length===0) {
-                    this.deviceTyp = null
-                    this.currentDevice = null
+                this.deviceTypeArr = data.types
+                if(this.isEmptyObject(this.devices)) {
+                    this.deviceType = 0
+                    this.currentDevice = {}
+                    this.deviceTypeArr = {}
+                    this.deviceCurrentType = {}
                 }else{
-                    this.deviceType = this.devices[0].dpt_id
-                    this.currentDevice = this.devices[0]
-                    return this.devices[0]
+                    this.selectDevice(this.currentDapeng)
                 }
                 
             }).then((res) => {
@@ -195,12 +251,16 @@ export default {
             }).catch(this.catchError)
         },
         getData(data) {
-            fetchDeviceRealData({...data })
-            .then((res2) => {
-                console.log(res2)
-                this.deviceData = res2.data.devices
-            }).catch(this.catchError)
-            this.startTimer()
+            // fetchDeviceRealData({...data })
+            // .then((res2) => {
+            //     console.log(res2)
+            //     this.deviceData = res2.data.devices
+            // }).catch(this.catchError)
+            // this.startTimer()
+        },
+        isEmptyObject(obj) {
+            if(!obj) return false;
+            return Object.keys(obj).length === 0;
         },
         catchError() {
             console.log(this.timer, 66666666666)
@@ -227,7 +287,6 @@ export default {
             return device.device_status && device.device_status.rs_status==1?'正常':'停止'
         },
         getRunningStatusClass(device) {
-            console.log(device, 9999999999)
             return device.device_status && device.device_status.rs_status==1?'success':'error'
         },
         changeStatus(val, item, typeStatus) {
@@ -237,13 +296,13 @@ export default {
                 type: 'warning'
             })
             .then(() => {
-                this.updateStatus({pdi_index: item.pdi_index, [typeStatus]: val})
+                this.updateStatus({pdi_index: item.pdi_index, value: val, field: typeStatus}, item)
             })
             .catch(() => {
                 item.device_status[typeStatus] = val==0?1:0
                 this.$message({
                     type: 'info',
-                    message: '已取消删除'
+                    message: '取消更改状态'
                 })
             })
         },
@@ -251,15 +310,29 @@ export default {
             this.changeStatus(val, item, 'rs_status')
         },
         deviceChange(val, item) {
-            this.changeStatus(val, item, 'deviceStatus')
+            this.changeStatus(val, item, 'device_status')
         },
-        updateStatus(params) {
+        updateStatus(params, item) {
             updateStatus(params)
             .then((res) => {
-
+                openMessage(res)
+                .then(()=>{})
+                .catch(()=>{
+                    item.device_status[params.field] = params.value==0?1:0
+                })
             })
-            .catch((err)=>{})
-        }
+            .catch((err)=>{
+                item.device_status[params.field] = params.value==0?1:0
+            })
+        },
+        openSetting(item) {
+           this.settingDialog = true
+           this.deviceTitle = `${item.pdi_index} 设备报警设置`
+        },
+        saveData(data) {
+            console.log(data)
+        },
+        dialogOpen() {},
     },
     created() {
         fetchList().then((res) => {
@@ -367,6 +440,14 @@ $activeColor: #e6a23c;
   flex-wrap: wrap;
   color: #fff;
   align-items: center;
+}
+.running-setting {
+  text-align: right;
+  padding: 5px;
+  cursor: pointer;
+}
+.my-setting-form /deep/ .el-input-number .el-input {
+  width: auto;
 }
 </style>
 
