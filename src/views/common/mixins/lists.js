@@ -119,6 +119,19 @@ export default {
           return v[j]
         })
       )
+    },
+    showValue(row, prop) {
+      const attrs = prop.split('.')
+      let cur
+      let curValue = row
+      while ((cur = attrs.shift())) {
+        curValue = curValue[cur]
+        if (!curValue) {
+          return ''
+        }
+      }
+      return curValue
+      // return scope.row[attrs[0]] ? scope.row[attrs[0]][attrs[1]] : ''
     }
   },
   created() {}

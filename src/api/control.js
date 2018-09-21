@@ -15,3 +15,11 @@ export function fetchDevice(query) {
     params: query
   })
 }
+
+export function fetchDeviceData(query) {
+  return request({
+    url: 'control/devicedata',
+    method: 'get',
+    params: query
+  })
+}

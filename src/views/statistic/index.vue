@@ -10,41 +10,57 @@
             </search-form>  
         </div>
         <div class='table-layout-inner'>
-            <div class='dapeng-wrapper'>
-                <div>选择大棚: </div>
-                <div class='card-panel' 
-                v-bind:class="{ active:index==current}" 
-                v-for='(item, index) in dapeng' 
-                :key='item.AreaName' 
-                @click='handleClick(index, item)'>
-                    <div class='icon-wraper'>
-                        <svg-icon icon-class="dapeng"  class='icon-panel'/>
-                    </div>
-                    <div class="card-panel-text" >{{ (index+1) + '号大棚' }}</div>
-                </div>
-            </div>
 
-            <div class='dapeng-wrapper'>
-                <div>选择类型: </div>
-                <div class='card-panel-device' 
-                v-if='devices.length>0' 
-                v-bind:class="{ active:index==deviceIndex}" 
-                v-for='(item, index) in devices' 
-                :key='item.pdi_index' 
-                @click='handleDevice(index, item)'>
-                    <div class='icon-wraper'>
-                        <svg-icon icon-class="shebei"  class='icon-panel'/>
-                    </div>
+            <device-card class='running-custom'>
+                <!-- <div class='running-type-custom'>选择大棚: </div> -->
+                <device-component
+                    v-for='(item, index) in dapeng' 
+                    :key='item.AreaName'  
+                    :is-active='index==current'
+                    :icon-name="'dapeng'" 
+                    @click.native='handleClick(index, item)'>
+
+                    <template slot='params'>
+                        <p>
+                            NO.{{ index+1 }}
+                        </p>
+                        <p> 
+                            {{ (index+1) + '号大棚' }}
+                        </p>
+                    </template>
                     
-                    <div class="card-panel-text" v-if='item.types' >{{ item.types.dt_typename }} </div>
-                    <div class="card-panel-text" v-if='item.types' > {{ item.types.dt_typememo }}</div>
-                </div>
-                
-                <div v-if='devices.length===0'> 无数据</div>
-            </div>
+                </device-component>
+        
+            </device-card>
+
+            <device-card class='running-custom'>
+                <!-- <div class='running-type-custom' >选择类型: </div> -->
+                <device-component
+                    v-for='(item, index) in devices' 
+                    :key='index' 
+                    v-if='devices.length>0'  
+                    :is-active='index==deviceIndex'
+                    :icon-name="typeIcon[item.dpt_id]" 
+                    direction='column'
+                    @click.native='handleDevice(index, item)'>
+
+                    <template slot='params'>
+                        <p>
+                            {{ item.types.dt_typename }}
+                        </p>
+                        <p> 
+                            {{ item.types.dt_typememo }}
+                        </p>
+                    </template>
+                    
+                </device-component>
+
+                <div class='running-type-custom' v-if='devices.length===0'> 无数据</div>
+        
+            </device-card>
 
             <div class='dapeng-wrapper'>
-                <div>选择日期: </div>
+                <!-- <div>选择日期: </div> -->
                 <div style='padding: 0 5px;'>
                     <el-radio-group v-model="selectDate" @change='changeDate' class='selectDate'>
                         <el-radio :label="'day'" border>当天</el-radio>
@@ -108,9 +124,11 @@ import CoLine  from './coLine'
 import LightLine  from './lightLine'
 import SoilLine  from './soilLine'
 import TableComponent from './table'
+import DeviceComponent from '@/components/deviceComponent'
+import DeviceCard from '@/components/device'
 
 export default {
-    components: {  SearchForm, MonitorLine, CoLine, LightLine, SoilLine, TableComponent },
+    components: {  SearchForm, MonitorLine, CoLine, LightLine, SoilLine, TableComponent, DeviceComponent, DeviceCard },
     data() {
         return {
             searchDate: [],
@@ -168,7 +186,8 @@ export default {
             poption: {
                 onPick: this.onPick
             },
-            searchParams: {}
+            searchParams: {},
+            typeIcon: {}
         }
     },
     methods: {
@@ -232,6 +251,7 @@ export default {
                 }else{
                     this.deviceType = this.devices[0].dpt_id
                     this.currentDevice = this.devices[0]
+                    this.typeIcon = data.icon
                     return this.devices[0]
                 }
                 
@@ -245,8 +265,8 @@ export default {
             }).catch(this.catchError)
         },
         getData(data) {
-            console.log(this.showType)
-            this.searchParams = {...data, selectDate: this.selectDate, searchDate: this.searchDate, showType: this.showType };
+            console.log(this.showType, data, 'get data')
+            this.searchParams = {...data, selectDate: this.selectDate, searchDate: this.searchDate, showType: this.showType, page: 1, pageSize: 10 };
             if(this.showType===2) {
                 return;
             }
@@ -345,50 +365,7 @@ $activeColor: #e6a23c;
   flex-wrap: wrap;
   align-items: center;
 }
-.card-panel {
-  background-color: #67c23a;
-  text-align: center;
-  width: 200px;
-  height: 100px;
-  margin: 5px;
-  cursor: pointer;
 
-  &:hover,
-  &.active {
-    background-color: $activeColor;
-    .icon-panel {
-      fill: #fff;
-    }
-    .card-panel-text {
-      color: #fff;
-    }
-  }
-}
-.icon-panel {
-  width: 60px;
-  height: 60px;
-  fill: #ccc;
-}
-.icon-wraper {
-  display: inline-block;
-  padding-top: 8px;
-}
-.card-panel-text {
-  color: #ccc;
-}
-.chart-block {
-  display: flex;
-  flex-wrap: wrap;
-}
-.chart-item {
-  // padding: 5px;
-  margin: 15px;
-  position: relative;
-}
-.card-panel-device {
-  @extend .card-panel;
-  height: 120px;
-}
 .selectDate /deep/ {
   & .el-radio__input.is-checked + .el-radio__label {
     color: $activeColor;
@@ -401,9 +378,26 @@ $activeColor: #e6a23c;
     border-color: $activeColor;
   }
 }
+
 .table-list {
   width: 100%;
   margin-top: 20px;
+}
+.running-type-custom {
+  color: #000;
+}
+
+.running-setting {
+  text-align: right;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.running-custom /deep/ .running-type-item {
+  &.active,
+  &:hover {
+    background-color: $activeColor;
+  }
 }
 </style>
 

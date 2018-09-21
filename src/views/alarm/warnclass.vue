@@ -35,7 +35,7 @@
 <script>
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/myform'
-import { fetchList, createWarnDefine, updateWarnDefine, deleteWarnDefine } from '@/api/warndefine'
+import { fetchList, createWarnClass, updateWarnClass, deleteDeviceinfo } from '@/api/warnclass'
 import openMessage from '@/utils/message.js'
 
 export default {
@@ -47,74 +47,34 @@ export default {
       dialogTitle: '',
       formColumns: [
         // { name: 'wc_index', label: '告警编号', type: 'el-input-number', props: {min:1, max: 4} },
-        { name: 'wd_id', label: '告警编号' },
-        { name: 'dt_typeid', label: '设备分类' },
-        { name: 'wd_name', label: '告警名称' },
-        { name: 'wd_warndesc0', label: '告警描述1' },
-        { name: 'wd_warndesc1', label: '告警描述2' },
+        { name: 'Wc_classname', label: '告警分类' },
+        { name: 'Wc_memo', label: '告警描述' },
 
-        { name: 'wd_warnsound', label: '语音告警' },
-        { name: 'wd_level0', label: '告警级别1' },
-        { name: 'wd_level1', label: '告警级别2' },
-        { name: 'wd_delay', label: '告警延迟时间', type: 'el-input-number', props: { controls: false } },
-        { name: 'wd_enablelog0', label: '是否发生时记录', type: 'switch', default: 1 },
-        { name: 'wd_enablelog1', label: '是否取消时记录', type: 'switch', default: 1 },
-        { name: 'wd_memo', label: '备注' },
       ],
       searchColumns: [
-        { name: 'wd_id', label: '告警编号', props: { clearable: true }},
+        { name: 'Wc_classname', label: '告警分类', props: { clearable: true }},
       ],
       formRules: {
         // wc_index: [
         //   { type:'number', required: true, message: '请输入告警编号', trigger: 'blur' }
         // ],
+        Wc_classname: [
+          { required: true, message: '请输入告警分类', trigger: 'blur' }
+        ],
       },
       formProps: {
         labelWidth: '120px'
       },
       columns: {
-        wd_index: {
-          label: '索引'
+        wc_index: {
+          label: '编号'
         },
-        wd_id: {
-          label: '告警编号'
+        Wc_classname: {
+          label: '告警分类'
         },
-        dt_typeid: {
-          label: '设备分类'
+        Wc_memo: {
+          label: '告警描述'
         },
-        wd_name: {
-          label: '告警名称'
-        },
-
-        wd_warndesc0: {
-          label: '告警描述1'
-        },
-        wd_warndesc1: {
-          label: '告警描述2'
-        },
-        wd_warnsound: {
-          label: '语音告警'
-        },
-        wd_level0: {
-          label: '告警级别1'
-        },
-        wd_level1: {
-          label: '告警级别2'
-        },
-
-        wd_delay: {
-          label: '告警延迟时间'
-        },
-        wd_enablelog0: {
-          label: '是否发生时记录'
-        },
-        wd_enablelog1: {
-          label: '是否取消时记录'
-        },
-        wd_memo: {
-          label: '备注'
-        },
-
         action: {
           'min-width': '150',
           label: '操作'
@@ -137,13 +97,13 @@ export default {
       this.isAdd = true
       this.dialogTitle = '添加'
       this.userFormModel = {
-        wd_enablelog0: 1,
-        wd_enablelog1: 1,
+       
       }
+      this.editId = 0
 
     },
     handleDelete(data) {
-      deleteWarnDefine(data).then((res) => {
+      deleteDeviceinfo(data).then((res) => {
         openMessage(res).then(() => {
           this.getList()
         })
@@ -170,7 +130,7 @@ export default {
       })
     },
     saveData(data) {
-      const method = this.isAdd !== true ? updateWarnDefine : createWarnDefine
+      const method = this.isAdd !== true ? updateWarnClass : createWarnClass
       data.isAdd = this.isAdd
       method(data).then((res) => {
         openMessage(res).then(() => {

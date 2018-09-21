@@ -239,3 +239,23 @@ code {
     margin-bottom: 0;
   }
 }
+
+.lvl1,
+.lvl2,
+.lvl3,
+.lvl4 {
+  color: #fff;
+  border: none;
+}
+.lvl1 {
+  background-color: #f56c6c;
+}
+.lvl2 {
+  background-color: #ff7e40;
+}
+.lvl3 {
+  background-color: #e6a23c;
+}
+.lvl4 {
+  background-color: #409eff;
+}

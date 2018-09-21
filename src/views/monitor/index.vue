@@ -10,62 +10,70 @@
             </search-form>  
         </div>
         <div class='table-layout-inner'>
-            <div class='dapeng-wrapper'>
-                <div>选择大棚: </div>
-                <div class='card-panel' 
-                v-bind:class="{ active:index==current}" 
-                v-for='(item, index) in dapeng' 
-                :key='item.AreaName' 
-                @click='handleClick(index, item)'>
-                    <div class='icon-wraper'>
-                        <svg-icon icon-class="dapeng"  class='icon-panel'/>
-                    </div>
-                    <div class="card-panel-text" >{{ (index+1) + '号大棚' }}</div>
-                </div>
-            </div>
 
-            <div class='dapeng-wrapper'>
-                <div>选择类型: </div>
-                <div class='card-panel-device' 
-                v-if='devices.length>0' 
-                v-bind:class="{ active:index==deviceIndex}" 
-                v-for='(item, index) in devices' 
-                :key='item.pdi_index' 
-                @click='handleDevice(index, item)'>
-                    <div class='icon-wraper'>
-                        <svg-icon :icon-class="typeIcon[item.dpt_id]"  class='icon-panel'/>
-                    </div>
+
+            <device-card class='running-custom'>
+                <!-- <div class='running-type-custom'>选择大棚: </div> -->
+                <device-component
+                    v-for='(item, index) in dapeng' 
+                    :key='item.AreaName'  
+                    :is-active='index==current'
+                    :icon-name="'dapeng'" 
+                    @click.native='handleClick(index, item)'>
+
+                    <template slot='params'>
+                        <p>
+                            NO.{{ index+1 }}
+                        </p>
+                        <p> 
+                            {{ (index+1) + '号大棚' }}
+                        </p>
+                    </template>
                     
-                    <div class="card-panel-text" v-if='item.types' >{{ item.types.dt_typename }} </div>
-                    <div class="card-panel-text" v-if='item.types' > {{ item.types.dt_typememo }}</div>
-                </div>
-                
-                <div v-if='devices.length===0'> 无数据</div>
-            </div>
+                </device-component>
+        
+            </device-card>
 
+            <device-card class='running-custom'>
+                <!-- <div class='running-type-custom' >选择类型: </div> -->
+                <device-component
+                    v-for='(item, index) in devices' 
+                    :key='index' 
+                    v-if='devices.length>0'  
+                    :is-active='index==deviceIndex'
+                    :icon-name="typeIcon[item.dpt_id]" 
+                    direction='column'
+                    @click.native='handleDevice(index, item)'>
 
-            <div class='running-type'>
+                    <template slot='params'>
+                        <p>
+                            {{ item.types.dt_typename }}
+                        </p>
+                        <p> 
+                            {{ item.types.dt_typememo }}
+                        </p>
+                    </template>
+                    
+                </device-component>
 
-                <device-component v-for='(item, index) in deviceData' :key='index' :status='getRunningStatusClass(item)' :icon-name="typeIcon[deviceType]">
+                <div class='running-type-custom' v-if='devices.length===0'> 无数据</div>
+        
+            </device-card>
+
+            <device-card class='monitor-device'>
+                <device-component 
+                v-for='(item, index) in deviceData' 
+                :key='index' 
+                :status='getRunningStatusClass(item)'
+                size='medium' 
+                :icon-name="typeIcon[deviceType]">
                     <template slot='params'>
                         <p> 运行状态: {{ getRunningStatus(item) }}</p>
                         <p v-for='(params, index) in  item.params' :key='index'> {{ params[1] }}: {{ params[0] }} °C</p>
                     </template>
                      设备编号: {{ item.pdi_index }}
                 </device-component>
-
-                <device-component>
-                    <template slot='icon'>
-                        <svg-icon icon-class="temp"  class='running-icon-panel'/>
-                    </template>
-                    <template slot='params'>
-                        <p> 运行状态: 正常</p>
-                        <p> 温度: 35 °C</p>
-                        <p> 湿度: 35 °C</p>
-                    </template>
-                    设备编号: 1111111
-                </device-component>
-            </div>
+            </device-card>
 
         </div>
     </div>    
@@ -76,10 +84,11 @@
 import SearchForm from '@/views/common/components/searchForm'
 import { fetchList, fetchDevice, fetchDeviceRealData } from '@/api/monitor'
 import DeviceComponent from '@/components/deviceComponent'
+import DeviceCard from '@/components/device'
 
 
 export default {
-    components: {  SearchForm, DeviceComponent },
+    components: {  SearchForm, DeviceComponent, DeviceCard },
     data() {
         return {
             dapeng: [],
@@ -112,12 +121,7 @@ export default {
             currentDevice: null,
             timer: null,
             typeIcon: {
-                110: 'temp',
-                111: 'co2',
-                112: 'light',
-                114: 'soil',
-                115: 'liquid',
-                116: 'video',
+
             }
         }
     },
@@ -174,6 +178,7 @@ export default {
                 }else{
                     this.deviceType = this.devices[0].dpt_id
                     this.currentDevice = this.devices[0]
+                    this.typeIcon = data.icon
                     return this.devices[0]
                 }
                 
@@ -191,7 +196,10 @@ export default {
             .then((res2) => {
                 console.log(res2)
                 this.deviceData = res2.data.devices
-            }).catch(this.catchError)
+            }).catch(()=>{
+                this.catchError()
+                this.deviceData = {}
+            })
             this.startTimer()
         },
         catchError() {
@@ -270,64 +278,25 @@ $activeColor: #e6a23c;
   min-height: 800px;
   position: relative;
 }
-.dapeng-wrapper {
-  padding: 0 10px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.card-panel {
-  background-color: #67c23a;
-  text-align: center;
-  width: 200px;
-  height: 100px;
-  margin: 5px;
-  cursor: pointer;
 
-  &:hover,
-  &.active {
+.running-type-custom {
+  color: #000;
+}
+
+.running-setting {
+  text-align: right;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.running-custom /deep/ .running-type-item {
+  &.active,
+  &:hover {
     background-color: $activeColor;
-    .icon-panel {
-      fill: #fff;
-    }
-    .card-panel-text {
-      color: #fff;
-    }
   }
 }
-.icon-panel {
-  width: 60px;
-  height: 60px;
-  fill: #ccc;
-}
-.icon-wraper {
-  display: inline-block;
-  padding-top: 8px;
-}
-.card-panel-text {
-  color: #ccc;
-}
-.chart-block {
-  display: flex;
-  flex-wrap: wrap;
-}
-.chart-item {
-  // padding: 5px;
-  margin: 15px;
-  position: relative;
-}
-.card-panel-device {
-  @extend .card-panel;
-  height: 120px;
-}
-
-.running-type {
-  margin-top: 20px;
-  padding: 0 10px;
-  display: flex;
-  flex-wrap: wrap;
-  color: #fff;
-  align-items: center;
+.monitor-device /deep/ .row p {
+  text-align: left;
 }
 </style>
 

@@ -35,7 +35,7 @@
 <script>
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/myform'
-import { fetchList, createWarnDefine, updateWarnDefine, deleteWarnDefine } from '@/api/warndefine'
+import { fetchList, createItem, updateItem, deleteItem } from '@/api/warnuser'
 import openMessage from '@/utils/message.js'
 
 export default {
@@ -46,73 +46,45 @@ export default {
       logo: [],
       dialogTitle: '',
       formColumns: [
-        // { name: 'wc_index', label: '告警编号', type: 'el-input-number', props: {min:1, max: 4} },
-        { name: 'wd_id', label: '告警编号' },
-        { name: 'dt_typeid', label: '设备分类' },
-        { name: 'wd_name', label: '告警名称' },
-        { name: 'wd_warndesc0', label: '告警描述1' },
-        { name: 'wd_warndesc1', label: '告警描述2' },
-
-        { name: 'wd_warnsound', label: '语音告警' },
-        { name: 'wd_level0', label: '告警级别1' },
-        { name: 'wd_level1', label: '告警级别2' },
-        { name: 'wd_delay', label: '告警延迟时间', type: 'el-input-number', props: { controls: false } },
-        { name: 'wd_enablelog0', label: '是否发生时记录', type: 'switch', default: 1 },
-        { name: 'wd_enablelog1', label: '是否取消时记录', type: 'switch', default: 1 },
-        { name: 'wd_memo', label: '备注' },
+        { name: 'Wu_name', label: '用户名' },
+        { name: 'Wu_title', label: '用户称谓' },
+        { name: 'Wu_SmsNumber', label: '短信息号码'},
+        { name: 'Wu_Emailaddr', label: '邮件地址'},
+        { name: 'Wu_Telenumber', label: '用户电话号码' },
+ 
       ],
       searchColumns: [
-        { name: 'wd_id', label: '告警编号', props: { clearable: true }},
+        { name: 'wu_index', label: '用户编号', props: { clearable: true }},
       ],
       formRules: {
-        // wc_index: [
-        //   { type:'number', required: true, message: '请输入告警编号', trigger: 'blur' }
-        // ],
+        Wu_name: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        Wu_SmsNumber: [
+          { type:'string', len: 11, required: true, message: '请输入11位短信息号码', trigger: ['blur'] }
+        ],
       },
       formProps: {
         labelWidth: '120px'
       },
       columns: {
-        wd_index: {
+        wu_index: {
           label: '索引'
         },
-        wd_id: {
-          label: '告警编号'
+        Wu_name: {
+          label: '用户名'
         },
-        dt_typeid: {
-          label: '设备分类'
+        Wu_title: {
+          label: '用户称谓'
         },
-        wd_name: {
-          label: '告警名称'
+        Wu_SmsNumber: {
+          label: '短信息号码'
         },
-
-        wd_warndesc0: {
-          label: '告警描述1'
+        Wu_Emailaddr: {
+          label: '邮件地址'
         },
-        wd_warndesc1: {
-          label: '告警描述2'
-        },
-        wd_warnsound: {
-          label: '语音告警'
-        },
-        wd_level0: {
-          label: '告警级别1'
-        },
-        wd_level1: {
-          label: '告警级别2'
-        },
-
-        wd_delay: {
-          label: '告警延迟时间'
-        },
-        wd_enablelog0: {
-          label: '是否发生时记录'
-        },
-        wd_enablelog1: {
-          label: '是否取消时记录'
-        },
-        wd_memo: {
-          label: '备注'
+        Wu_Telenumber: {
+          label: '用户电话号码'
         },
 
         action: {
@@ -131,19 +103,21 @@ export default {
       isAdd: true,
     }
   },
+  filters: {
+
+  },
   methods: {
     handleAdd(data) {
       this.editDialog = true
       this.isAdd = true
       this.dialogTitle = '添加'
       this.userFormModel = {
-        wd_enablelog0: 1,
-        wd_enablelog1: 1,
+
       }
 
     },
     handleDelete(data) {
-      deleteWarnDefine(data).then((res) => {
+      deleteItem(data).then((res) => {
         openMessage(res).then(() => {
           this.getList()
         })
@@ -156,6 +130,7 @@ export default {
       this.isAdd = false
       this.editDialog = true
       this.dialogTitle = '编辑'
+
       this.$nextTick(() => {
         this.userFormModel = data
       })
@@ -170,7 +145,7 @@ export default {
       })
     },
     saveData(data) {
-      const method = this.isAdd !== true ? updateWarnDefine : createWarnDefine
+      const method = this.isAdd !== true ? updateItem : createItem
       data.isAdd = this.isAdd
       method(data).then((res) => {
         openMessage(res).then(() => {

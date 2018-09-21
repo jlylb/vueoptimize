@@ -3,7 +3,7 @@
 <div>
 
 <div v-if='formColumns.length > 0' class="search-form-layout">
-    <search-form :form-columns='formColumns' @search-form='handleFilter' @search-export='handleExport'>
+    <search-form :form-columns='formColumns' @search-form='handleFilter' @search-export='handleExport' :pform-model='search'>
         <template slot='add_button'>
             <slot name='add_search_button'></slot>
         </template>
@@ -20,7 +20,8 @@
         <el-form label-position="left" inline >
           <el-form-item v-for='item in columns' :key='item.prop' v-bind="item" v-if='item.prop!="action"'>
              <slot :name='"expand-"+item.prop' :data='scope.row' >
-                <span> {{ scope.row[item.prop] }}</span>
+                <!-- <span> {{ scope.row[item.prop] }}</span> -->
+                {{ showValue(scope.row, item.prop) }}
              </slot>
           </el-form-item>
         </el-form>
@@ -29,7 +30,8 @@
     <el-table-column v-for='item in showColumns' :key='item.prop' v-bind="item" >
         <template slot-scope="scope">
             <slot :name='item.prop' :data='scope.row' v-if='item.prop!="action"'>
-                {{ scope.row[item.prop] }}
+                <!-- {{ scope.row[item.prop] }}  -->
+                {{ showValue(scope.row, item.prop) }} 
             </slot>
             <slot :name='item.prop' :data='scope.row' v-if='item.prop=="action"'>
                 <el-button
@@ -126,15 +128,19 @@ export default {
     tableData(newval) {
       this.data = newval
       this.setColumns()
+    },
+    searchData(newval) {
+      this.search = newval
+      console.log(this.search, 'muted search')
     }
   }
 }
 </script>
 <style lang="scss">
-.page-container{
-    margin: 15px 0 0 0;
-    background-color: #fff;
-    padding: 10px;
+.page-container {
+  margin: 15px 0 0 0;
+  background-color: #fff;
+  padding: 10px;
 }
 .not-found {
   display: inline-block;

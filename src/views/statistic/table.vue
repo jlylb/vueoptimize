@@ -50,7 +50,7 @@ export default {
     params: {
       handler(newVal) {
         this.search = {...this.search, ...newVal}
-        this.getList()
+        this.getList(this.search)
       },
       deep: true
     }
@@ -58,7 +58,6 @@ export default {
   methods: {
 
     getList(query) {
-
       fetchDeviceData(query||this.search).then((res) => {
         console.log(res, 'table show list');
         this.data = res.data.data.data
