@@ -22,7 +22,7 @@
 
 <script>
 import MyForm from '../common/components/layoutform'
-import { createCategory,  updateCategory, fetchEdit, fetchCategory } from '@/api/category'
+import { updateCarousel,  createCarousel } from '@/api/carousel'
 import openMessage from '@/utils/message.js'
 import MyFormitem from '../common/components/myformitem'
 
@@ -34,25 +34,50 @@ export default {
       data: [],
       formColumns: [
 
-        { name: 'name', label: '分类', tab: 'content' },
-        { name: 'name_en', label: '分类英文', tab: 'content' },
-        {
-          name: 'parent_id',
-          label: '父分类',
-          type: 'cascader',
-          ref: 'cascader1',
-
-          props: {
-            class: 'cascader-category_id',
-            changeOnSelect: true
-          },
+        { name: 'name', label: '幻灯片名称', tab: 'content' },
+        { name: 'height', label: '幻灯片高度', tab: 'content' },
+        { name: 'initial_index', label: '幻灯片的索引', default: 0, tab: 'content' },
+        { name: 'autoplay', label: '是否自动切换', default: 1, tab: 'content', type: 'switch' },
+        { name: 'interval', label: '自动切换间隔', tab: 'content' },
+        { 
+          name: 'type', 
+          label: '幻灯片类型', 
+          type: 'select', 
           data: [
-
+            { label: '默认', value: 'none'},
+            { label: '卡片', value: 'card'}            
           ],
-          default: [0],
+          tab: 'content' },
+        { 
+          name: 'indicator_position', 
+          label: '指示器的位置',
+          type: 'select', 
+          data: [
+            { label: 'none', value: 'none'},
+            { label: 'outside', value: 'outside'}            
+          ], 
+          tab: 'content' },
+        { 
+          name: 'trigger', 
+          label: '触发方式',
+          type: 'select', 
+          data: [
+            { label: 'hover', value: 'hover'},
+            { label: 'click', value: 'click'},
+          ],
           tab: 'content'
         },
-
+        { 
+          name: 'arrow', 
+          label: '箭头显示时机',
+          type: 'select', 
+          data: [
+            { label: 'hover', value: 'hover'},
+            { label: 'always', value: 'always'},
+            { label: 'never', value: 'never'},
+          ], 
+          tab: 'content' },
+        { name: 'status', label: '状态', type: 'switch', default: 1, tab: 'content' },
         {
           name: 'action',
           type: 'formbutton',
@@ -74,17 +99,12 @@ export default {
             }
           }
         }
+  
       ],
 
       formRules: {
         name: [
-          { required: true, message: '请输入分类', trigger: 'blur' }
-        ],
-        parent_id: [
-          { required: true, message: '父分类不能为空', trigger: 'blur' }
-        ],
-        name_en: [
-          { required: true, message: '请输入分类英文', trigger: 'blur' }
+          { required: true, message: '幻灯片名称', trigger: 'blur' }
         ]
       },
       userFormModel: {},
@@ -106,22 +126,21 @@ export default {
       this.logo = []
       this.$nextTick(() => {
         this.userFormModel = {
-          parent_id: [0]
+          initial_index: 0,
+          autoplay: 1,
+          status: 1,
+          interval: 3000,
+          trigger: 'hover',
+          arrow: 'hover',
+          indicator_position: 'none',
+          type: 'none',
+          height: 'auto'
         }
       })
     },
 
     handleEdit(data) {
       this.$nextTick(() => {
-        console.log(data.path)
-        if (data.path) {
-          const pid = data.path.split('-')
-          pid.pop()
-          data.parent_id = pid.map((item) => +item)
-        } else {
-          data.parent_id = [0]
-        }
-
         this.$refs.dialogForm.setFormModel(data)
       })
     },
@@ -129,7 +148,7 @@ export default {
       this.$router.go(-1)
     },
     saveData(data) {
-      const method = this.isAdd !== true ? updateCategory : createCategory
+      const method = this.isAdd !== true ? updateCarousel : createCarousel
       method(data).then((res) => {
         console.log(res)
         openMessage(res).then(() => {
@@ -142,39 +161,16 @@ export default {
 
   },
   created() {
-    const method = this.isAdd !== true ? fetchEdit : fetchCategory
-    let id = this.$route.params? this.$route.params.id : null
-    method(id).then((res) => {
-      console.log(res)
-      const cascader = [{ label: '根目录', value: 0 }]
-      const columns = this.formColumns
-      columns.map((item) => {
-        if (item.name == 'parent_id') {
-          cascader[0].children = res.data.data.parent_id
-          item.data = cascader
-          return item
-        }
-      })
-      this.formColumns = columns
-    })
-    console.log(this.$route.params, 5666677, this.isAdd)
     if (this.isAdd) {
       this.handleAdd()
     } else {
       this.handleEdit(this.$route.params)
     }
-    // this.$nextTick(() => {
-    //   this.userFormModel = {
-    //     category_id: [0]
-    //   }
-    // })
-    // this.$nextTick(() => {
-    //   this.$refs.dialogForm.clearValidate()
-    // })
+
   }
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
    .table-layout .my-form .el-input{
         width: 50%;
     }
