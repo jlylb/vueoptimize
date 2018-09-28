@@ -330,11 +330,11 @@ export default {
     },
   },
   created() {
+    this.search = Object.assign({}, this.search, this.$route.params);
     this.getList()
   }
 }
 </script>
 <style lang="scss">
-
 </style>
 

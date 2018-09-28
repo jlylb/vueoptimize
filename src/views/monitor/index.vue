@@ -62,16 +62,19 @@
 
             <device-card class='monitor-device'>
                 <device-component 
-                v-for='(item, index) in deviceData' 
+                v-for='(item, index) in deviceData.items' 
                 :key='index' 
-                :status='getRunningStatusClass(item)'
-                size='medium' 
+                :status='getRunningStatusClass(deviceData)'
+                size='large' 
                 :icon-name="typeIcon[deviceType]">
                     <template slot='params'>
-                        <p> 运行状态: {{ getRunningStatus(item) }}</p>
-                        <p v-for='(params, index) in  item.params' :key='index'> {{ params[1] }}: {{ params[0] }} °C</p>
+                        <p> 运行状态: {{ getRunningStatus(deviceData) }} </p>
+                        <p> 连接状态: {{ item.consta.value==0?'正常':'断开' }} </p>
+                        <p v-for='(params, idxParam) in  item' :key='idxParam' v-if='idxParam!=="consta"'>{{ params[idxParam + '_name'] }}:  {{ params[idxParam + '_value'] }}</p>
+                        <p> 更新时间: {{ deviceData.rd_updatetime }} </p>
+                        
                     </template>
-                     设备编号: {{ item.pdi_index }}
+                    {{ deviceData.pdi_index }}
                 </device-component>
             </device-card>
 
@@ -213,9 +216,9 @@ export default {
             if(this.timer) {
                 return
             }
-            this.timer = setInterval(() => {
-               this.getData(this.currentDevice)
-            }, 10000)
+            // this.timer = setInterval(() => {
+            //    this.getData(this.currentDevice)
+            // }, 10000)
         },
         handleButton() {
             if(!this.currentDevice) {
@@ -224,10 +227,10 @@ export default {
             this.getData(this.currentDDevice)
         },
         getRunningStatus(device) {
-            return device.device_status && device.device_status.rs_status==1?'正常':'停止'
+            return device.rd_NetCom==0?'正常':'停止'
         },
         getRunningStatusClass(device) {
-            return device.device_status && device.device_status.rs_status==1?'success':'error'
+            return device.rd_NetCom==0?'success':'error'
         },
     },
     created() {

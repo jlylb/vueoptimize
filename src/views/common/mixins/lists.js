@@ -4,8 +4,8 @@ export default {
       search: this.searchData,
       columns: [],
       data: [],
-      showColumns: [],
-      showlength: 8
+      showColumns: []
+      // showlength: 8
     }
   },
   methods: {
@@ -62,7 +62,7 @@ export default {
             label: this.labels[item] || item
           })
           this.columns.push(column)
-          if (i <= this.showlength) {
+          if (i <= this.columnLength) {
             this.showColumns.push(column)
           }
           i++
@@ -78,7 +78,7 @@ export default {
               this.labels[item] || {}
             )
             this.columns.push(column)
-            if (i <= this.showlength) {
+            if (i <= this.columnLength) {
               this.showColumns.push(column)
             }
             i++

@@ -1,5 +1,5 @@
 <template>
-    <div :class="`running-type-wrapper running-${status}`" >
+    <div :class='["running-type-wrapper", `running-${status}`, { [activeClass]: isActive }]'>
       <div class='running-type-header'>
         <slot name='header'></slot>
       </div> 
@@ -126,6 +126,7 @@ export default {
 .medium {
   width: 300px;
 }
+
 .row {
   flex-direction: row;
   p {

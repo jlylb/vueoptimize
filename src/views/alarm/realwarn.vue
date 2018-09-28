@@ -9,24 +9,8 @@
         :hide-action='true'
         @list-data='getList'>
 
-        <template slot='wd_index' slot-scope="{ data }">
-          <el-popover
-            placement="right"
-            width="300"
-            @show='detail(data)'
-            trigger="hover">
-
-            <el-form label-position="left" class='show-detail'>
-              <el-form-item label="告警名称">{{ detailData.wd_name }}</el-form-item>
-              <el-form-item label="告警描述">{{ detailData.wd_warndesc0 }}</el-form-item>
-              <el-form-item label="告警描述">{{ detailData.wd_warndesc1 }}</el-form-item>
-            </el-form>
-            <el-button slot="reference" type='primary' size='small'>查看 {{ data.wd_index }}</el-button>
-          </el-popover>
-        </template>
-
-         <template slot='warndefine.wd_level0' slot-scope="{ data }">
-           <el-tag :class='warnClass(data.warndefine.wd_level0)'> {{ data.warndefine.wd_level0|warnTxt }} </el-tag>
+         <template slot='pdi_warnlevel' slot-scope="{ data }">
+           <el-tag :class='warnClass(data.pdi_warnlevel)'> {{ data.pdi_warnlevel|warnTxt }} </el-tag>
          </template>
 
 
@@ -45,6 +29,7 @@ export default {
   components: { tableList },
   data() {
     return {
+
       data: [],
 
       searchColumns: [
@@ -53,36 +38,33 @@ export default {
       searchModel: {},
 
       columns: {
-        rw_index: {
-          label: '索引'
-        },
         pdi_index: {
-          label: '设备编号'
+          label: '索引',
+          sortable: true
         },
-        // wd_index: {
-        //   label: '告警编号'
-        // },
-        'warndefine.wd_level0': {
-          label: '告警等级'
+        pdi_devid: {
+          label: '设备编号',
+          sortable: true
         },
-        'warndefine.wd_name': {
-          label: '告警名称'
+        pdi_areaname: {
+          label: '区域名称'
         },
-        'warndefine.wd_warndesc0': {
+        pdi_name: {
+          label: '设备名称'
+        },
+        pdi_typememo: {
+          label: '设备类型'
+        },
+        pdi_warnname: {
           label: '告警描述'
         },
-        rw_occurtime: {
+        pdi_warnlevel: {
+          label: '告警等级'
+        },
+        pdi_updatetime: {
           label: '告警时间'
         },
-        hw_index: {
-          label: '告警事件编号'
-        },
-        rw_canceltime: {
-          label: '恢复时间'
-        },
-        rw_memo: {
-          label: '备注'
-        },
+
 
       },
       total: 0,
@@ -125,8 +107,8 @@ export default {
     }
   },
   created() {
-    const pdiIndex = this.$route.params.pdi_index;
-    this.search.pdi_index = pdiIndex;
+    // const pdiIndex = this.$route.params.pdi_index;
+    this.search = Object.assign({}, this.search, this.$route.params);
    // this.searchModel = { pdi_index: pdiIndex };
     this.getList();
   }
@@ -135,6 +117,9 @@ export default {
 <style lang="scss" scoped>
 .show-detail .el-form-item {
   margin-bottom: 0;
+}
+.table-layout /deep/ .el-table .warning-high {
+  background: #f0f9eb;
 }
 </style>
 

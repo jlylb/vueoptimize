@@ -14,7 +14,8 @@
   <el-table
     :data='data' 
     stripe
-    style="width: 100%">
+    style="width: 100%"
+    v-bind="tableProps">
     <el-table-column type="expand" >
       <template slot-scope="scope">
         <el-form label-position="left" inline >
@@ -86,6 +87,12 @@ export default {
         return {}
       }
     },
+    tableProps: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
     formColumns: {
       type: Array,
       default() {
@@ -102,6 +109,12 @@ export default {
       type: Number,
       default() {
         return 0
+      }
+    },
+    columnLength: {
+      type: Number,
+      default() {
+        return 8
       }
     },
     pageSizes: {

@@ -259,3 +259,10 @@ code {
 .lvl4 {
   background-color: #409eff;
 }
+$activeColor: #e6a23c;
+.running-type .running-type-wrapper {
+  &.active,
+  &:hover {
+    background-color: $activeColor;
+  }
+}

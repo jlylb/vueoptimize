@@ -13,7 +13,7 @@
         <div class='table-layout-inner'>
 
             <device-card class='running-custom'>
-                <div class='running-type-custom'>选择大棚: </div>
+                <!-- <div class='running-type-custom'>选择大棚: </div> -->
                 <device-component
                     v-for='(item, index) in dapeng' 
                     :key='item.AreaName'  
@@ -35,7 +35,7 @@
             </device-card>
 
             <device-card class='running-custom'>
-                <div class='running-type-custom' >选择类型: </div>
+                <!-- <div class='running-type-custom' >选择类型: </div> -->
                 <device-component
                     v-for='(item, index) in deviceCurrentType' 
                     :key='index'  
