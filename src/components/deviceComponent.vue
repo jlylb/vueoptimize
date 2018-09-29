@@ -4,7 +4,7 @@
         <slot name='header'></slot>
       </div> 
       <div  :class='["running-type-item", direction, size, { [activeClass]: isActive }]'>
-          <div class='running-icon'>
+          <div class='running-icon' v-if='$slots.icon||iconName'>
             <svg-icon v-if='iconName' :icon-class="iconName"  class='running-icon-panel'/>
             <slot name='icon'>
             </slot>  
