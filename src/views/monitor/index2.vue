@@ -5,72 +5,22 @@
                 :form-columns='formColumns'
                 :pform-model='formModel'
                 :is-export='false'
-                :is-search='false' 
+                search-label='筛选'
+                search-icon=''
                 @search-form='handleFilter'>
             </search-form>  
         </div>
         <div class='table-layout-inner' :style="{padding:0}">
-
-
-            <!-- <device-card class='running-custom'>
-    
-                <device-component
-                    v-for='(item, index) in dapeng' 
-                    :key='item.AreaName'  
-                    :is-active='index==current'
-                    :icon-name="'dapeng'" 
-                    @click.native='handleClick(index, item)'>
-
-                    <template slot='params'>
-                        <p>
-                            NO.{{ index+1 }}
-                        </p>
-                        <p> 
-                            {{ (index+1) + '号大棚' }}
-                        </p>
-                    </template>
-                    
-                </device-component>
-        
-            </device-card> -->
-
-            <!-- <device-card class='running-custom'>
-  
-                <device-component
-                    v-for='(item, index) in devices' 
-                    :key='index' 
-                    v-if='devices.length>0'  
-                    :is-active='index==deviceIndex'
-                    :icon-name="typeIcon[item.dpt_id]" 
-                    direction='column'
-                    @click.native='handleDevice(index, item)'>
-
-                    <template slot='params'>
-                        <p>
-                            {{ item.types.dt_typename }}
-                        </p>
-                        <p> 
-                            {{ item.types.dt_typememo }}
-                        </p>
-                    </template>
-                    
-                </device-component>
-
-                <div class='running-type-custom' v-if='devices.length===0'> 无数据</div>
-        
-            </device-card> -->
-
-
             <div class='real-status-block'>
                 <div class="real-data" >
-                    <el-carousel :autoplay='false' indicator-position='none' arrow='never' ref='realData'>
+                    <el-carousel :autoplay='true' indicator-position='none' arrow='never' ref='realData'>
                         <el-carousel-item v-for="(item, index) in deviceData.items" :key="index">
                              <el-card class="box-card">
                             <div class='content content-data'>
                                 <h3 class='title'>实时数据</h3>
                                 <el-row v-for='(params, idxParam) in  item' :key='idxParam' v-if='idxParam!=="consta"' class='content-status'>
                                     <el-col :span="12">{{ params[idxParam + '_name'] + (index+1) }}</el-col>
-                                    <el-col :span="12">{{ params[idxParam + '_value'] }}</el-col>
+                                    <el-col :span="12">{{ params[idxParam + '_value'] }} {{ deviceData.unit[idxParam] }}</el-col>
                                 </el-row>
                             </div>
                              </el-card>
@@ -79,7 +29,7 @@
                 </div>
 
                 <div class="real-status">
-                    <el-carousel :autoplay='false' indicator-position='none' arrow='never' ref='realStatus'>
+                    <el-carousel :autoplay='true' indicator-position='none' arrow='never' ref='realStatus'>
                         <el-carousel-item v-for="(item, index) in deviceData.items" :key="index">
                             <el-card class="box-card">
                             <div class='content'>
@@ -117,7 +67,7 @@
                             </el-row>
                                 <el-row v-for='(params, idxParam) in  firstData' :key='idxParam' v-if='idxParam!=="consta"' class='content-status-choose'> 
                                     <el-col :span="12"><svg-icon  :icon-class="deviceData.icons[idxParam]" /> 当前{{ params[idxParam + '_name'] }}</el-col>
-                                    <el-col :span="12">{{ params[idxParam + '_value'] }}</el-col>
+                                    <el-col :span="12">{{ params[idxParam + '_value'] }} {{ deviceData.unit[idxParam] }}</el-col>
                                 </el-row>
                                 <el-row class='content-status-choose'> 
                                     <el-col :span="12"><svg-icon  icon-class="time" /> 更新时间</el-col> 
@@ -128,7 +78,7 @@
                 </div>
                 <div class="real-status">
                     <el-card class="box-card">
-                        
+                        <monitor-chart :data='deviceData' class='monitor-chart'></monitor-chart>
                     </el-card>
                 </div>        
             </div>
@@ -140,12 +90,12 @@
 
 import SearchForm from '@/views/common/components/searchForm'
 import { fetchList, fetchDevice, fetchDeviceRealData } from '@/api/monitor'
-import DeviceComponent from '@/components/deviceComponent'
-import DeviceCard from '@/components/device'
+
+import MonitorChart from './chart'
 
 
 export default {
-    components: {  SearchForm, DeviceComponent, DeviceCard },
+    components: {  SearchForm, MonitorChart },
     data() {
         return {
             dapeng: [],
@@ -167,6 +117,43 @@ export default {
                 change: this.selectChange,
                 clear: this.selectClear
             },
+                data: [] },
+            { 
+                name: 'dapeng',
+                label: '选择大棚:',
+                type: 'select',
+                props: {
+                    class: 'select-dropdown',
+                    placeholder: '请选择大棚',
+                    filterable: true,
+                },
+                events: {
+                    change: this.selectDapeng,
+                },
+                data: [] },
+            { 
+                name: 'device_type',
+                label: '选择设备分类:',
+                type: 'select',
+                props: {
+                    class: 'select-dropdown',
+                    placeholder: '请选择设备分类',
+                    filterable: true,
+                },
+                events: {
+                    change: this.selectType,
+                },
+                data: [] },
+            { 
+                name: 'device',
+                label: '选择设备:',
+                type: 'select',
+                props: {
+                    class: 'select-dropdown',
+                    placeholder: '请选择设备',
+                    filterable: true,
+                },
+
                 data: [] }
             ],
             current: 0,
@@ -174,69 +161,66 @@ export default {
             deviceIndex: 0,
             devices: [],
             deviceData: {},
-            deviceType: null,
-            currentDevice: null,
+            deviceType: [],
+            current: null,
             timer: null,
-            typeIcon: {
-
-            },
-            fields: [],
             firstData: {},
             firstIndex: 1,
+            currentDeviceType: null
         }
     },
     methods: {
-        handleFilter() {
-
+        handleFilter(data) {
+            console.log(data)
         },
         selectChange(val) {
             this.current = 0
             this.deviceIndex = 0
             if(val in this.city){
                 this.dapeng = this.city[val]
-                this.currentDapeng = this.dapeng[0]
-                this.getDevice(this.dapeng[0])
+                const columns = this.formColumns
+                columns.map((item) => {
+                    return this.setColumns(item)
+                })
+                this.formColumns = columns
 
             }else{
                 this.dapeng = []
                 this.devices = []
                 this.deviceData = {}
-                this.currentDapeng = null
-                this.currentDevice = null
+
             }
+        },
+        selectDapeng(val) {
+            this.currentDapeng = val
+            const columns = this.formColumns
+            columns.map((item) => {
+                return this.setColumns(item, ['device_type', 'device'])
+            })
+            this.formColumns = columns
+        },
+        selectType(val) {
+            this.currentDeviceType = val
+            const columns = this.formColumns
+            columns.map((item) => {
+                return this.setColumns(item, ['device'])
+            })
+            this.formColumns = columns
         },
         selectClear() {
 
         },
-        handleClick(index, item) {
-            this.current = index
-            if(item.value===this.currentDapeng.value) {
-                return
-            }
-            this.currentDapeng = item
-            this.catchError()
-            this.getDevice(item)
-        },
-        handleDevice(index, item) {
-            this.deviceIndex = index
-            if(item.dpt_id===this.deviceType) {
-                return
-            }
-            this.deviceType = item.dpt_id
-            this.currentDevice = item
-            this.catchError()
-            this.getData(item)
-        },
+
         getDevice(data) {
             fetchDevice(data).then((ress) => {
                 console.log(ress)
                 const data = ress.data
                 this.devices = data.devices
                 if(this.devices.length===0) {
-                    this.deviceType = null
+                    // this.deviceType = null
                     this.currentDevice = null
                 }else{
-                    this.deviceType = this.devices[0].dpt_id
+                    // this.deviceType = this.devices[0].dpt_id
                     this.currentDevice = this.devices[0]
                     this.typeIcon = data.icon
                     return this.devices[0]
@@ -297,6 +281,23 @@ export default {
             this.$refs.realData.setActiveItem(index)
             this.$refs.realStatus.setActiveItem(index)
             // this.$message('click on item ' + command);
+        },
+        setColumns(item, fields) {
+            fields = fields || ['dapeng', 'device_type', 'device'];
+            if (fields.indexOf(item.name) > -1 && item.name == 'dapeng') {
+                item.data = this.dapeng
+                this.$set(this.formModel, 'dapeng', this.currentDapeng)
+            }
+
+            if (fields.indexOf(item.name) > -1 && item.name == 'device_type') {
+                item.data = this.deviceType[this.currentDapeng]
+                this.$set(this.formModel, 'device_type', this.currentDeviceType)
+            }
+            if (fields.indexOf(item.name) > -1 && item.name == 'device') {
+                item.data = this.devices[this.currentDapeng][this.currentDeviceType]
+                this.$set(this.formModel, 'device', item.data[0].value)
+            }
+            return item
         }
     },
     created() {
@@ -307,16 +308,21 @@ export default {
             this.city = data.city || []
             let first = province[0].value
             this.dapeng = this.city[first]
+            this.currentDapeng = this.dapeng[0].value;
+            this.deviceType = data.deviceType
+            this.currentDeviceType = this.deviceType[this.currentDapeng][0].value;
+            this.devices = data.device
             const columns = this.formColumns
             columns.map((item) => {
                 if (item.name == 'pro') {
                     item.data = province
                     this.$set(this.formModel, 'pro', first)
                 }
-                return item
+
+                return this.setColumns(item)
             })
             this.formColumns = columns
-            this.currentDapeng = this.dapeng[0]
+            console.log(this.formColumns, 'form columns')
             return this.dapeng[0]
         })
         .then((res) => {
@@ -428,6 +434,10 @@ $activeColor: #e6a23c;
   height: 60px;
   line-height: 60px;
   font-size: 20px;
+}
+.monitor-chart {
+  width: 100%;
+  min-height: 500px;
 }
 </style>
 

@@ -27,7 +27,7 @@
         </el-form-item>
         <el-form-item>
           <template v-if='isSearch'>
-            <el-button type="primary" @click="onSubmit" icon='el-icon-search'>查询</el-button>
+            <el-button type="primary" @click="onSubmit" :icon='searchIcon'>{{ searchLabel }}</el-button>
           </template>  
             <template v-if='isExport'>
               <el-button 
@@ -66,7 +66,15 @@ export default {
     isSearch: {
       type: Boolean,
       default: true
-    }
+    },
+    searchLabel: {
+      type: String,
+      default: '查询'
+    },
+    searchIcon: {
+      type: String,
+      default: 'el-icon-search'
+    },
   },
   watch: {
     pformModel(newval) {
