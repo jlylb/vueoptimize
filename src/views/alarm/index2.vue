@@ -40,7 +40,8 @@
                     v-for='(item, index) in deviceCurrentType' 
                     :key='index'  
                     :is-active='index==deviceIndex'
-                    :icon-name="typeIcon[item.dt_typeid]" 
+                    :icon-name="typeIcon[item.dt_typeid]"
+                    direction='column' 
                     @click.native='handleDevice(index, item)'>
 
                     <template slot='params'>
@@ -58,44 +59,26 @@
         
             </device-card>
 
-        
+
             <device-card>
-                
+
                 <device-component 
-                v-for='(item, index) in currentDevice' 
-                :key='index'
-                size='medium' 
-                :status='getRunningStatusClass(deviceData[item.pdi_index])'
-                :is-active='getRunningStatusClass(deviceData[item.pdi_index])==="success"' 
-                :icon-name="typeIcon[deviceType]">
+                    v-for='(item, index) in currentDevice' 
+                    :key='index' 
+                    :status='getRunningStatusClass(item)'
+                    :icon-name="typeIcon[deviceType]">
+
                     <template slot='params'>
-                        <p> 运行状态:
-                            <el-switch
-                                :key='item.pdi_index + "running_status"'
-                                @change="runningChange($event, deviceData[item.pdi_index])"
-                                :active-value='0'
-                                :inactive-value='1'
-                                v-model="(deviceData[item.pdi_index]||{}).running_status">
-                            </el-switch>
-                        </p>
-                        <p> 设备状态:
-                        <el-switch
-                            :key='item.pdi_index + "device_status"'
-                            @change="deviceChange($event, deviceData[item.pdi_index])"
-                            :active-value='0'
-                            :inactive-value='1'
-                            v-model="(deviceData[item.pdi_index]||{}).device_status">
-                        </el-switch>
-                        </p>
+                        <p class='p-warning'> 告警数 </p>
+                        <p class='p-warning-num animated infinite headShake' @click='goDetail(item)'> {{ item.warn_num }} </p>
                     </template>
                      设备编号: {{ item.pdi_index }}
                 </device-component>
+
             </device-card>
 
-<div :class="'test-class-'+i" v-for='i in 10' :key='i'></div>
 
         </div>
-        
     </div>    
 </template>
 
@@ -103,14 +86,12 @@
 
 import SearchForm from '@/views/common/components/searchForm'
 import { fetchList } from '@/api/monitor'
-import { updateStatus, fetchDevice, fetchDeviceData } from '@/api/control'
+import { fetchDevice } from '@/api/alarm'
 import DeviceComponent from '@/components/deviceComponent'
 import DeviceCard from '@/components/device'
-import openMessage from '@/utils/message.js'
-import MyForm from '../common/components/myform'
 
 export default {
-    components: {  SearchForm, DeviceComponent, MyForm, DeviceCard },
+    components: {  SearchForm, DeviceComponent, DeviceCard },
     data() {
         return {
             dapeng: [],
@@ -145,14 +126,8 @@ export default {
             currentDevice: {},
             timer: null,
             typeIcon: {
-
             },
-
-            deviceTitle: ''
         }
-    },
-    computed: {
-
     },
     methods: {
         handleFilter() {
@@ -184,8 +159,7 @@ export default {
             }
             this.currentDapeng = item
             this.catchError()
-            // this.selectDevice(item)
-            this.getDevice(this.currentDapeng)
+            this.selectDevice(item)
         },
         handleDevice(index, item) {
             this.deviceIndex = index
@@ -194,8 +168,7 @@ export default {
             }
             this.deviceType = item.dt_typeid
             this.currentDevice = this.devices[this.currentDapeng.value][item.dt_typeid]
-            // this.catchError()
-            this.getData()
+            this.catchError()
 
         },
         selectDevice(item) {
@@ -215,7 +188,6 @@ export default {
 
         },
         getDevice(data) {
-            console.log(data, 'device')
             fetchDevice(data).then((ress) => {
                 console.log(ress)
                 const data = ress.data
@@ -227,104 +199,56 @@ export default {
                     this.currentDevice = {}
                     this.deviceTypeArr = {}
                     this.deviceCurrentType = {}
-                    
                 }else{
                     this.selectDevice(this.currentDapeng)
                 }
                 
             }).then((res) => {
-                console.log(res,'get device data.....')
-                if(this.isEmptyObject(this.currentDevice)) {
+                if(!res) {
                     this.deviceData = {}
                     this.catchError()
                     return 
                 }
-                this.getData()
+                this.getData(res)
             }).catch(this.catchError)
         },
-        getData() {
-            let pdiIndex = []
-            this.currentDevice.forEach((item)=>{
-                pdiIndex.push(item.pdi_index)
-            })
-            let params = {
-                dpt_id: this.deviceType,
-                pdi_index: pdiIndex
-            }
-            fetchDeviceData(params)
-            .then((res)=>{
-                const data = res.data
-                console.log(data, 'get data .......')
-                this.deviceData = data.devicesData
-            }).catch(()=>{
-                this.deviceData = {}
-            })
+        getData(data) {
+
         },
         isEmptyObject(obj) {
             if(!obj) return false;
             return Object.keys(obj).length === 0;
         },
         catchError() {
-            console.log(this.timer, 66666666666)
             if (this.timer) {
                 clearInterval(this.timer)
                 this.timer = null
             } 
         },
         startTimer() {
-
+            // if(this.timer) {
+            //     return
+            // }
+            // this.timer = setInterval(() => {
+            //    this.getData(this.currentDevice)
+            // }, 10000)
         },
         handleButton() {
             if(!this.currentDevice) {
                 return
             }
-            this.getData(this.currentDevice)
+            this.getData(this.currentDDevice)
         },
         getRunningStatus(device) {
-            return device.running_status==0?'正常':'停止'
+            return device.device_status && device.device_status.rs_status==0?'正常':'停止'
         },
         getRunningStatusClass(device) {
-            console.log(device, 'device status .....')
-            return device && device.running_status==0?'success':'error'
-        },
-        changeStatus(val, item, typeStatus) {
-            this.$confirm('确定更改, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-            .then(() => {
-                this.updateStatus({pdi_index: item.pdi_index, value: val, field: typeStatus, dpt_id: this.deviceType}, item)
-            })
-            .catch(() => {
-                item[typeStatus] = val==0 ? 1 : 0
-                this.$message({
-                    type: 'info',
-                    message: '取消更改状态'
-                })
-            })
-        },
-        runningChange(val, item) {
-            this.changeStatus(val, item, 'running_status')
-        },
-        deviceChange(val, item) {
-            this.changeStatus(val, item, 'device_status')
-        },
-        updateStatus(params, item) {
-            console.log(params, 'params .....')
-            updateStatus(params)
-            .then((res) => {
-                openMessage(res)
-                .then(()=>{})
-                .catch(()=>{
-                    item[params.field] = params.value==0 ? 1 : 0
-                })
-            })
-            .catch((err)=>{
-                item[params.field] = params.value==0 ? 1 : 0
-            })
+            return device.warn_num > 0?'error':'success'
         },
 
+        goDetail(item) {
+            this.$router.push({ name: 'api.realwarn.index', params:{ pdi_index: item.pdi_index } })
+        }
     },
     created() {
         fetchList().then((res) => {
@@ -365,14 +289,92 @@ export default {
 
 <style lang='scss' scoped>
 $activeColor: #e6a23c;
-
 .table-layout-inner {
   background-color: #fff;
   padding: 20px 0;
   min-height: 800px;
   position: relative;
 }
+.dapeng-wrapper {
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.card-panel {
+  background-color: #67c23a;
+  text-align: center;
+  width: 200px;
+  height: 100px;
+  margin: 5px;
+  cursor: pointer;
 
+  &:hover,
+  &.active {
+    background-color: $activeColor;
+    .icon-panel {
+      fill: #fff;
+    }
+    .card-panel-text {
+      color: #fff;
+    }
+  }
+}
+.icon-panel {
+  width: 60px;
+  height: 60px;
+  fill: #ccc;
+}
+.icon-wraper {
+  display: inline-block;
+  padding-top: 8px;
+}
+.card-panel-text {
+  color: #ccc;
+}
+.chart-block {
+  display: flex;
+  flex-wrap: wrap;
+}
+.chart-item {
+  // padding: 5px;
+  margin: 15px;
+  position: relative;
+}
+.card-panel-device {
+  @extend .card-panel;
+  height: 120px;
+}
+
+.running-type {
+  margin-top: 20px;
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  color: #fff;
+  align-items: center;
+}
+.running-setting {
+  text-align: right;
+  padding: 5px;
+  cursor: pointer;
+}
+.my-setting-form /deep/ .el-input-number .el-input {
+  width: auto;
+}
+.p-warning {
+  margin: 5px 0;
+  text-align: center;
+}
+.p-warning-num {
+  text-align: center;
+  margin: 5px 0;
+  font-size: 3em;
+  cursor: pointer;
+  &:hover {
+    animation-play-state: paused;
+  }
+}
 .running-type-custom {
   color: #000;
 }
@@ -389,16 +391,5 @@ $activeColor: #e6a23c;
     background-color: $activeColor;
   }
 }
-.test-class {
-    width: 200px;
-    height: 50px; 
-}
-@for $i from 1 through 10 {
-    .test-class-#{$i} { 
-        @extend .test-class;
-        @warn random();
-       // background-color: desaturate($baseColor1, percentage($i * 10/100 ));
-        background-color: scale-color(hsl(90, 50%, 50%), $saturation: percentage($i * 10/100 ), $alpha: 50%);
-    }
-  }
 </style>
+

@@ -272,3 +272,15 @@ export function deepClone(source) {
 export function uniqueArr(arr) {
   return Array.from(new Set(arr))
 }
+
+export function getDataValue(data, keys, other='') {
+  keys = keys || []
+  let len = keys.length
+  if(len===0) return other
+  let index = 0
+  let dataVal = data
+  while (dataVal != null && index < len) {
+      dataVal = dataVal[keys[index++]]
+  }
+  return (index && index == len) ? dataVal : other
+}

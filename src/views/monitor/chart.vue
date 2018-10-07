@@ -18,11 +18,12 @@ export default {
       legend: [],
       series: [],
       colors: ['#5793f3', '#d14a61', '#675bba'],
+      chart: null
     }
   },
   props: {
     data: {
-      type: Object,
+      type: [Object, Array],
       default() {
         return {}
       }
@@ -31,10 +32,8 @@ export default {
   watch: {
     data: {
       handler(newval) {
-        this.xfield = this.getXField(newval)
-        console.log(this.xfield)
-        this.getFields(newval)
-        this.echartsData = this.getData()
+        console.log(newval, 'newval', Object.keys(newval))
+        this.handlerData(newval)
       },
      // deep: true,
       // immediate: true
@@ -42,6 +41,7 @@ export default {
   },
   methods: {
     barClick(chart) {
+      this.chart = chart
       chart.on('click', (params) => {
         console.log(params)
       })
@@ -57,6 +57,7 @@ export default {
     },
     getFields(data){
       let itemField = {}
+      // data.items = data.items||[]
       data.items.forEach((item, key) => {
         for(let fieldKey in item){
           if(!itemField[fieldKey] && fieldKey!=='consta') {
@@ -106,9 +107,22 @@ export default {
       console.log(this.series)
       //return itemField;
     },
-    getData() {
+    handlerData(data) {
+        if(Object.keys(data).length === 0) {
+           this.xfield = [];
+           this.yfield = [];
+           this.legend = [];
+           this.series = [];
+           if(this.chart) this.chart.clear()
+        }else{
+          this.xfield = this.getXField(data)
+          this.getFields(data)
+        }
 
-      const option = {
+        this.echartsData = this.getData()
+    },
+    getData() {
+      let option = {
         color: this.colors,
         tooltip: {
             trigger: 'axis',
@@ -121,24 +135,41 @@ export default {
           // right: '15%'
         },
         xAxis : [
-            {
-                type : 'category',
-                data : this.xfield,
-                axisTick: {
-                    alignWithLabel: true,
-                },
-                axisLabel: {
-                  interval: 0,
-                  rotate: 30
-                }
-            }
+
         ],
         yAxis : this.yfield,
         series: this.series
       }
+      if(this.xfield.length > 0) {
+        option.xAxis = [
+          {
+              type : 'category',
+              data : this.xfield,
+              axisTick: {
+                  alignWithLabel: true,
+              },
+              axisLabel: {
+                interval: 0,
+                rotate: 30
+              }
+          }
+        ] 
+      }else{
+        option.xAxis = []
+      }
+
       return option
     }
   },
+  created() {
+    console.log('chart created....', this.data)
+  },
+  mounted() {
+    this.handlerData(this.data)
+  },
+  destroyed() {
+    this.chart = null
+  }
 }
 </script>
 

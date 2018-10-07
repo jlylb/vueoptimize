@@ -22,6 +22,13 @@ exports.cssLoaders = function (options) {
     }
   }
 
+  const styleLoader = {
+    loader: 'style-loader',
+    options: {
+      
+    }
+  }
+
   const postcssLoader = {
     loader: 'postcss-loader',
     options: {
@@ -40,6 +47,17 @@ exports.cssLoaders = function (options) {
           sourceMap: options.sourceMap
         })
       })
+      if(loader=='sass') {
+
+        loaders.push(
+          {
+            loader: 'sass-resources-loader',
+            options: {
+              resources: [path.resolve(__dirname, '../src/styles/common/var.scss')]  
+            }
+          } 
+        )
+      }
     }
 
     // Extract CSS when that option is specified
