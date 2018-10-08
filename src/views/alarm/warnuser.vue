@@ -36,7 +36,7 @@
                 </my-form>
         </el-dialog>
         <el-dialog title="告警设置" :visible.sync="editDialogWarn" width='50%'>
-          <deviceinfo-warn :uid='uid'></deviceinfo-warn>
+          <deviceinfo-warn :uid='uid' :key='uid'></deviceinfo-warn>
         </el-dialog>
     </div>
 </template>
@@ -99,7 +99,7 @@ export default {
         },
 
         action: {
-          'min-width': '150',
+          'min-width': '200',
           label: '操作'
         },
       },

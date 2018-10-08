@@ -23,15 +23,24 @@
 
         <template slot-scope="{ data }" slot='sms'>
 
-           <el-checkbox v-model="data.sms" @change='selectCheckbox(data, $event, "sms")'></el-checkbox>
+           <el-checkbox 
+           v-model="data.sms"
+           @change='selectCheckbox(data, $event, "sms")'>
+           </el-checkbox>
         </template>
 
         <template slot-scope="{ data }" slot='email'>
-           <el-checkbox v-model="data.email" @change='selectCheckbox(data, $event, "email")'></el-checkbox>
+           <el-checkbox 
+           v-model="data.email" 
+           @change='selectCheckbox(data, $event, "email")'>
+           </el-checkbox>
         </template>
 
         <template slot-scope="{ data }" slot='audio'>
-           <el-checkbox v-model="data.audio" @change='selectCheckbox(data, $event, "audio")'></el-checkbox>
+           <el-checkbox 
+           v-model="data.audio"
+           @change='selectCheckbox(data, $event, "audio")'>
+           </el-checkbox>
         </template>
 
         </table-list>
@@ -49,7 +58,7 @@ export default {
   components: { tableList, MyForm },
   props: {
     uid: {
-      type: String,
+      type: [String, Number],
       default: null
     }
   },
@@ -86,66 +95,21 @@ export default {
           label: '短信',
           columnKey: 'sms',
           renderHeader: (h, { column }) => {
-            const field = 'sms'
-            const vm = this
-            return h('el-checkbox', {
-              props: 
-                {
-                  value: vm[field],
-                },
-              on: {
-                change: function(bVal, ev) {
-                console.log('change header' ,vm[field],bVal,field)
-                  vm.$emit('change', bVal);
-                  vm[field] = bVal
-                  vm.formatColumn(field)
-                }
-              },
-            }, column.label)
+            return this.render(h, column)
           }
         },
         email: {
           label: '邮箱',
           columnKey: 'email',
           renderHeader: (h, { column }) => {
-            const field = 'email'
-            const vm = this
-            return h('el-checkbox', {
-              props: 
-                {
-                  value: vm[field],
-                },
-              on: {
-                change: function(bVal, ev) {
-                console.log('change header' ,vm[field],bVal,field)
-                  vm.$emit('change', bVal);
-                  vm[field] = bVal
-                  vm.formatColumn(field)
-                }
-              },
-            }, column.label)
+            return this.render(h, column)
           }
         },
         audio: {
           label: '语音',
           columnKey: 'audio',
           renderHeader: (h, { column }) => {
-            const field = 'audio'
-            const vm = this
-            return h('el-checkbox', {
-              props: 
-                {
-                  value: vm[field],
-                },
-              on: {
-                change: function(bVal, ev) {
-                console.log('change header' ,vm[field],bVal,field)
-                  vm.$emit('change', bVal);
-                  vm[field] = bVal
-                  vm.formatColumn(field)
-                }
-              },
-            }, column.label)
+            return this.render(h, column)
           }
         },
         action: {
@@ -165,6 +129,7 @@ export default {
 
     getList(query) {
       console.log(query)
+      this.reset()
       fetchList(query || this.search).then((res) => {
         this.data = res.data.data.data
         this.total = res.data.data.total
@@ -185,7 +150,7 @@ export default {
       let curData = [ ...this.data ]
       curData[index][field] = bVal
       this.data = curData
-      let selectedLength = this.data.filter((item) => item[field] === true )
+      let selectedLength = this.data.filter((item) => item[field] > 0 )
 
       this[field] = ( this.data.length === selectedLength.length )
 
@@ -193,12 +158,49 @@ export default {
 
     },
     handleSave() {
-
+      const data = this.data.map((item)=>{
+         let {pdi_index, wu_index, sms=false, email=false, audio=false} = item
+         return {pdi_index, wu_index, sms, email, audio}
+      })
+      console.log(data, 'handle save')
+    },
+    reset() {
+      this.sms = false
+      this.email = false
+      this.audio = false
+      this.data = []
+    },
+    render(h, column) {
+      const field = column.property
+      const vm = this
+      return h('el-checkbox', {
+        props: 
+          {
+            value: vm[field],
+          },
+        on: {
+          change: function(bVal, ev) {
+            vm.$emit('change', bVal);
+            vm[field] = bVal
+            vm.formatColumn(field)
+          }
+        },
+      }, column.label)
+    },
+    formatData(data) {
+      if(data.length === 0 ) return []
+      return data.map((item)=>{
+        let val = +item.Wn_notifytype
+        item.sms = (val & 4) > 0;
+        item.email = (val & 2) >0;
+        item.audio = (val & 1) >0;
+        return item
+      })
     }
 
   },
   created() {
-    this.search = Object.assign({}, this.search, this.$route.params);
+    this.search = Object.assign({}, this.search, this.$route.params, {uid: this.uid});
     this.getList()
   }
 }
