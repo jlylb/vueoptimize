@@ -20,7 +20,7 @@
               type="danger"
               size='small'
               icon='el-icon-bell'
-              @click="handleWarn">告警设置</el-button>
+              @click="handleWarn(data)">告警设置</el-button>
         </template>
         </table-list>
         <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false'>
@@ -36,7 +36,7 @@
                 </my-form>
         </el-dialog>
         <el-dialog title="告警设置" :visible.sync="editDialogWarn" width='50%'>
-          <deviceinfo-warn></deviceinfo-warn>
+          <deviceinfo-warn :uid='uid'></deviceinfo-warn>
         </el-dialog>
     </div>
 </template>
@@ -54,6 +54,7 @@ export default {
     return {
       data: [],
       logo: [],
+      uid: null,
       dialogTitle: '',
       formColumns: [
         { name: 'Wu_name', label: '用户名' },
@@ -173,8 +174,9 @@ export default {
         this.$refs.dialogForm.clearValidate()
       })
     },
-    handleWarn() {
+    handleWarn(data) {
       this.editDialogWarn = true
+      this.uid = data.wu_index
     }
 
   },

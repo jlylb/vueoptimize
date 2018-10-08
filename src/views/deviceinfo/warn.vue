@@ -10,6 +10,12 @@
         :hide-action='true'
         :is-export='false'
         :show-expand='false'>
+        <template  slot='add_search_button'>
+            <el-button
+            type="primary"
+            icon='el-icon-circle-check-outline'
+            @click="handleSave">保存</el-button>
+        </template>
 
         <template slot-scope="{ data }" slot='area'>
             {{ data.area.AreaName }}
@@ -41,6 +47,12 @@ import openMessage from '@/utils/message.js'
 
 export default {
   components: { tableList, MyForm },
+  props: {
+    uid: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
       data: [],
@@ -178,6 +190,9 @@ export default {
       this[field] = ( this.data.length === selectedLength.length )
 
      console.log(this.data, selectedLength)
+
+    },
+    handleSave() {
 
     }
 
