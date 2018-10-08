@@ -15,7 +15,13 @@
             icon='el-icon-circle-plus-outline'
             @click="handleAdd">添加</el-button>
         </template>
-
+        <template  slot='actionExtra' slot-scope='{ data }'>
+          <el-button
+              type="danger"
+              size='small'
+              icon='el-icon-bell'
+              @click="handleWarn">告警设置</el-button>
+        </template>
         </table-list>
         <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false'>
             <my-form
@@ -29,6 +35,9 @@
 
                 </my-form>
         </el-dialog>
+        <el-dialog title="告警设置" :visible.sync="editDialogWarn" width='50%'>
+          <deviceinfo-warn></deviceinfo-warn>
+        </el-dialog>
     </div>
 </template>
 
@@ -37,9 +46,10 @@ import tableList from '../common/components/tableList'
 import MyForm from '../common/components/myform'
 import { fetchList, createItem, updateItem, deleteItem } from '@/api/warnuser'
 import openMessage from '@/utils/message.js'
+import DeviceinfoWarn from '@/views/deviceinfo/warn'
 
 export default {
-  components: { tableList, MyForm },
+  components: { tableList, MyForm, DeviceinfoWarn },
   data() {
     return {
       data: [],
@@ -98,6 +108,7 @@ export default {
         pageSize: 10
       },
       editDialog: false,
+      editDialogWarn: false,
       userFormModel: {
       },
       isAdd: true,
@@ -162,7 +173,9 @@ export default {
         this.$refs.dialogForm.clearValidate()
       })
     },
-
+    handleWarn() {
+      this.editDialogWarn = true
+    }
 
   },
   created() {

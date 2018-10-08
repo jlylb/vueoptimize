@@ -79,11 +79,11 @@ const user = {
           const data = response.data
           if (data.status === 0) {
             reject(response)
-            return
+          } else {
+            commit('SET_TOKEN', data.token)
+            setToken(response.data.token)
+            resolve()
           }
-          commit('SET_TOKEN', data.token)
-          setToken(response.data.token)
-          resolve()
         }).catch(error => {
           reject(error)
         })

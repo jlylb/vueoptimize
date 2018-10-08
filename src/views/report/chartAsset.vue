@@ -94,7 +94,7 @@ export default {
             orient: 'horizontal',
             right: '3%',
             bottom: '20%',
-            width: '50%',
+            width: '45%',
             data: this.data.map((item) => {
               return item.name
             })

@@ -8,12 +8,14 @@
         :search-data='search'
         @list-data='getList'
         @list-edit='handleEdit'
+        :show-expand='false'
         @list-delete='handleDelete'>
         <template  slot='add_search_button'>
             <el-button
             type="primary"
             icon='el-icon-circle-plus-outline'
             @click="handleAdd">添加</el-button>
+
         </template>
         <template slot-scope="{ data }" slot='dt_issupportext'>
             <el-tag :type='data.dt_issupportext==1?"success":"info"'> {{ data.dt_issupportext==1?'支持':'不支持' }} </el-tag>
@@ -328,6 +330,9 @@ export default {
       this.$set(formModel, 'AreaId', null)
       this.userFormModel = formModel
     },
+    handleWarn() {
+
+    }
   },
   created() {
     this.search = Object.assign({}, this.search, this.$route.params);

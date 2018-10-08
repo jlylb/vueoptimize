@@ -31,6 +31,7 @@
 
                 </my-form>
         </el-dialog>
+        
     </div>
 </template>
 
@@ -72,12 +73,12 @@ export default {
           {label: '语音', value: 2 },
           {label: '邮箱', value: 4 },
         ], default: []},
-        { name: 'wn_smsdes0', label: '告警短信描述', inputType: 'textarea' },
-        { name: 'wn_smsdes1', label: '取消短信描述', inputType: 'textarea'},
-        { name: 'wn_emaildes0', label: '告警E-Maill描述',  inputType: 'textarea'},
-        { name: 'wn_emaildes1', label: '取消E-Maill描述',  inputType: 'textarea'},
-        { name: 'wn_teldes0', label: '语音播放文件' },
-        { name: 'wn_teldes1', label: '取消语音播放文件' },
+        // { name: 'wn_smsdes0', label: '告警短信描述', inputType: 'textarea' },
+        // { name: 'wn_smsdes1', label: '取消短信描述', inputType: 'textarea'},
+        // { name: 'wn_emaildes0', label: '告警E-Maill描述',  inputType: 'textarea'},
+        // { name: 'wn_emaildes1', label: '取消E-Maill描述',  inputType: 'textarea'},
+        // { name: 'wn_teldes0', label: '语音播放文件' },
+        // { name: 'wn_teldes1', label: '取消语音播放文件' },
  
       ],
       searchColumns: [
@@ -244,7 +245,6 @@ export default {
         this.$refs.dialogForm.clearValidate()
       })
     },
-
 
   },
   created() {

@@ -24,10 +24,10 @@
         <span class='short-cut-title'>{{ $t('navbar.screenfull') }}</span>
         </div>
 
-        <div class='short-cut-item'>
+        <!-- <div class='short-cut-item'>
           <lang-select class="international"></lang-select>
           <span class='short-cut-title'>语言切换</span>
-        </div>
+        </div> -->
 
       <!-- <el-tooltip effect="dark" :content="$t('navbar.theme')" placement="bottom">
         <theme-picker class="theme-switch right-menu-item"></theme-picker>
@@ -109,14 +109,12 @@ export default {
 }
 </script>
 <style lang='css'>
-
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-
-@import "src/styles/variables.scss";
+@import 'src/styles/variables.scss';
 %cut {
-  .short-cut-item{
+  .short-cut-item {
     width: 64px;
     margin: 13px 16px;
     cursor: pointer;
@@ -143,8 +141,8 @@ export default {
     margin-top: 6px;
   }
 }
-.short-cut-right{
-  @extend %cut
+.short-cut-right {
+  @extend %cut;
 }
 .short-cut-left {
   float: left;
@@ -152,40 +150,40 @@ export default {
   align-items: flex-end;
   justify-content: flex-end;
   /deep/ {
-    @extend %cut 
+    @extend %cut;
   }
 }
 
-  .sub-navbar{
-    background-color: $baseColor;
-    height: 80px;
-    background-image: none;
-    // padding-left: 20px;
-    display: flex;
-    @media screen and ( max-width: 768px ){
-      .short-cut{
-        transform: translate3d(-360px,0,0)
-      }
-      .layout-left{
-        display: inline-block;
-      }
+.sub-navbar {
+  background-color: $baseColor;
+  height: 80px;
+  background-image: none;
+  // padding-left: 20px;
+  display: flex;
+  @media screen and (max-width: 768px) {
+    .short-cut {
+      transform: translate3d(-360px, 0, 0);
+    }
+    .layout-left {
+      display: inline-block;
     }
   }
-  .layout-right{
-    display: flex;
-    justify-content: flex-end;
-    width: 30%;
-  }
-  .layout-left{
-    display: flex;
-    width: 70%;
-  }
-  .short-cut-menu {
-    height: 48px;
-    width:48px;
-    color: #fff;
-    margin: 16px;
-  }
+}
+.layout-right {
+  display: flex;
+  justify-content: flex-end;
+  width: 30%;
+}
+.layout-left {
+  display: flex;
+  width: 70%;
+}
+.short-cut-menu {
+  height: 48px;
+  width: 48px;
+  color: #fff;
+  margin: 16px;
+}
 .navbar {
   height: 80px;
   line-height: 50px;
@@ -202,7 +200,7 @@ export default {
     padding: 0 10px;
     color: #fff;
   }
-  .breadcrumb-container{
+  .breadcrumb-container {
     float: left;
   }
   .errLog-container {
@@ -214,8 +212,8 @@ export default {
     // float: right;
     // height: 100%;
     display: flex;
-    &:focus{
-     outline: none;
+    &:focus {
+      outline: none;
     }
     .right-menu-item {
       // display: inline-block;
@@ -224,7 +222,7 @@ export default {
     .screenfull {
       height: 20px;
     }
-    .international{
+    .international {
       vertical-align: top;
       display: block;
     }

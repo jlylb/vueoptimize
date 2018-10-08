@@ -43,7 +43,7 @@ router.beforeEach((to, from, next) => {
           })
           .catch(() => {
             store.dispatch('FedLogOut').then(() => {
-              //Message.error('验证失败或账号已失效，请重新登录!')
+              // Message.error('验证失败或账号已失效，请重新登录!')
               // next({ path: '/' })
               next()
             })

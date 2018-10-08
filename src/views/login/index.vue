@@ -5,7 +5,7 @@
 
       <div class="title-container">
         <h3 class="title">{{$t('login.title')}}</h3>
-        <lang-select class="set-language"></lang-select>
+        <!-- <lang-select class="set-language"></lang-select> -->
       </div>
 
       <el-form-item prop="username">
@@ -36,11 +36,11 @@
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
-import LangSelect from '@/components/LangSelect'
+// import LangSelect from '@/components/LangSelect'
 import openMessage from '@/utils/message.js'
 
 export default {
-  components: { LangSelect },
+  components: {  },
   name: 'login',
   data() {
     const validateUsername = (rule, value, callback) => {
@@ -114,9 +114,9 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-$bg:#2d3a4b;
-$light_gray:#eee;
-#canvascontainer{
+$bg: #2d3a4b;
+$light_gray: #eee;
+#canvascontainer {
   position: absolute;
   top: 0px;
 }
@@ -150,11 +150,11 @@ $light_gray:#eee;
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
-body{
+body {
   height: 100%;
 }
 .login-container {

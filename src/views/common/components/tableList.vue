@@ -3,7 +3,7 @@
 <div>
 
 <div v-if='formColumns.length > 0' class="search-form-layout">
-    <search-form :form-columns='formColumns' @search-form='handleFilter' @search-export='handleExport' :pform-model='search'>
+    <search-form :form-columns='formColumns' @search-form='handleFilter' @search-export='handleExport' :pform-model='search' :is-export='isExport'>
         <template slot='add_button'>
             <slot name='add_search_button'></slot>
         </template>
@@ -16,7 +16,12 @@
     stripe
     style="width: 100%"
     v-bind="tableProps">
-    <el-table-column type="expand" >
+    <el-table-column
+      type="selection"
+      width="55"
+      v-if='showSelection'>
+    </el-table-column>
+    <el-table-column type="expand" v-if='showExpand'>
       <template slot-scope="scope">
         <el-form label-position="left" inline >
           <el-form-item v-for='item in columns' :key='item.prop' v-bind="item" v-if='item.prop!="action"'>
@@ -34,7 +39,7 @@
                 <!-- {{ scope.row[item.prop] }}  -->
                 {{ showValue(scope.row, item.prop) }} 
             </slot>
-            <slot :name='item.prop' :data='scope.row' v-if='item.prop=="action"'>
+            <slot :name='item.prop' :data='scope.row' :$index='scope.$index' v-if='item.prop=="action"'>
                 <el-button
                 size="mini"
                 type="primary"
@@ -135,10 +140,23 @@ export default {
     hideAction: {
       type: Boolean,
       default: false
+    },
+    showExpand: {
+      type: Boolean,
+      default: true
+    },
+    showSelection: {
+      type: Boolean,
+      default: false
+    },
+    isExport: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
     tableData(newval) {
+      console.log(newval, 'table list ....')
       this.data = newval
       this.setColumns()
     },
