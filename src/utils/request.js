@@ -1,14 +1,55 @@
 import axios from 'axios'
-import { Message, MessageBox } from 'element-ui'
+import { Message, MessageBox, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import router from '../router'
-
+import { debounce } from '@/utils'
 // create an axios instance
 const service = axios.create({
   baseURL: '/api', // api的base_url
-  timeout: 5000 // request timeout
+  timeout: 5000, // request timeout
+  showLoading: true
 })
+
+
+let loading
+
+function startLoading() {
+  loading = Loading.service({
+    target: '.table-layout',
+    lock: true,
+    text: '加载中……',
+   // background: 'rgba(0, 0, 0, 0.7)'
+  })
+}
+
+function endLoading() {
+  loading.close()
+}
+
+let needLoadingRequestCount = 0
+
+export function showFullScreenLoading() {
+  if (needLoadingRequestCount === 0) {
+    startLoading()
+  }
+  needLoadingRequestCount++
+}
+
+const tryCloseLoading = () => {
+  if (needLoadingRequestCount === 0) {
+    loading.close()
+  }
+}
+
+export function tryHideFullScreenLoading() {
+  if (needLoadingRequestCount <= 0) return
+  needLoadingRequestCount--
+  if (needLoadingRequestCount === 0) {
+    endLoading()
+  }
+}
+
 
 // request interceptor
 service.interceptors.request.use(
@@ -17,6 +58,9 @@ service.interceptors.request.use(
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       config.headers['Authorization'] = 'Bearer ' + getToken()
+    }
+    if (config.showLoading) {
+      showFullScreenLoading()
     }
     return config
   },
@@ -70,6 +114,9 @@ service.interceptors.response.use(
     //     duration: 5 * 1000
     //   })
     // }
+    if (response.config.showLoading) {
+      tryHideFullScreenLoading()
+    }
     return response
   },
 

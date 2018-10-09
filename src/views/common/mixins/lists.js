@@ -4,7 +4,8 @@ export default {
       search: this.searchData,
       columns: [],
       data: [],
-      showColumns: []
+      showColumns: [],
+      loadingText: '数据加载中....'
       // showlength: 8
     }
   },
@@ -52,10 +53,7 @@ export default {
       this.showColumns = []
 
       if (Object.keys(this.customColumns).length === 0) {
-        if (this.data.length === 0) {
-          return
-        }
-        const firstData = this.data[0]
+        const firstData = this.data[0] || {}
         const extract = {}
         let i = 1
         for (const item in firstData) {

@@ -9,11 +9,12 @@
         </template>
     </search-form>
 </div>
-<div v-if='data.length > 0'>
+<!-- <div v-if='data.length > 0'> -->
   <el-table
     :data='data' 
     stripe
     style="width: 100%"
+    :empty-text='loadingText'
     v-on="tableOnEvents"
     v-bind="tableProps">
     <el-table-column
@@ -54,7 +55,7 @@
       </template>
     </el-table-column>
   </el-table>
-</div>
+<!-- </div> -->
 
 
   <div class='page-container' v-if='data.length > 0'>
@@ -164,12 +165,17 @@ export default {
     tableData(newval) {
       console.log(newval, 'table list ....')
       this.data = newval
+      this.loadingText = newval.length > 0 ? '数据加载中....' : '没有数据'
       this.setColumns()
     },
     searchData(newval) {
       this.search = newval
       console.log(this.search, 'muted search')
     }
+  },
+  created() {
+    console.log(this.tableData,'created list .....')
+    this.setColumns()
   }
 }
 </script>
