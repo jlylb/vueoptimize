@@ -9,12 +9,12 @@
         </template>
     </search-form>
 </div>
-
 <div v-if='data.length > 0'>
   <el-table
     :data='data' 
     stripe
     style="width: 100%"
+    v-on="tableOnEvents"
     v-bind="tableProps">
     <el-table-column
       type="selection"
@@ -93,6 +93,12 @@ export default {
       }
     },
     tableProps: {
+      type: Object,
+      default() {
+        return {}
+      }
+    },
+    tableOnEvents: {
       type: Object,
       default() {
         return {}

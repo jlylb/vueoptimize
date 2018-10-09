@@ -4,6 +4,8 @@
         :custom-columns='columns'
         :form-columns='searchColumns'
         :table-data='data'
+        :table-props='formProps'
+        :table-on-events='tableEvents'
         :total='total'
         :search-data='search'
         @list-data='getList'
@@ -50,12 +52,12 @@
 
 <script>
 import tableList from '../common/components/tableList'
-import MyForm from '../common/components/myform'
 import { fetchList } from '@/api/deviceinfo'
+import { saveWarnSetting } from '@/api/warnuser'
 import openMessage from '@/utils/message.js'
 
 export default {
-  components: { tableList, MyForm },
+  components: { tableList },
   props: {
     uid: {
       type: [String, Number],
@@ -68,6 +70,11 @@ export default {
       sms: false,
       email: false,
       audio: false, 
+      fields: {
+        sms: 1,
+        email: 2,
+        audio: 4,
+      },
       formColumns: [
 
       ],
@@ -89,7 +96,9 @@ export default {
           label: '设备编号'
         },
         area: {
-          label: '区域名称'
+          label: '区域名称',
+          columnKey: 'area',
+          filters: null
         },
         sms: {
           label: '短信',
@@ -122,28 +131,49 @@ export default {
         page: 1,
         pageSize: 10
       },
-
+      tableEvents: {
+        'filter-change': this.filterArea
+      },
+      areaName: null,
+      saveData: []
     }
   },
+  watch: {
+    areaName(newVal) {
+      console.log(newVal,'watch newVal.....')
+    },
+    saveData: {
+      handler(newVal) {
+        console.log(newVal,'watch save data.....')
+      },
+    },
+  },
   methods: {
-
+    filterArea(c){
+      this.search = Object.assign({}, this.search, c);
+      this.getList()
+    },
     getList(query) {
-      console.log(query)
       this.reset()
       fetchList(query || this.search).then((res) => {
-        this.data = res.data.data.data
+        this.data = this.formatData(res.data.data.data)
         this.total = res.data.data.total
+        if(!this.areaName) {
+          this.areaName = res.data.areaName
+          let columns = this.columns
+          columns.area.filters = this.areaName
+          this.columns = columns
+        }
+
       }).catch((res) => {
 
       })
     },
     formatColumn(field) {
-      console.log('formatColumn', this[field])
       this.data = this.data.map((item) => {
         item[field] = this[field];
         return item
       })
-      console.log(this.data, 'set ....')
     },
     selectCheckbox(data, bVal, field) {
       let index = this.data.indexOf(data)
@@ -154,20 +184,34 @@ export default {
 
       this[field] = ( this.data.length === selectedLength.length )
 
-     console.log(this.data, selectedLength)
-
     },
     handleSave() {
       const data = this.data.map((item)=>{
-         let {pdi_index, wu_index, sms=false, email=false, audio=false} = item
-         return {pdi_index, wu_index, sms, email, audio}
+         let {pdi_index, sms=false, email=false, audio=false} = item
+         return { pdi_index, type: {sms, email, audio} }
       })
-      console.log(data, 'handle save')
+      this.$confirm('是否保存告警设置?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      })
+        .then(() => {
+          saveWarnSetting({ data, uid: this.uid }).then((res)=>{
+            openMessage(res)
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消保存'
+          })
+        })
+
     },
     reset() {
-      this.sms = false
-      this.email = false
-      this.audio = false
+      for(let field in this.fields) {
+        this[field] = false
+      }
       this.data = []
     },
     render(h, column) {
@@ -189,14 +233,24 @@ export default {
     },
     formatData(data) {
       if(data.length === 0 ) return []
-      return data.map((item)=>{
+      let fieldLen = {}
+      data = data.map((item) => {
         let val = +item.Wn_notifytype
-        item.sms = (val & 4) > 0;
-        item.email = (val & 2) >0;
-        item.audio = (val & 1) >0;
+        for(let field in this.fields) {
+          fieldLen[field] = fieldLen[field] || 0
+          let isBool = (val & this.fields[field]) > 0
+          item[field] = isBool
+          if(isBool) fieldLen[field] += 1 
+        }
         return item
       })
-    }
+      let total = data.length
+      for(let field in this.fields) {
+        this[field] = fieldLen[field] === total
+      }
+      console.log(this.sms, this.email, this.audio, 'formating ....')
+      return data
+    },
 
   },
   created() {

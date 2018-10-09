@@ -50,10 +50,11 @@ export default {
     setColumns() {
       this.columns = []
       this.showColumns = []
-      if (this.data.length === 0) {
-        return
-      }
+
       if (Object.keys(this.customColumns).length === 0) {
+        if (this.data.length === 0) {
+          return
+        }
         const firstData = this.data[0]
         const extract = {}
         let i = 1

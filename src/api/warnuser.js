@@ -30,3 +30,11 @@ export function deleteItem(data) {
     method: 'delete'
   })
 }
+
+export function saveWarnSetting(data) {
+  return request({
+    url: 'warnuser/' + data.uid + '/warnsetting',
+    method: 'post',
+    data
+  })
+}

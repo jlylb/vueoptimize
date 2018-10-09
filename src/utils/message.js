@@ -12,7 +12,7 @@ export default function openMessage(res) {
     if (status === 1) {
       resolve()
     } else {
-      reject()
+      reject(res)
     }
   })
 }

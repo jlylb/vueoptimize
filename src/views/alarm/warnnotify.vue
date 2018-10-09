@@ -6,6 +6,7 @@
         :table-data='data'
         :total='total'
         :search-data='search'
+        :show-expand='false'
         @list-data='getList'
         @list-edit='handleEdit'
         @list-delete='handleDelete'>
@@ -108,27 +109,30 @@ export default {
         wu_index: {
           label: '用户编号'
         },
+        'user.Wu_name': {
+          label: '用户名'
+        },
         Wn_notifytype: {
           label: '告警方式'
         },
-        wn_smsdes0: {
-          label: '告警短信描述'
-        },
-        wn_smsdes1: {
-          label: '取消短信描述'
-        },
-        wn_emaildes0: {
-          label: '告警E-Maill描述'
-        },
-        wn_emaildes1: {
-          label: '取消E-Maill描述'
-        },
-        wn_teldes0: {
-          label: '语音播放文件'
-        },
-        wn_teldes1: {
-          label: '取消语音播放文件'
-        },
+        // wn_smsdes0: {
+        //   label: '告警短信描述'
+        // },
+        // wn_smsdes1: {
+        //   label: '取消短信描述'
+        // },
+        // wn_emaildes0: {
+        //   label: '告警E-Maill描述'
+        // },
+        // wn_emaildes1: {
+        //   label: '取消E-Maill描述'
+        // },
+        // wn_teldes0: {
+        //   label: '语音播放文件'
+        // },
+        // wn_teldes1: {
+        //   label: '取消语音播放文件'
+        // },
 
         action: {
           'min-width': '150',
