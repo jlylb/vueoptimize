@@ -3,7 +3,7 @@ import { Message, MessageBox, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import router from '../router'
-import { debounce } from '@/utils'
+// import { debounce } from '@/utils'
 // create an axios instance
 const service = axios.create({
   baseURL: '/api', // api的base_url
@@ -11,15 +11,14 @@ const service = axios.create({
   showLoading: true
 })
 
-
 let loading
 
 function startLoading() {
   loading = Loading.service({
     target: '.table-layout',
     lock: true,
-    text: '加载中……',
-   // background: 'rgba(0, 0, 0, 0.7)'
+    text: '加载中……'
+    // background: 'rgba(0, 0, 0, 0.7)'
   })
 }
 
@@ -36,11 +35,11 @@ export function showFullScreenLoading() {
   needLoadingRequestCount++
 }
 
-const tryCloseLoading = () => {
-  if (needLoadingRequestCount === 0) {
-    loading.close()
-  }
-}
+// const tryCloseLoading = () => {
+//   if (needLoadingRequestCount === 0) {
+//     loading.close()
+//   }
+// }
 
 export function tryHideFullScreenLoading() {
   if (needLoadingRequestCount <= 0) return
@@ -50,7 +49,6 @@ export function tryHideFullScreenLoading() {
   }
 }
 
-
 // request interceptor
 service.interceptors.request.use(
   config => {
@@ -59,9 +57,9 @@ service.interceptors.request.use(
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       config.headers['Authorization'] = 'Bearer ' + getToken()
     }
-    if (config.showLoading) {
-      showFullScreenLoading()
-    }
+    // if (config.showLoading) {
+    //   showFullScreenLoading()
+    // }
     return config
   },
   error => {
@@ -114,26 +112,23 @@ service.interceptors.response.use(
     //     duration: 5 * 1000
     //   })
     // }
-    if (response.config.showLoading) {
-      tryHideFullScreenLoading()
-    }
+    // if (response.config.showLoading) {
+    //   tryHideFullScreenLoading()
+    // }
     return response
   },
 
   error => {
     const res = error.response
     let errorMsg = error.message
-    console.log(res, router.to)
+    console.log(error, res, router.to)
+    // endLoading()
     if (res.status === 401) {
-      MessageBox.confirm(
-        '验证失败或账号已失效，请重新登录!',
-        '提示',
-        {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).then(() => {
+      MessageBox.confirm('验证失败或账号已失效，请重新登录!', '提示', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
         store.dispatch('FedLogOut').then(() => {
           location.reload() // 为了重新实例化vue-router对象 避免bug
         })

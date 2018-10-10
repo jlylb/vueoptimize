@@ -266,3 +266,9 @@ $activeColor: #e6a23c;
     background-color: $activeColor;
   }
 }
+.table-layout-inner {
+  background-color: #fff;
+  padding: 20px 0;
+  min-height: 800px;
+  position: relative;
+}

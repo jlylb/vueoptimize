@@ -25,10 +25,13 @@
             </div>
         </div>
 
-        <div class='table-layout-inner'>
+        <div class='table-layout-inner' v-if='deviceData.items'>
 
             <chart-statistic :data='deviceData' class='monitor-chart'></chart-statistic>
  
+        </div>
+        <div class='table-layout-inner' v-else>
+            <empty-text></empty-text>
         </div>
     </div>    
 </template>
@@ -39,11 +42,13 @@ import SearchForm from '@/views/common/components/searchForm'
 import { fetchList, fetchDevice, fetchDeviceData } from '@/api/monitor'
 import DeviceFilter from '@/views/common/components/deviceFilter'
 import ChartStatistic from './chart.vue'
+// import EmptyText from '@/views/common/components/empty'
+
 export default {
     components: {  
         SearchForm, 
         DeviceFilter,
-        ChartStatistic 
+        ChartStatistic
     },
     data() {
         return {

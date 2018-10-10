@@ -77,6 +77,7 @@ const user = {
         loginByUsername(username, userInfo.password).then(response => {
           console.log(response)
           const data = response.data
+          console.log(data, 'Login By Username.....')
           if (data.status === 0) {
             reject(response)
           } else {

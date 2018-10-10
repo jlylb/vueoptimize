@@ -87,6 +87,7 @@ export default {
             this.loading = false
             this.$router.push({ path: '/' })
           }).catch((res) => {
+            console.log(res,'login catch ......')
             openMessage(res)
             this.loading = false
           })

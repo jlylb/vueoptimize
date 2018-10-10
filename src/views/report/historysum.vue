@@ -11,8 +11,8 @@
       <div v-if='data.length > 0'>
         <chart-bar :warn='data' class='chart-bar' ></chart-bar>
       </div>
-        <div v-if='data.length ===0' class='no-data'>
-          没有查询到数据
+        <div class='table-layout-inner' v-else>
+            <empty-text></empty-text>
         </div>
     </div>
 </template>

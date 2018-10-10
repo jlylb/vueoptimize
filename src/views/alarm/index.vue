@@ -3,9 +3,12 @@
 
         <device-filter ref='deviceFilter' @filter='getData' ></device-filter>
 
-        <div class='table-layout-inner'>
+        <div class='table-layout-inner' v-if='Object.keys(deviceData).length > 0'>
             <alarm-chart :data='deviceData' class='monitor-chart'></alarm-chart>
 
+        </div>
+        <div class='table-layout-inner' v-else>
+            <empty-text></empty-text>
         </div>
     </div>    
 </template>
@@ -40,12 +43,6 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-
-.table-layout-inner {
-  background-color: #fff;
-  min-height: 800px;
-  position: relative;
-}
 .monitor-chart {
   width: 100%;
   min-height: 500px;
