@@ -7,7 +7,7 @@ import router from '../router'
 // create an axios instance
 const service = axios.create({
   baseURL: '/api', // api的base_url
-  timeout: 5000, // request timeout
+  // timeout: 5000, // request timeout
   showLoading: true
 })
 
@@ -56,6 +56,7 @@ service.interceptors.request.use(
     if (store.getters.token) {
       // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
       config.headers['Authorization'] = 'Bearer ' + getToken()
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
     }
     // if (config.showLoading) {
     //   showFullScreenLoading()

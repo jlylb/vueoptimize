@@ -38,6 +38,8 @@
 import { isvalidUsername } from '@/utils/validate'
 // import LangSelect from '@/components/LangSelect'
 import openMessage from '@/utils/message.js'
+import { loginByUsername } from '@/api/login'
+import {  setToken } from '@/utils/auth'
 
 export default {
   components: {  },
@@ -91,6 +93,7 @@ export default {
             openMessage(res)
             this.loading = false
           })
+
         } else {
           console.log('error submit!!')
           return false
