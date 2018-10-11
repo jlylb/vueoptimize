@@ -5,7 +5,7 @@
         <div class='table-layout-inner' :style="{padding:0}" v-if='deviceData.items'>
             <div class='real-status-block' >
                 <div class="real-data" >
-                    <el-carousel :autoplay='true' indicator-position='none' arrow='never' ref='realData'>
+                    <el-carousel :autoplay='true'  arrow='never' ref='realData' class='monitor-carousel'>
                         <el-carousel-item v-for="(item, index) in deviceData.items" :key="index">
                              <el-card class="box-card">
                             <div class='content content-data'>
@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="real-status">
-                    <el-carousel :autoplay='true' indicator-position='none' arrow='never' ref='realStatus'>
+                    <el-carousel :autoplay='true'  arrow='never' ref='realStatus' class='monitor-carousel'>
                         <el-carousel-item v-for="(item, index) in deviceData.items" :key="index">
                             <el-card class="box-card">
                             <div class='content'>
@@ -159,7 +159,6 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-$activeColor: #e6a23c;
 .table-layout-inner {
   background-color: #fff;
   padding: 20px 0;
@@ -167,37 +166,6 @@ $activeColor: #e6a23c;
   position: relative;
 }
 
-.running-type-custom {
-  color: #000;
-}
-
-.running-setting {
-  text-align: right;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.running-custom /deep/ .running-type-item {
-  &.active,
-  &:hover {
-    background-color: $activeColor;
-  }
-}
-.monitor-device {
-  /deep/ .running-type-wrapper {
-    margin: 0;
-  }
-  .monitor-device-left {
-    width: 30%;
-  }
-  .monitor-device-right {
-    width: 70%;
-    height: 100%;
-  }
-}
-.monitor-device /deep/ .row p {
-  text-align: left;
-}
 .real-status-block {
   display: flex;
 }
@@ -251,6 +219,12 @@ $activeColor: #e6a23c;
 .monitor-chart {
   width: 100%;
   min-height: 500px;
+}
+.monitor-carousel /deep/ .el-carousel__button {
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  background-color: $light-blue;
 }
 </style>
 

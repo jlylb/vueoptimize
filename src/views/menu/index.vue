@@ -18,6 +18,9 @@
         <template slot-scope="{ data }" slot='status'>
             <el-tag> {{ data.status }} </el-tag>
         </template>
+        <template slot-scope="{ data }" slot='meta.icon'>
+           <svg-icon v-if="data.meta&&data.meta.icon" :icon-class="data.meta.icon"></svg-icon>
+        </template>
         <template slot-scope="{ data }" slot='actionExtra'>
               <el-button
                 size="mini"
@@ -35,24 +38,8 @@
                 :pform-model='formModel'
                 :pform-columns='formColumns'>
                   <template slot='meta' slot-scope='{ data, fmodel }'>
-                      <el-input type="text" v-model="fmodel.meta.title" placeholder="请输入标题" class='meta' ></el-input>
                       <el-input type="text" v-model="fmodel.meta.icon" placeholder="请输入图标" class='meta'></el-input>
                   </template>
-             <template slot='route_path' slot-scope='{ data, fmodel }'>
-                <!-- <el-select 
-                v-model="fmodel[data.name]" 
-                v-if='data.type=="select"' 
-                @change='selectChange($event,data.data)'
-                @clear='selectClear' 
-                v-bind='data.props||{}'>
-                    <el-option
-                    v-for="item in data.data"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                    </el-option>
-                </el-select> -->
-              </template>
                 </my-form>
         </el-dialog>
         <button-form ref='buttonDialog'></button-form>
@@ -95,23 +82,6 @@ export default {
           name: 'route_name',
           label: '路由名称',
         },
-        // {
-        //   name: 'route_name',
-        //   label: '路由名称',
-        //   type: 'select',
-        //   props: {
-        //     filterable: true,
-        //     remote: true,
-        //     remoteMethod: this.remoteRoute,
-        //     placeholder: '请输入路由名称',
-        //     class: 'select-dropdown',
-        //     clearable: true,
-        //     allowCreate: true
-        //   },
-        //   data: [
-
-        //   ]
-        // },
         { name: 'route_path', label: '路由路径' },
         {
           name: 'component',
@@ -186,8 +156,8 @@ export default {
         redirect: {
           label: '跳转路径'
         },
-        meta: {
-          label: '属性'
+        'meta.icon': {
+          label: '图标'
         },
         path: {
           hidden: true
@@ -352,9 +322,9 @@ export default {
 }
 </script>
 <style lang="scss" >
-    .meta {
-      margin-bottom: 10px;  width: 30%;
-    }
-
+.meta {
+  margin-bottom: 10px;
+  width: 30%;
+}
 </style>
 

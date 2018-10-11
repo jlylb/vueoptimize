@@ -34,12 +34,14 @@ function filterAsyncRouter(asyncRouterMap, roles) {
 const _import = require('@/utils/_import_development')
 
 function genRoutes(routes) {
-  routes.forEach((item) => {
+  routes.forEach(item => {
     if (item.component && typeof item.component === 'string') {
       item.component = _import(item.component)
     }
     if (item.meta && item.buttons) {
-      item.meta = Object.assign(item.meta, JSON.parse(item.buttons))
+      item.meta = Object.assign(item.meta, item.buttons || {}, {
+        title: item.menu_name
+      })
     }
     if (item.children && item.children.length > 0) {
       item.children = genRoutes(item.children)
