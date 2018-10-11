@@ -92,7 +92,7 @@
                 </device-component>
             </device-card>
 
-<div :class="'test-class-'+i" v-for='i in 10' :key='i'></div>
+
 
         </div>
         
@@ -390,15 +390,15 @@ $activeColor: #e6a23c;
   }
 }
 .test-class {
-    width: 200px;
-    height: 50px; 
+  width: 200px;
+  height: 50px;
 }
-@for $i from 1 through 10 {
-    .test-class-#{$i} { 
-        @extend .test-class;
-        @warn random();
-       // background-color: desaturate($baseColor1, percentage($i * 10/100 ));
-        background-color: scale-color(hsl(90, 50%, 50%), $saturation: percentage($i * 10/100 ), $alpha: 50%);
-    }
-  }
+// @for $i from 1 through 10 {
+//     .test-class-#{$i} {
+//         @extend .test-class;
+//         @warn random();
+//        // background-color: desaturate($baseColor1, percentage($i * 10/100 ));
+//         background-color: scale-color(hsl(90, 50%, 50%), $saturation: percentage($i * 10/100 ), $alpha: 50%);
+//     }
+//   }
 </style>

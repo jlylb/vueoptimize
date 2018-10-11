@@ -87,7 +87,7 @@ export default {
       this.$emit('search-form', this.formModel)
     },
     handleDownload() {
-      this.$emit('search-export', Object.keys(this.formModel))
+      this.$emit('search-export')
     }
   },
   created() {

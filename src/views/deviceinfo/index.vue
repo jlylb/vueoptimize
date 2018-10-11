@@ -24,13 +24,7 @@
             <el-tag :type='data.dt_isenable==1?"success":"info"'> {{ data.dt_isenable==1?'是':'否' }} </el-tag>
         </template>
 
-        <template slot-scope="{ data }" slot='area'>
-            {{ data.area.AreaName }}
-        </template>
 
-        <template slot-scope="{ data }" slot='company'>
-            {{ data.company.Co_Name }}
-        </template>
 
         </table-list>
         <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false'>
@@ -173,13 +167,13 @@ export default {
         AreaId: {
           label: '区域'
         },
-        area: {
+        'area.AreaName': {
           label: '区域名称'
         },
         Co_ID: {
           label: '公司编号'
         },
-        company: {
+        'company.Co_Name': {
           label: '公司名称'
         },
         action: {

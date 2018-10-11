@@ -1,3 +1,4 @@
+import { getDataValue } from '@/utils'
 export default {
   data() {
     return {
@@ -57,9 +58,11 @@ export default {
         const extract = {}
         let i = 1
         for (const item in firstData) {
-          const column = Object.assign({ prop: item, label: item }, extract, {
-            label: this.labels[item] || item
-          })
+          const column = Object.assign(
+            { prop: item, label: item },
+            extract,
+            getDataValue(this.labels, [item], {})
+          )
           this.columns.push(column)
           if (i <= this.columnLength) {
             this.showColumns.push(column)
@@ -74,7 +77,7 @@ export default {
             const column = Object.assign(
               { prop: item },
               this.customColumns[item],
-              this.labels[item] || {}
+              getDataValue(this.labels, [item], {})
             )
             this.columns.push(column)
             if (i <= this.columnLength) {
@@ -99,23 +102,31 @@ export default {
       this.columns.push(action)
       this.showColumns.push(action)
     },
-    handleExport(columns) {
-      console.log(columns)
+    handleExport() {
+      if (this.data.length === 0) return
+      // const columns = Object.keys(this.data[0])
+      const tHeader = []
+      const filterVal = []
+      this.columns.map(v => {
+        const { label, prop } = v
+        tHeader.push(label)
+        filterVal.push(prop)
+      })
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = columns
-        const filterVal = columns
+        // const tHeader = columns
+        // const filterVal = columns
         const data = this.formatJson(filterVal, this.data)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: 'table-list'
+          filename: +new Date()
         })
       })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
         filterVal.map(j => {
-          return v[j]
+          return this.showValue(v, j)
         })
       )
     },

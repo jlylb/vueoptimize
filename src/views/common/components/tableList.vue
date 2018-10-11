@@ -28,7 +28,7 @@
           <el-form-item v-for='item in columns' :key='item.prop' v-bind="item" v-if='item.prop!="action"'>
              <slot :name='"expand-"+item.prop' :data='scope.row' >
                 <!-- <span> {{ scope.row[item.prop] }}</span> -->
-                {{ showValue(scope.row, item.prop) }}
+                {{ showValue(scope.row, item.prop) || '无' }}
              </slot>
           </el-form-item>
         </el-form>
@@ -38,7 +38,7 @@
         <template slot-scope="scope">
             <slot :name='item.prop' :data='scope.row' v-if='item.prop!="action"'>
                 <!-- {{ scope.row[item.prop] }}  -->
-                {{ showValue(scope.row, item.prop) }} 
+                {{ showValue(scope.row, item.prop) || '无' }} 
             </slot>
             <slot :name='item.prop' :data='scope.row' :$index='scope.$index' v-if='item.prop=="action"'>
                 <el-button

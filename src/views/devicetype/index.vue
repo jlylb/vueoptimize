@@ -127,7 +127,8 @@ export default {
       editDialog: false,
       userFormModel: {
       },
-      isAdd: true
+      isAdd: true,
+      labels: null
     }
   },
   methods: {
@@ -195,6 +196,5 @@ export default {
 }
 </script>
 <style lang="scss">
-
 </style>
 

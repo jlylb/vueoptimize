@@ -5,8 +5,8 @@
         :form-columns='searchColumns'
         :table-data='data'
         :total='total'
-        :search-data='search'
         :labels='labels'
+        :search-data='search'
         :hide-action='true'
         @list-data='getList'>
             <template  slot='add_search_button'>
@@ -54,8 +54,8 @@ export default {
       fetchList({...this.search, ...this.$route.params}).then((res) => {
         this.data = res.data.data.data
         this.total = res.data.data.total
-        const labels = res.data.desc
-        this.formatLabel(labels)
+        this.labels = res.data.desc
+        
         console.log(this.data)
       }).catch((res) => {
 
@@ -80,6 +80,5 @@ export default {
 }
 </script>
 <style lang="scss">
-
 </style>
 
