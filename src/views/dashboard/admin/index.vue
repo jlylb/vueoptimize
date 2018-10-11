@@ -4,19 +4,15 @@
     <panel-group ></panel-group>
 
      <el-row style='margin-bottom:30px;'>
-      <my-line :style='{width:"100%", height: "200px"}'></my-line>
+      <ve-line :data="chartData" :legend-visible='false' :settings="chartSettings" ></ve-line>
     </el-row>
 
     <el-row :gutter="20">
       <el-col :lg='9'>
-            <div class="chart-wrapper" style="height:800px;">
-              <radar-chart></radar-chart>
-            </div>
+          <ve-radar :data="chartData1"></ve-radar>
       </el-col>
       <el-col :lg='15'>
-        <div class="chart-wrapper" style="height:800px">
-          <map-chart id='map'  width='100%' height='100%'></map-chart>
-        </div>
+        <ve-map :data="chartData3" :settings="chartSettings3"></ve-map>
       </el-col>
     </el-row>
     
@@ -26,76 +22,75 @@
 
 <script>
 import PanelGroup from "./components/PanelGroup";
-
-import RaddarChart from "./components/RaddarChart";
-import PieChart from "./components/PieChart";
-import BarChart from "./components/BarChart";
-import TransactionTable from "./components/TransactionTable";
-import TodoList from "./components/TodoList";
-import BoxCard from "./components/BoxCard";
-import MapChart from "@/components/Charts/map";
 import MyLine from "./components/Line";
 import RadarChart from "./components/RadarChart";
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-};
 
 export default {
   name: "dashboard-admin",
   components: {
     PanelGroup,
-    MyLine,
-    RaddarChart,
-    PieChart,
-    BarChart,
-    TransactionTable,
-    TodoList,
-    BoxCard,
-    MapChart,
     RadarChart
   },
   data() {
     function getData() {
       const data = [];
       for (let i = 0; i < 24; i++) {
-        data[i] = Math.ceil(Math.random() * 1000);
+        data.push({ hour: i, alarm: Math.ceil(Math.random() * 1000) });
       }
       return data;
     }
+    this.chartSettings = {
+        labelMap: {
+          alarm: '报警数',
+        },
+    }
+    this.chartSettings3 = {
+        position: 'china',
+        label: false,
+        itemStyle: {
+          normal: {
+            borderColor: '#00f'
+          }
+        },
+        zoom: 1.2
+      }
     return {
-      lineChartData: lineChartData.newVisitis,
-      hours: getData()
-    };
+      hours: getData(),
+      chartData: {
+          columns: ['hour', 'alarm'],
+          rows: getData()
+      },
+      chartData1: {
+          columns: ['日期', '访问用户', '下单用户', '下单率'],
+          rows: [
+            { '日期': '1/1', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
+            { '日期': '1/2', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
+            { '日期': '1/3', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
+            { '日期': '1/4', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
+            { '日期': '1/5', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
+            { '日期': '1/6', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
+          ]
+        },
+        chartData3: {
+          columns: ['位置', '人口'],
+          rows: [
+            { '位置': '吉林', '人口': 123 },
+            { '位置': '北京', '人口': 1223 },
+            { '位置': '上海', '人口': 2123 },
+            { '位置': '浙江', '人口': 4123 }
+          ]
+        }
+    }
   },
   methods: {
-    handleSetLineChartData(type) {
-      // this.lineChartData = lineChartData[type]
-    }
+
   }
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
- @import "src/styles/variables.scss";
 .dashboard-editor-container {
   padding: 0 20px 32px;
-  //background-color: $baseColor;
   .chart-wrapper {
     background: $subMenuBg;
     padding: 16px 16px 0;
