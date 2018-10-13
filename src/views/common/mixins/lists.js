@@ -54,7 +54,12 @@ export default {
       this.showColumns = []
 
       if (Object.keys(this.customColumns).length === 0) {
-        const firstData = this.data[0] || {}
+        let firstData
+        if (this.data.length > 0) {
+          firstData = this.data[0]
+        } else {
+          firstData = Object.keys(this.labels).length > 0 ? this.labels : {}
+        }
         const extract = {}
         let i = 1
         for (const item in firstData) {

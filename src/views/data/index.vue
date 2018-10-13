@@ -42,9 +42,7 @@ export default {
         pageSize: 10
       },
 
-      labels: {
-
-      },
+      labels: {},
     }
   },
   methods: {
@@ -61,18 +59,13 @@ export default {
 
       })
     },
-    formatLabel(descs) {
-        let tableArr = this.$route.params.table.split('_')
-        let prefix = tableArr[1] === 'realdata' ? 'rd' : 'hd'
-        descs.forEach((item) => {
-            let field = prefix + '_' + item.dp_paramname
-            let label = item.dp_paramdesc
-            this.labels[field] = { label }
-        })
-    },
+
     handleBack() {
         this.$router.go(-1)
     }
+  },
+  mounted() {
+    
   },
   created() {
     this.getList()

@@ -11,7 +11,8 @@
 </div>
 <!-- <div v-if='data.length > 0'> -->
   <el-table
-    :data='data' 
+    :data='data'
+    ref='tablelist' 
     stripe
     style="width: 100%"
     :empty-text='loadingText'
@@ -166,7 +167,7 @@ export default {
       console.log(newval, 'table list ....')
       this.data = newval
       this.loadingText = newval.length > 0 ? '数据加载中....' : '没有数据'
-      this.setColumns()
+      this.setColumns()   
     },
     searchData(newval) {
       this.search = newval
