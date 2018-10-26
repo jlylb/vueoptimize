@@ -114,6 +114,7 @@ export default {
                 this.deviceData = res2.data.devices
                 this.firstData = this.deviceData.items[0]
                 this.loading = false
+                this.setCarouselDefault(0)
             }).catch(()=>{
                 this.catchError()
                 this.deviceData = {}
@@ -147,9 +148,12 @@ export default {
             this.firstIndex = command
             let index = command-1
             this.firstData = this.deviceData.items[index]
-            this.$refs.realData.setActiveItem(index)
-            this.$refs.realStatus.setActiveItem(index)
+            this.setCarouselDefault(index)
         },
+        setCarouselDefault(index) {
+            this.$refs.realData && this.$refs.realData.setActiveItem(index)
+            this.$refs.realStatus && this.$refs.realStatus.setActiveItem(index)
+        }
 
     },
 

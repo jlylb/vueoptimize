@@ -18,7 +18,8 @@ export default {
       legend: [],
       series: [],
       colors: ['#5793f3', '#d14a61', '#675bba'],
-      chart: null
+      chart: null,
+      grid: {  }
     }
   },
   props: {
@@ -72,20 +73,28 @@ export default {
       })
       console.log(itemField)
       const colors = this.colors;
-      const postions = ['left','right'];
+      const postions = ['left','right','right'];
       const keys = Object.keys(itemField)
       this.yfield = []
       this.series = []
       this.legend = []
       for(let xkey in keys) {
         let curKey = keys[xkey]
+        let offset = 0
+        if (xkey > 1) {
+          offset = 80
+          this.grid = { right: '15%' }
+        }else {
+          this.grid = {  }
+          offset = 0
+        }
         this.yfield.push({
             type: 'value',
             name: itemField[curKey].name,
             min: 0,
             max: 100,
             position: postions[xkey],
-            // offset: 80,
+            offset: offset,
             axisLine: {
                 lineStyle: {
                     color: colors[xkey]
@@ -113,12 +122,12 @@ export default {
            this.yfield = [];
            this.legend = [];
            this.series = [];
-           if(this.chart) this.chart.clear()
+           
         }else{
           this.xfield = this.getXField(data)
           this.getFields(data)
         }
-
+        if(this.chart) this.chart.clear()
         this.echartsData = this.getData()
     },
     getData() {
@@ -131,9 +140,7 @@ export default {
         legend: {
           data: this.legend
         },
-        grid: {
-          // right: '15%'
-        },
+        grid: this.grid,
         xAxis : [
 
         ],
