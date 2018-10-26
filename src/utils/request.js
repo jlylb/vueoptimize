@@ -138,7 +138,9 @@ service.interceptors.response.use(
     }
     if (res.status === 422) {
       for (const msgKey in res.data) {
-        errorMsg = res.data[msgKey][0]
+        errorMsg = Array.isArray(res.data[msgKey])
+          ? res.data[msgKey][0]
+          : res.data[msgKey]
         break
       }
     }

@@ -10,11 +10,11 @@
             <el-card class="box-card" shadow="hover" v-for='(items, key) in allAbility' :key='key'>
                 <div slot="header" class="clearfix">
                     <el-checkbox :indeterminate="indeterminate[key]" v-model="itemModel[key]" @change="itemCheckAllChange($event,key)" border>全选</el-checkbox>
-                    <span>{{ key }}</span>
+                    <span>{{ key   }}</span>
                 </div>
                 <div  class="text item">
                     <el-checkbox-group v-model="formModel[key]" @change="handleCheckedChange($event,key)">
-                        <el-checkbox v-for="item in items" :label="item.value" :key="item.value">{{item.label}}</el-checkbox>
+                        <el-checkbox v-for="item in items" :label="item.value" :key="item.value">{{ item.label  }}</el-checkbox>
                     </el-checkbox-group>
                 </div>
             </el-card>
@@ -34,7 +34,8 @@ export default {
       checkAll: false,
       isIndeterminate: true,
       itemModel: {},
-      indeterminate: {}
+      indeterminate: {},
+      desc: {}
     }
   },
   computed: {
@@ -124,6 +125,7 @@ export default {
   created() {
     fetchRoleAlibity(this.$route.params.role).then((res) => {
       this.allAbility = res.data.data.all
+      this.desc = res.data.data.desc
       let model = {}, itemModel = {}
       const indeterminate = {}
       for (const key in this.allAbility) {
@@ -154,7 +156,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.box-card{
-    margin-bottom: 10px;
+.box-card {
+  margin-bottom: 10px;
 }
 </style>
