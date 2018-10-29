@@ -109,6 +109,13 @@
                 :file-list='pics'
                 :upload-props='myitem.props || {}'>
             </upload-form-column>
+            <upload-crop
+                v-if='myitem.type=="uploadcrop"'
+                @upload-success='uploadCrop'
+                @upload-fail='uploadFail'
+                :default-img='defaultCrop'
+                :crop-params='myitem.props'>
+            </upload-crop>
 </slot>
         </el-form-item>
         <slot name='button'>
@@ -120,8 +127,10 @@
 </template>
 <script>
 import uploadFormColumn from './uploadFormColumn'
+import UploadCrop from './uploadCrop'
+
 export default {
-  components: { uploadFormColumn },
+  components: { uploadFormColumn, UploadCrop },
   data() {
     return {
       formModel: this.pformModel,
@@ -165,6 +174,12 @@ export default {
       type: Array,
       default() {
         return []
+      }
+    },
+    defaultCrop: {
+      type: String,
+      default() {
+        return ''
       }
     }
   },
@@ -220,6 +235,13 @@ export default {
     },
     uploadSuccess(file, props) {
       const fieldName = props.name || 'file'
+      this.formModel[fieldName] = file.data.location
+    },
+    uploadFail(file, field) {
+      console.log(file)
+    },
+    uploadCrop(file, field) {
+      const fieldName = field || 'file'
       this.formModel[fieldName] = file.data.location
     },
     removeSuccess(file, props) {

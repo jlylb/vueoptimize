@@ -10,7 +10,7 @@
             <el-card class="box-card" shadow="hover" v-for='(items, key) in allAbility' :key='key'>
                 <div slot="header" class="clearfix">
                     <el-checkbox :indeterminate="indeterminate[key]" v-model="itemModel[key]" @change="itemCheckAllChange($event,key)" border>全选</el-checkbox>
-                    <span>{{ key   }}</span>
+                    <span>{{ desc[key]?desc[key]:key }}</span>
                 </div>
                 <div  class="text item">
                     <el-checkbox-group v-model="formModel[key]" @change="handleCheckedChange($event,key)">
@@ -125,7 +125,7 @@ export default {
   created() {
     fetchRoleAlibity(this.$route.params.role).then((res) => {
       this.allAbility = res.data.data.all
-      this.desc = res.data.data.desc
+      this.desc = res.data.desc
       let model = {}, itemModel = {}
       const indeterminate = {}
       for (const key in this.allAbility) {

@@ -7,6 +7,7 @@
             @do-form='saveData'
             :form-rules='formRules'
             :default-files='logo'
+            :default-crop='defaultCrop'
             :pform-model='formModel'
             :pform-columns='formColumns'></my-form>
         </div>
@@ -24,20 +25,27 @@ export default {
     return {
       data: [],
       logo: [],
+      defaultCrop: null,
       formColumns: [
         { name: 'name', label: '用户名', props: { disabled: true }},
+        // {
+        //   name: 'logo',
+        //   label: '上传头像',
+        //   type: 'upload',
+        //   props: {
+        //     action: '/api/upload',
+        //     limit: 1,
+        //     name: 'logo',
+        //     data: {
+        //       field: 'logo'
+        //     }
+        //   }
+
+        // },
         {
           name: 'logo',
           label: '上传头像',
-          type: 'upload',
-          props: {
-            action: '/api/upload',
-            limit: 1,
-            name: 'logo',
-            data: {
-              field: 'logo'
-            }
-          }
+          type: 'uploadcrop',
 
         }
       ],
@@ -70,6 +78,7 @@ export default {
   created() {
     let logo
     if(this.avatar) {
+      this.defaultCrop = getImageUrl(this.avatar)
       logo = [
       {
         name: this.name,
@@ -95,11 +104,11 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.table-layout-inner{
-    background-color: #fff;
-    padding: 20px 0;
+.table-layout-inner {
+  background-color: #fff;
+  padding: 20px 0;
 }
 .table-layout-inner /deep/ .profile-form .el-input {
-    width: 30%;
+  width: 30%;
 }
 </style>
