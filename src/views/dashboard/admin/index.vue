@@ -1,18 +1,14 @@
 <template>
   <div class="dashboard-editor-container">
 
-    <panel-group ></panel-group>
+    <panel-group :dapeng='dapengTotal' :device='deviceTotal' :warn='warnTotal'></panel-group>
 
-     <el-row style='margin-bottom:30px;'>
-      <ve-line :data="chartData" :legend-visible='false' :settings="chartSettings" ></ve-line>
-    </el-row>
-
-    <el-row :gutter="20">
+    <el-row :gutter="20" :style="{ position: 'relative' }">
       <el-col :lg='9'>
-          <ve-radar :data="chartData1"></ve-radar>
+          <ve-pie :data="chartData1" :settings="chartSettings1" ref='chart1' height='600px' :extend="extend1" :events="chartEvents1"></ve-pie>
       </el-col>
       <el-col :lg='15'>
-        <ve-map :data="chartData3" :settings="chartSettings3"></ve-map>
+        <ve-map :data="chartData3" :settings="chartSettings3" ref='chart3' height='600px' :extend="extend3" :events="chartEvents3" :after-config='afterConfig'></ve-map>
       </el-col>
     </el-row>
     
@@ -22,68 +18,121 @@
 
 <script>
 import PanelGroup from "./components/PanelGroup";
-import MyLine from "./components/Line";
-import RadarChart from "./components/RadarChart";
+import { fetchList } from "@/api/dashboard";
 
 export default {
   name: "dashboard-admin",
   components: {
     PanelGroup,
-    RadarChart
   },
   data() {
-    function getData() {
-      const data = [];
-      for (let i = 0; i < 24; i++) {
-        data.push({ hour: i, alarm: Math.ceil(Math.random() * 1000) });
-      }
-      return data;
-    }
-    this.chartSettings = {
+
+    this.chartSettings1 = {
+        radius: 200 ,
+        offsetY: 300,
+        roseType: 'area',
         labelMap: {
-          alarm: '报警数',
+          lvl: '告警等级',
+          num: '告警数量',
         },
+    }
+    this.extend1 = {
+      color: ['#C03639', '#ff9900', '#19be6b', '#2db7f5'],
     }
     this.chartSettings3 = {
         position: 'china',
         label: false,
         itemStyle: {
           normal: {
-            borderColor: '#00f'
-          }
+            areaColor: '#36a3f7',
+            borderColor: '#fff',
+            color: '#C03639',
+          },
+          emphasis: {
+              areaColor: '#0c60a0',
+              borderWidth: 0,
+              label: {
+                show: false,
+                color: '#fff',
+              }
+          },
         },
-        zoom: 1.2
+        labelMap: {
+          label: '大棚区域分布',
+          num: '大棚',
+        },
+        zoom: 1.2,
       }
+    this.extend3 = {
+      color: ['#19be6b', '#C03639', '#ff9900', '#2db7f5'],
+    }
+
     return {
-      hours: getData(),
-      chartData: {
-          columns: ['hour', 'alarm'],
-          rows: getData()
-      },
-      chartData1: {
-          columns: ['日期', '访问用户', '下单用户', '下单率'],
-          rows: [
-            { '日期': '1/1', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
-            { '日期': '1/2', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
-            { '日期': '1/3', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
-            { '日期': '1/4', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
-            { '日期': '1/5', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
-            { '日期': '1/6', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
-          ]
-        },
-        chartData3: {
-          columns: ['位置', '人口'],
-          rows: [
-            { '位置': '吉林', '人口': 123 },
-            { '位置': '北京', '人口': 1223 },
-            { '位置': '上海', '人口': 2123 },
-            { '位置': '浙江', '人口': 4123 }
-          ]
-        }
+      chartData1: {},
+      chartData3: {},
+      dapengTotal: 0,
+      deviceTotal: 0,
+      warnTotal: 0,
+      chartEvents3: {},
+      dapeng: [],
+      warns: []
     }
   },
   methods: {
+     afterConfig (options) {
+        console.log(options, 'charts ....')
+        return options
+      }
+  },
+  mounted() {
 
+  },
+  created() {
+    this.chartEvents1 = {
+      click: (v) => {
+        let lvl = null
+        const { name } = v.data 
+        this.warns.forEach((item) => {
+          if(item.lvl===name) {
+            lvl = item.plvl
+            return
+          }
+        })
+
+        lvl && this.$router.push({ name: 'api.realwarn.index', params: { lvl } })
+      }
+    }
+  this.chartEvents3 = {
+      click: (v) => {
+        let aid = null
+        const { name } = v.data 
+        this.dapeng.forEach((item) => {
+          if(item.label===name) {
+            aid = item.aid
+            return
+          }
+        })
+
+        aid && this.$router.push({ name: 'api.area.index', params: { aid } })
+      }
+    }
+    fetchList().then((res) => {
+      const { dpTotal, warnTotal, deviceTotal, warns, dapeng } = res.data
+      this.chartData1 = {
+          columns: ['lvl', 'num'],
+          rows: warns
+      }
+      this.chartData3 = {
+        columns: ['label', 'num',],
+        rows: dapeng
+      }
+      this.dapeng = dapeng
+      this.warns = warns
+      this.dapengTotal = dpTotal
+      this.warnTotal = warnTotal
+      this.deviceTotal = deviceTotal
+
+    })
   }
 };
 </script>

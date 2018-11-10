@@ -27,7 +27,7 @@
         </span>
       </el-form-item>
 
-      <el-button type="primary" style="width:100%;margin-bottom:30px;" :loading="loading" @click.native.prevent="handleLogin">{{$t('login.logIn')}}</el-button>
+      <el-button type="success" class='login-btn' style="width:100%;margin-bottom:30px;" :loading="loading" @click.native.prevent="handleLogin">{{$t('login.logIn')}}</el-button>
 
     </el-form>
 
@@ -154,9 +154,10 @@ $light_gray: #eee;
 </style>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-$bg: #2d3a4b;
+$bg: #78a126;
 $dark_gray: #889aa4;
 $light_gray: #eee;
+$login-btn-color: darken($bg, 10%);
 
 body {
   height: 100%;
@@ -186,7 +187,7 @@ body {
   }
   .svg-container {
     padding: 6px 5px 6px 15px;
-    color: $dark_gray;
+    color: $light_gray;
     vertical-align: middle;
     width: 30px;
     display: inline-block;
@@ -216,7 +217,7 @@ body {
     right: 10px;
     top: 7px;
     font-size: 16px;
-    color: $dark_gray;
+    color: $light_gray;
     cursor: pointer;
     user-select: none;
   }
@@ -224,6 +225,10 @@ body {
     position: absolute;
     right: 35px;
     bottom: 28px;
+  }
+  /deep/ .login-btn {
+    background-color: $login-btn-color;
+    border-color: $login-btn-color;
   }
 }
 </style>

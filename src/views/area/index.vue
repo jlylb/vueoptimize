@@ -309,12 +309,12 @@ export default {
     },
   },
   created() {
+    const { aid } = this.$route.params
+    aid && ( this.search.aid = aid )
     this.getList()
   }
 }
 </script>
 <style lang="scss">
-
-
 </style>
 
