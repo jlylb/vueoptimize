@@ -1,24 +1,17 @@
 <template>
-  <div>
-    <my-echart v-model='echartsData' @init='barClick'></my-echart>
-</div>
+  <ve-histogram :data="chartData" :settings="chartSettings" :extend='chartExtend' :after-config='afterConfig' height='500px'></ve-histogram>
 </template>
 
 <script>
 
-import MyEchart from "@/components/Charts/myechart";
-
 export default {
-  components: { MyEchart },
+  components: {  },
     data() {
     return {
-      echartsData: {},
-      xfield: [],
-      yfield: [],
-      legend: [],
-      series: [],
-      colors: ['#5793f3', '#d14a61', '#675bba'],
-      chart: null
+      chartData: {},
+      chartSettings: {},
+      chartExtend: {},
+      colors: ['#5793f3', '#d14a61', '#675bba']
     }
   },
   props: {
@@ -32,143 +25,109 @@ export default {
   watch: {
     data: {
       handler(newval) {
-        console.log(newval, 'newval', Object.keys(newval))
-        this.handlerData(newval)
+        console.log(newval, 'watch newval')
+        this.handlerData()
       },
      // deep: true,
-      // immediate: true
+    // immediate: true
     }
   },
   methods: {
-    barClick(chart) {
-      this.chart = chart
-      chart.on('click', (params) => {
-        console.log(params)
-      })
-    },
-    getXField(data){
-      let name = data.name
-      let num = data.num
-      let names = []
-      for(let i=1; i<= num; i++) {
-        names.push(name+i)
-      }
-      return names
-    },
-    getFields(data){
-      let itemField = {}
-      // data.items = data.items||[]
-      data.items.forEach((item, key) => {
-        for(let fieldKey in item){
-          if(!itemField[fieldKey] && fieldKey!=='consta') {
-            itemField[fieldKey] = {}
-            itemField[fieldKey]['data'] = []
-          }
-          if(fieldKey!=='consta'){
-            itemField[fieldKey].name=item[fieldKey][fieldKey+'_name']
-            itemField[fieldKey].data.push(item[fieldKey][fieldKey+'_value'])
-          }
-        }
-      })
-      console.log(itemField)
-      const colors = this.colors;
-      const postions = ['left','right'];
-      const keys = Object.keys(itemField)
-      this.yfield = []
-      this.series = []
-      this.legend = []
-      for(let xkey in keys) {
-        let curKey = keys[xkey]
-        this.yfield.push({
-            type: 'value',
-            name: itemField[curKey].name,
-            min: 0,
-            max: 100,
-            position: postions[xkey],
-            // offset: 80,
-            axisLine: {
-                lineStyle: {
-                    color: colors[xkey]
-                }
-            },
-            axisLabel: {
-                formatter: '{value} ' + data.unit[curKey]
+    afterConfig (options) {
+      console.log(options, 'charts ....')
+       const { fields, unit, fieldDesc } = this.data
+       fields.map((field, index) => {
+
+          if(index > 1) {
+            options.series[index].yAxisIndex = index;
+
+            options.yAxis[index] = {
+              min: 0,
+              max: 100,
+              position: 'right',
+              offset: 80,
+              show: true,
+              type: 'value',
+              name: fieldDesc[field] +' '+ unit[field],
+              axisTick: {show: true},
             }
-        })
-        this.legend.push(itemField[curKey].name);
-        this.series.push({
-          ...itemField[curKey],
-          yAxisIndex: xkey,
-          type:'bar'
-        })
-        
-      }
-      console.log(this.yfield)
-      console.log(this.series)
-      //return itemField;
-    },
-    handlerData(data) {
-        if(Object.keys(data).length === 0) {
-           this.xfield = [];
-           this.yfield = [];
-           this.legend = [];
-           this.series = [];
-           if(this.chart) this.chart.clear()
-        }else{
-          this.xfield = this.getXField(data)
-          this.getFields(data)
-        }
-
-        this.echartsData = this.getData()
-    },
-    getData() {
-      let option = {
-        color: this.colors,
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {type: 'cross'}
-        },
-        legend: {
-          data: this.legend
-        },
-        grid: {
-          // right: '15%'
-        },
-        xAxis : [
-
-        ],
-        yAxis : this.yfield,
-        series: this.series
-      }
-      if(this.xfield.length > 0) {
-        option.xAxis = [
-          {
-              type : 'category',
-              data : this.xfield,
-              axisTick: {
-                  alignWithLabel: true,
-              },
-              axisLabel: {
-                interval: 0,
-                rotate: 30
+          }
+          options.yAxis[index].axisLine = {
+              show: true,
+              lineStyle: {
+                  color: this.colors[index]
               }
           }
-        ] 
-      }else{
-        option.xAxis = []
+       })
+       options.tooltip = {
+          trigger: 'axis',
+          axisPointer: {
+              type: 'cross'
+          }
+        }
+      console.log(options, 'charts .... after')
+      return options
+    },
+    handlerData() {
+      const { items, name, fields, unit, fieldDesc } = this.data
+      const  rows = []
+      const yAxisType = [], xAxisType = [ 'category' ], yAxisName = []
+      items.forEach((item, index) => {
+        let cur = { name: `${name}${index + 1}` }
+        fields.forEach((field) => {
+          cur[field] = item[field][field + '_value'];
+        })
+        rows.push(cur)
+      })
+
+      
+      let columns = [], labelMap = fieldDesc, right = [], axisSite = {}
+      let min = [], max = [], series = [], yAxis = []
+
+      fields.map((field, index) => {
+        min.push(0)
+        max.push(100)
+        yAxisType.push('value')
+        columns.push(field)
+        yAxisName.push(fieldDesc[field] +' '+ unit[field])
+        if(index > 0) {
+          right.push(field)
+        }
+      })
+      axisSite = { right }
+
+      columns = ['name'].concat(columns)
+
+      this.chartData = {
+        columns, rows
       }
 
-      return option
+      this.chartSettings = {
+        yAxisType, xAxisType, labelMap, min, max,  yAxisName, axisSite,
+      }
+
+      this.series = series
+
+      this.yAxis = yAxis
+
+      this.chartExtend = {
+        color: this.colors,
+        grid: {
+           left: '2%',
+           right: '8%'
+        },
+      }
     }
+
   },
   created() {
     console.log('chart created....', this.data)
   },
   mounted() {
-    this.handlerData(this.data)
+    this.handlerData()
   },
   destroyed() {
-    this.chart = null
+
   }
 }
 </script>

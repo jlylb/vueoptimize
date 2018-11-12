@@ -70,7 +70,7 @@
                 </div>
                 <div class="real-status">
                     <el-card class="box-card">
-                        <monitor-chart :data='deviceData' class='monitor-chart'></monitor-chart>
+                        <monitor-chart :data='deviceData'></monitor-chart>
                     </el-card>
                 </div>        
             </div>
@@ -87,7 +87,7 @@ import SearchForm from '@/views/common/components/searchForm'
 import DeviceFilter from '@/views/common/components/deviceFilter'
 import { fetchList, fetchDeviceRealData } from '@/api/monitor'
 
-import MonitorChart from './chart'
+import MonitorChart from './chart1'
 import { getDataValue } from '@/utils'
 
 export default {

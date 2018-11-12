@@ -1,20 +1,17 @@
 <template>
-<div>
-  <my-echart v-model='echartsData' @init='barClick'></my-echart>
-
-</div>
+  <ve-histogram :after-config='afterConfig' height='100vh' :events='chartEvents' :extend='echartsData'></ve-histogram>
 </template>
 
 <script>
 
-import MyEchart from "@/components/Charts/myechart";
-
 export default {
-  components: { MyEchart },
+  components: {  },
   data() {
     return {
       echartsData: {},
+      chartData: {},
       dataLevel: {},
+      chartEvents: {},
       levelTxt: {
         1: '一级告警',
         2: '二级告警',
@@ -44,13 +41,6 @@ export default {
     },
   },
   watch: {
-    // warn(newval) {
-    //   console.log(newval, 'warn')
-    //   this.dataLevel = this.formatWarnLevel(newval)
-    //   this.echartsData = this.getData()
-      
-    //   console.log(this.dataLevel)
-    // },
     warn: {
       handler(newval) {
         console.log(newval, 'warn ..............')
@@ -60,39 +50,46 @@ export default {
       immediate: true
     }
   },
-  created(){
-    this.echartsData = this.getData()
+  mounted(){
+      this.chartEvents = {
+        click: (params) => {
+          this.barClick(params)
+        }
+    }
+   // this.echartsData = this.getData()
   },
   methods: {
-    barClick(chart) {
-      chart.on('click', (params) => {
-        const options = this.echartsData
-        const barData = params.data
+    afterConfig(options) {
+      // console.log(this.getData(), 'after config.......1111111111111')
+     return this.echartsData
+    },
+    barClick(params) {
+      const options = this.echartsData
+      const barData = params.data
       console.log(params);
-        if(params.componentSubType==='bar') {
-           let { pdi_index: pdiIndex } = barData
-           options.title[1].text = '设备: '+ pdiIndex + ' 告警等级占比'
-           options.title[1].subtext = '总计 ' + params.value
-           let pdiItem = this.formatKeys()[pdiIndex]
-          let pdiLevel = this.formatWarnLevel(pdiItem)
-           console.log(pdiItem, pdiLevel);
-           options.series[2]['data'] = Object.values(pdiLevel).map(function (item) {
-                return {
-                    name: item.name,
-                    value: item.num,
-                    pdi_index: pdiIndex,
-                    lvl: item.lvl
-                }
-            })
-             console.log(options);
-            this.echartsData = options
-        }
-        if(params.componentSubType==='pie') {
-          let { pdi_index, lvl } = barData
+      if(params.componentSubType==='bar') {
+          let { pdi_index: pdiIndex } = barData
+          options.title[1].text = '设备: '+ pdiIndex + ' 告警等级占比'
+          options.title[1].subtext = '总计 ' + params.value
+          let pdiItem = this.formatKeys()[pdiIndex]
+        let pdiLevel = this.formatWarnLevel(pdiItem)
+          console.log(pdiItem, pdiLevel);
+          options.series[2]['data'] = Object.values(pdiLevel).map(function (item) {
+              return {
+                  name: item.name,
+                  value: item.num,
+                  pdi_index: pdiIndex,
+                  lvl: item.lvl
+              }
+          })
+            console.log(options);
+          this.echartsData = options
+      }
+      if(params.componentSubType==='pie') {
+        let { pdi_index, lvl } = barData
 
-          this.$router.push({name: 'api.report.index', params: {lvl: lvl, pdi_index}})
-        }
-      })
+        this.$router.push({name: 'api.report.index', params: {lvl: lvl, pdi_index}})
+      }
     },
     getMax() {
       return Math.max(...Object.values(this.getNum()))
@@ -198,6 +195,9 @@ export default {
           max: this.getMax(),
           splitLine: {
             show: false
+          },
+          axisTick: {
+            show: false
           }
          // data: times
         },
@@ -207,7 +207,7 @@ export default {
           axisLabel: {
             interval: 0,
             rotate: 30
-          }
+          },
         },
         grid: [
           {

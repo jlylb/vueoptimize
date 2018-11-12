@@ -1,12 +1,16 @@
 <template>
-   <ve-histogram :data="chartData"  :after-config='afterConfig' height='700px'></ve-histogram>
+  <div>
+    <my-echart v-model='echartsData' @init='barClick'></my-echart>
+</div>
 </template>
 
 <script>
+
+import MyEchart from "@/components/Charts/myechart";
 import { getDataValue, parseTime } from '@/utils'
 
 export default {
-  components: {  },
+  components: { MyEchart },
     data() {
     return {
       echartsData: {},
@@ -17,8 +21,7 @@ export default {
       series: [],
       optonsData: [],
       colors: ['#5793f3', '#d14a61', '#675bba'],
-      chart: null,
-      chartData: {}
+      chart: null
     }
   },
   props: {
@@ -39,8 +42,11 @@ export default {
     }
   },
   methods: {
-    afterConfig(options) {
-      return this.getData()
+    barClick(chart) {
+      this.chart = chart
+      chart.on('click', (params) => {
+        console.log(params)
+      })
     },
     getXField(data){
       let name = data.name
@@ -74,7 +80,6 @@ export default {
                 formatter: '{value} ' + data.unit[curKey]
             },
             axisLine: {
-                show: true,
                 lineStyle: {
                     color: colors[xkey]
                 }
@@ -131,7 +136,7 @@ export default {
           this.getFields(data)
         }
 
-        // this.echartsData = this.getData()
+        this.echartsData = this.getData()
     },
     getData() {
 
@@ -252,7 +257,6 @@ if(this.xfield.length > 0) {
           rotate: 30
         },
       axisLine:{//坐标轴轴线相关设置
-          show: true,
           lineStyle:{
             color:'#666',
             opacity:1

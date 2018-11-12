@@ -1,20 +1,16 @@
 <template>
-<div>
-  <my-echart v-model='echartsData' @init='barClick'></my-echart>
-
-</div>
+ <ve-histogram :after-config='afterConfig' height='100vh' :events='chartEvents' :extend='echartsData'></ve-histogram>
 </template>
 
 <script>
 
-import MyEchart from "@/components/Charts/myechart";
-
 export default {
-  components: { MyEchart },
+  components: {  },
   data() {
     return {
       echartsData: {},
       dataLevel: {},
+      chartEvents: {},
     }
   },
   props: {
@@ -43,23 +39,30 @@ export default {
     }
   },
   created(){
-    this.echartsData = this.getData()
+    // this.echartsData = this.getData()
+  },
+  mounted(){
+      this.chartEvents = {
+        click: (params) => {
+          this.barClick(params)
+        }
+    }
   },
   methods: {
-    barClick(chart) {
-      chart.on('click', (params) => {
+    afterConfig(options) {
+      // console.log(this.getData(), 'after config.......1111111111111')
+     return this.echartsData
+    },
+    barClick(params) {
+      const options = this.echartsData
+      const barData = params.data
+      console.log(params);
 
-        const options = this.echartsData
-        const barData = params.data
-        console.log(params);
+      if(params.componentSubType==='pie' || params.componentSubType==='bar') {
+        let { dpt_id } = barData
 
-        if(params.componentSubType==='pie' || params.componentSubType==='bar') {
-          let { dpt_id } = barData
-
-          this.$router.push({ name: 'api.deviceinfo.index', params: { dpt_id } })
-        }
-
-      })
+        this.$router.push({ name: 'api.deviceinfo.index', params: { dpt_id } })
+      }
     },
     getMax() {
       return this.total
@@ -119,6 +122,9 @@ export default {
           type: "value",
           max: this.getMax(),
           splitLine: {
+            show: false
+          },
+          axisTick: {
             show: false
           }
          // data: times
