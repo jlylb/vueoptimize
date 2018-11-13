@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <my-echart v-model='echartsData' @init='barClick'></my-echart>
-</div>
+  <ve-histogram :data="chartData"   height='500px' :extend='echartsData'></ve-histogram>
 </template>
 
 <script>
 
-import MyEchart from "@/components/Charts/myechart";
 import { getDataValue } from '@/utils'
 
 export default {
-  components: { MyEchart },
+  components: {  },
     data() {
     return {
+      chartData: {},
       echartsData: {},
       xfield: [],
       timeField: [],
@@ -283,6 +281,9 @@ if(this.xfield.length > 0) {
           }
         },
       splitLine: { //坐标轴在 grid 区域中的分隔线。
+          show: false,
+        },
+        axisTick: {
           show: false,
         }
       }

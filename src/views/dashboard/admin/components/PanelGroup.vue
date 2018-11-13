@@ -88,7 +88,7 @@ export default {
         this.$router.push({ name: 'api.deviceinfo.index' })
       }
       if(stype==='dapeng') {
-        this.$router.push({ name: 'api.area.index' })
+        this.$router.push({ name: 'api.area.index', params: { total: true } })
       }
     }
   }

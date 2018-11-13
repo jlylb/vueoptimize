@@ -1,5 +1,5 @@
 <template>
-   <ve-histogram :data="chartData"  :after-config='afterConfig' height='700px'></ve-histogram>
+   <ve-histogram :data="chartData"  :after-config='afterConfig' height='700px' :extend='echartsData'></ve-histogram>
 </template>
 
 <script>
@@ -40,7 +40,8 @@ export default {
   },
   methods: {
     afterConfig(options) {
-      return this.getData()
+      // return this.getData()
+      return options
     },
     getXField(data){
       let name = data.name
@@ -114,8 +115,8 @@ export default {
         }
 
         this.xfield = this.xfield.map((item) => {
-          return data.searchType=='day'?parseTime(item, '{y}-{m}-{d} {h}:{i}'):item
-        }).sort()
+          return item
+        }).sort().reverse()
 
     },
     handlerData(data) {
@@ -131,7 +132,7 @@ export default {
           this.getFields(data)
         }
 
-        // this.echartsData = this.getData()
+        this.echartsData = this.getData()
     },
     getData() {
 
@@ -277,7 +278,7 @@ if(this.xfield.length > 0) {
       xAxisIndex: [0],
       start: 0,
       end: '50%',
-      handleSize: 0,
+      handleSize: 8,
       bottom: 0,
       left: '10%',
       right: '10%',

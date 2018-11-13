@@ -4,35 +4,23 @@
         <device-filter @filter='getData'></device-filter>
         <div class='table-layout-inner' :style="{padding:0}" v-if='deviceData.items'>
             <div class='real-status-block' >
-                <div class="real-data" >
-                    <el-carousel :autoplay='true'  arrow='never' ref='realData' class='monitor-carousel'>
-                        <el-carousel-item v-for="(item, index) in deviceData.items" :key="index">
-                             <el-card class="box-card">
-                            <div class='content content-data'>
-                                <h3 class='title'>实时数据</h3>
-                                <el-row v-for='(params, idxParam) in  item' :key='idxParam' v-if='idxParam!=="consta"' class='content-status'>
-                                    <el-col :span="12">{{ params[idxParam + '_name'] + (index+1) }}</el-col>
-                                    <el-col :span="12">{{ params[idxParam + '_value'] }} {{ deviceData.unit[idxParam] }}</el-col>
-                                </el-row>
-                            </div>
-                             </el-card>
-                        </el-carousel-item>
-                    </el-carousel>
-                </div>
 
-                <div class="real-status">
-                    <el-carousel :autoplay='true'  arrow='never' ref='realStatus' class='monitor-carousel'>
+
+                <div class="rw-100">
+                    <el-carousel :autoplay='false'  arrow='never' ref='realStatus' class='monitor-carousel'>
                         <el-carousel-item v-for="(item, index) in deviceData.items" :key="index">
                             <el-card class="box-card">
                             <div class='content'>
                                 <h3 class='title'>实时状态</h3>
                                 <el-row v-for='(field, fieldIndex) in  deviceData.fields' :key='field' v-if='field!=="consta"' class='content-status'>
-                                    <el-col :span="4">{{ item[field]['hwarn_name'] }}</el-col>
-                                    <el-col :span="4"> <el-tag :type='item[field]["hwarn_value"]==0?"primary":"danger"' size='mini'>{{ item[field]['hwarn_value']==0?'正常':'过高' }}</el-tag></el-col>
-                                    <el-col :span="4">{{ item[field]['lwarn_name'] }}</el-col>
-                                    <el-col :span="4"> <el-tag :type='item[field]["lwarn_value"]==0?"primary":"danger"' size='mini'>{{ item[field]['lwarn_value']==0?'正常':'过低' }}</el-tag></el-col>
-                                    <el-col :span="4" v-if='fieldIndex==0'>{{ item['consta']['consta_name'] }}</el-col> 
-                                    <el-col :span="4" v-if='fieldIndex==0'> <el-tag :type='item["consta"]["consta_value"]==0?"primary":"danger"' size='mini'>{{ item['consta']['consta_value']==0?'正常':'断线' }}</el-tag></el-col>
+                                    <el-col :span="3">{{ item[field][field + '_name'] + (index+1) }}</el-col>
+                                    <el-col :span="3"><el-tag>{{ item[field][field + '_value'] }} {{ deviceData.unit[field] }}</el-tag></el-col>
+                                    <el-col :span="3">{{ item[field]['hwarn_name'] }}</el-col>
+                                    <el-col :span="3"> <el-tag :type='item[field]["hwarn_value"]==0?"primary":"danger"' size='mini'>{{ item[field]['hwarn_value']==0?'正常':'过高' }}</el-tag></el-col>
+                                    <el-col :span="3">{{ item[field]['lwarn_name'] }}</el-col>
+                                    <el-col :span="3"> <el-tag :type='item[field]["lwarn_value"]==0?"primary":"danger"' size='mini'>{{ item[field]['lwarn_value']==0?'正常':'过低' }}</el-tag></el-col>
+                                    <el-col :span="3" v-if='fieldIndex==0'>{{ item['consta']['consta_name'] }}</el-col> 
+                                    <el-col :span="3" v-if='fieldIndex==0'> <el-tag :type='item["consta"]["consta_value"]==0?"primary":"danger"' size='mini'>{{ item['consta']['consta_value']==0?'正常':'断线' }}</el-tag></el-col>
                                 </el-row>
                             </div>
                             </el-card>
@@ -44,7 +32,8 @@
             <div class='real-status-block'>
                 <div class="real-data" >
                     <el-card class="box-card">
-                        <div class='content'>
+                        <div class='content content-align'>
+                          <div class='content-inner'>
                             <el-row class='content-status'>
                                 <el-col :span="24">
                                 <el-dropdown trigger="click" @command="handleCommand" size="medium">
@@ -58,13 +47,22 @@
                                 </el-col>
                             </el-row>
                                 <el-row v-for='(params, idxParam) in  firstData' :key='idxParam' v-if='idxParam!=="undefined" && idxParam!=="consta"' class='content-status-choose'> 
-                                    <el-col :span="12"><svg-icon  :icon-class="deviceData.icons ? deviceData.icons[idxParam]: ''" /> 当前{{ params[idxParam + '_name'] }}</el-col>
-                                    <el-col :span="12">{{ params[idxParam + '_value'] }} {{ deviceData.unit && deviceData.unit[idxParam] }}</el-col>
+                                    <el-col :span="12">
+                                        <span class='icon'><svg-icon  :icon-class="deviceData.icons ? deviceData.icons[idxParam]: ''" class='title-icon' /> </span>
+                                        当前{{ params[idxParam + '_name'] }}
+                                    </el-col>
+                                    <el-col :span="12" class='title-desc'>{{ params[idxParam + '_value'] }} {{ deviceData.unit && deviceData.unit[idxParam] }}</el-col>
                                 </el-row>
                                 <el-row class='content-status-choose'> 
-                                    <el-col :span="12"><svg-icon  icon-class="time" /> 更新时间</el-col> 
-                                    <el-col :span="12">{{ deviceData.rd_updatetime }}</el-col> 
+                                    <el-col :span="12">
+                                        <span class='icon'>
+                                            <svg-icon  icon-class="time" class='title-icon' />
+                                        </span> 
+                                        更新时间
+                                    </el-col> 
+                                    <el-col :span="12" class='title-desc'>{{ deviceData.rd_updatetime }}</el-col> 
                                 </el-row>
+                            </div>    
                         </div>
                     </el-card>
                 </div>
@@ -147,7 +145,6 @@ export default {
             this.firstIndex = command
             let index = command-1
             this.firstData = this.deviceData.items[index]
-            this.$refs.realData.setActiveItem(index)
             this.$refs.realStatus.setActiveItem(index)
         },
 
@@ -159,13 +156,31 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+@import 'src/styles/variables.scss';
 .table-layout-inner {
   background-color: #fff;
   padding: 20px 0;
   min-height: 800px;
   position: relative;
 }
+.icon {
+  display: inline-block;
+  border-radius: 100%;
+  border: 2px solid $baseColor;
+  color: $baseColor;
+  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  /deep/ .title-icon {
+    vertical-align: middle;
+  }
+}
 
+.title-desc {
+  line-height: 36px;
+  text-align: center;
+}
 .real-status-block {
   display: flex;
 }
@@ -175,12 +190,25 @@ export default {
 .real-status {
   width: 70%;
 }
+.rw-100 {
+  width: 100%;
+}
 .content {
   display: flex;
   justify-content: center;
-  align-items: center;
   flex-wrap: wrap;
   height: 100%;
+}
+.content-align {
+  align-items: center;
+  color: $baseColor;
+}
+.content-inner {
+  width: 80%;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 .content-data {
   //   flex-direction: column;
@@ -196,7 +224,7 @@ export default {
 .content-status-choose {
   width: 100%;
   /deep/ .el-col {
-    text-align: center;
+    // text-align: center;
     margin: 10px 0;
   }
 }

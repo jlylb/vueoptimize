@@ -10,6 +10,7 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
+                <slot :name='myitem.name' :data='item'></slot>
                 </el-option>
             </el-select>
 

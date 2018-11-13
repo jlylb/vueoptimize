@@ -122,18 +122,18 @@ $activeColor: #e6a23c;
   align-items: center;
 }
 
-.selectDate /deep/ {
-  & .el-radio__input.is-checked + .el-radio__label {
-    color: $activeColor;
-  }
-  & .el-radio__input.is-checked .el-radio__inner {
-    border-color: $activeColor;
-    background: $activeColor;
-  }
-  & .el-radio.is-bordered.is-checked {
-    border-color: $activeColor;
-  }
-}
+// .selectDate /deep/ {
+//   & .el-radio__input.is-checked + .el-radio__label {
+//     color: $activeColor;
+//   }
+//   & .el-radio__input.is-checked .el-radio__inner {
+//     border-color: $activeColor;
+//     background: $activeColor;
+//   }
+//   & .el-radio.is-bordered.is-checked {
+//     border-color: $activeColor;
+//   }
+// }
 
 .table-list {
   width: 100%;

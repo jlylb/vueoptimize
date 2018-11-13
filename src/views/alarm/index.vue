@@ -1,9 +1,19 @@
 <template>
     <div class='table-layout'>
 
-        <device-filter ref='deviceFilter' @filter='getData' ></device-filter>
+        <!-- <device-filter ref='deviceFilter' @filter='getData' ></device-filter> -->
+
+        <device-filter-three ref='deviceFilter' @filter='getData' ></device-filter-three>
 
         <div class='table-layout-inner' v-if='Object.keys(deviceData).length > 0'>
+              <el-alert
+                :title="tipText"
+                class='tip'
+                :type="tipType"
+                :closable='false'
+                center
+                show-icon>
+            </el-alert>
             <alarm-chart :data='deviceData' class='monitor-chart'></alarm-chart>
 
         </div>
@@ -17,15 +27,26 @@
 
 import SearchForm from '@/views/common/components/searchForm'
 import {  fetchDeviceRealData } from '@/api/monitor'
-import DeviceFilter from '@/views/common/components/deviceFilter'
+// import DeviceFilter from '@/views/common/components/deviceFilter'
+import DeviceFilterThree from '@/views/common/components/deviceFilterThree'
 import AlarmChart from './chart.vue'
 
 export default {
-    components: {   DeviceFilter, AlarmChart },
+    components: { AlarmChart, DeviceFilterThree },
     data() {
         return {
             deviceData: {}
         }
+    },
+    computed: {
+        tipType() {
+            const { rd_NetCom } = this.deviceData
+            return rd_NetCom == 0 ? 'success' : 'error'
+        },
+        tipText() {
+            const { rd_NetCom } = this.deviceData
+            return rd_NetCom == 0 ? '设备网络连接正常' : '设备网络连接断开'
+        },
     },
     methods: {
         getData(data) {
@@ -46,6 +67,9 @@ export default {
 .monitor-chart {
   width: 100%;
   min-height: 500px;
+}
+.tip {
+  height: 60px;
 }
 </style>
 

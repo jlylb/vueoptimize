@@ -309,8 +309,8 @@ export default {
     },
   },
   created() {
-    const { aid } = this.$route.params
-    aid && ( this.search.aid = aid )
+    this.search = Object.assign({}, this.search, this.$route.params)
+    console.log(this.search,this.$route.params, 'search ......')
     this.getList()
   }
 }
