@@ -271,7 +271,7 @@ export default {
     setRules() {
       var validArea = (rule, value, callback) => {
         console.log(this.selectarea)
-        if(this.selectarea.province || this.selectarea.city){
+        if(this.selectarea.province && this.selectarea.city){
           callback()
         } else {
           callback(new Error('请选择区域'))

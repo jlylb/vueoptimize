@@ -7,7 +7,7 @@ import router from '../router'
 // create an axios instance
 const service = axios.create({
   baseURL: '/api', // api的base_url
-  // timeout: 5000, // request timeout
+  timeout: 10000, // request timeout
   showLoading: true
 })
 
