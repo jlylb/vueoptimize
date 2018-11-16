@@ -17,54 +17,53 @@
 
 
 <script>
-import PanelGroup from "./components/PanelGroup";
-import { fetchList } from "@/api/dashboard";
+import PanelGroup from './components/PanelGroup'
+import { fetchList } from '@/api/dashboard'
 
 export default {
-  name: "dashboard-admin",
+  name: 'dashboard-admin',
   components: {
-    PanelGroup,
+    PanelGroup
   },
   data() {
-
     this.chartSettings1 = {
-        radius: 200 ,
-        offsetY: 300,
-        roseType: 'area',
-        labelMap: {
-          lvl: '告警等级',
-          num: '告警数量',
-        },
+      radius: 200,
+      offsetY: 300,
+      roseType: 'area',
+      labelMap: {
+        lvl: '告警等级',
+        num: '告警数量'
+      }
     }
     this.extend1 = {
-      color: ['#C03639', '#ff9900', '#19be6b', '#2db7f5'],
+      color: ['#C03639', '#ff9900', '#19be6b', '#2db7f5']
     }
     this.chartSettings3 = {
-        position: 'china',
-        label: false,
-        itemStyle: {
-          normal: {
-            areaColor: '#36a3f7',
-            borderColor: '#fff',
-            color: '#C03639',
-          },
-          emphasis: {
-              areaColor: '#0c60a0',
-              borderWidth: 0,
-              label: {
-                show: false,
-                color: '#fff',
-              }
-          },
+      position: 'china',
+      label: false,
+      itemStyle: {
+        normal: {
+          areaColor: '#36a3f7',
+          borderColor: '#fff',
+          color: '#C03639'
         },
-        labelMap: {
-          label: '大棚区域分布',
-          num: '大棚',
-        },
-        zoom: 1.2,
-      }
+        emphasis: {
+          areaColor: '#0c60a0',
+          borderWidth: 0,
+          label: {
+            show: false,
+            color: '#fff'
+          }
+        }
+      },
+      labelMap: {
+        label: '大棚区域分布',
+        num: '大棚'
+      },
+      zoom: 1.2
+    }
     this.extend3 = {
-      color: ['#19be6b', '#C03639', '#ff9900', '#2db7f5'],
+      color: ['#19be6b', '#C03639', '#ff9900', '#2db7f5']
     }
 
     return {
@@ -79,10 +78,10 @@ export default {
     }
   },
   methods: {
-     afterConfig (options) {
-        console.log(options, 'charts ....')
-        return options
-      }
+    afterConfig(options) {
+      console.log(options, 'charts ....')
+      return options
+    }
   },
   mounted() {
 
@@ -91,39 +90,39 @@ export default {
     this.chartEvents1 = {
       click: (v) => {
         let lvl = null
-        const { name } = v.data 
+        const { name } = v.data
         this.warns.forEach((item) => {
-          if(item.lvl===name) {
+          if (item.lvl === name) {
             lvl = item.plvl
             return
           }
         })
 
-        lvl && this.$router.push({ name: 'api.realwarn.index', params: { lvl } })
+        v.value > 0 && this.$router.push({ name: 'api.realwarn.index', params: { lvl }})
       }
     }
-  this.chartEvents3 = {
+    this.chartEvents3 = {
       click: (v) => {
         let aid = null
-        const { name } = v.data 
+        const { name } = v.data
         this.dapeng.forEach((item) => {
-          if(item.label===name) {
+          if (item.label === name) {
             aid = item.aid
             return
           }
         })
 
-        aid && this.$router.push({ name: 'api.area.index', params: { aid } })
+        aid && this.$router.push({ name: 'api.area.index', params: { aid }})
       }
     }
     fetchList().then((res) => {
       const { dpTotal, warnTotal, deviceTotal, warns, dapeng } = res.data
       this.chartData1 = {
-          columns: ['lvl', 'num'],
-          rows: warns
+        columns: ['lvl', 'num'],
+        rows: warns
       }
       this.chartData3 = {
-        columns: ['label', 'num',],
+        columns: ['label', 'num'],
         rows: dapeng
       }
       this.dapeng = dapeng
@@ -131,10 +130,9 @@ export default {
       this.dapengTotal = dpTotal
       this.warnTotal = warnTotal
       this.deviceTotal = deviceTotal
-
     })
   }
-};
+}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>

@@ -1,6 +1,9 @@
 import { Message } from 'element-ui'
 
 export default function openMessage(res) {
+  if (res && res.response && res.response.status !== 200) {
+    return
+  }
   const { status = 0, msg = '未知错误' } = res.data || {}
   const statusType = status === 1 ? 'success' : 'error'
   Message({

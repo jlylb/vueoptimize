@@ -6,14 +6,14 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 import '@/styles/index.scss' // global css
 
-import 'animate.css'
+// import 'animate.css'
 
 import App from './App'
 import router from './router'
 import store from './store'
 
-import VCharts from 'v-charts'
-Vue.use(VCharts)
+// import VCharts from 'v-charts'
+// Vue.use(VCharts)
 
 import i18n from './lang' // Internationalization
 import './icons' // icon

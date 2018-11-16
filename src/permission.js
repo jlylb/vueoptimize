@@ -4,6 +4,7 @@ import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // getToken from cookie
+import Vue from 'vue'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -38,6 +39,7 @@ router.beforeEach((to, from, next) => {
             store.dispatch('GenerateRoutes', myroutes).then(() => {
               // 根据roles权限生成可访问的路由表
               router.addRoutes(store.getters.addRouters)
+              console.log(to.name, to.path === '/')
               next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
             })
           })
@@ -50,7 +52,10 @@ router.beforeEach((to, from, next) => {
           })
       } else {
         // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓
-        if (hasPermission(store.getters.roles, to.meta.roles)) {
+        const notFound = to.name && to.path === '/'
+        if (notFound) {
+          next({ path: '/404', replace: true })
+        } else if (hasPermission(store.getters.roles, to.meta.roles)) {
           next() //
         } else {
           next({ path: '/401', replace: true, query: { noGoBack: true }})

@@ -11,11 +11,14 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
-function resolve (dir) {
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin
+
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 
-const env = require('../config/'+process.env.env_config+'.env')
+const env = require('../config/' + process.env.env_config + '.env')
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -32,6 +35,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
   plugins: [
+    new BundleAnalyzerPlugin(),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
@@ -51,13 +55,13 @@ const webpackConfig = merge(baseWebpackConfig, {
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
       // increasing file size: https://github.com/vuejs-templates/webpack/issues/1110
-      allChunks: false,
+      allChunks: false
     }),
     // Compress extracted CSS. We are using this plugin so that possible
     // duplicated CSS from different components can be deduped.
     new OptimizeCSSPlugin({
       cssProcessorOptions: config.build.productionSourceMap
-        ? { safe: true, map: { inline: false } }
+        ? { safe: true, map: { inline: false }}
         : { safe: true }
     }),
     // generate dist index.html with correct asset hash for caching.
@@ -87,14 +91,12 @@ const webpackConfig = merge(baseWebpackConfig, {
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      minChunks (module) {
+      minChunks(module) {
         // any required modules inside node_modules are extracted to vendor
         return (
           module.resource &&
           /\.js$/.test(module.resource) &&
-          module.resource.indexOf(
-            path.join(__dirname, '../node_modules')
-          ) === 0
+          module.resource.indexOf(path.join(__dirname, '../node_modules')) === 0
         )
       }
     }),
@@ -117,24 +119,27 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.optimize.CommonsChunkPlugin({
       async: 'echarts',
       minChunks(module) {
-        var context = module.context;
-        return context && (context.indexOf('echarts') >= 0 || context.indexOf('zrender') >= 0);
+        var context = module.context
+        return (
+          context &&
+          (context.indexOf('echarts') >= 0 || context.indexOf('zrender') >= 0)
+        )
       }
     }),
     // split xlsx into its own file
     new webpack.optimize.CommonsChunkPlugin({
       async: 'xlsx',
       minChunks(module) {
-        var context = module.context;
-        return context && (context.indexOf('xlsx') >= 0);
+        var context = module.context
+        return context && context.indexOf('xlsx') >= 0
       }
     }),
-     // split codemirror into its own file
-     new webpack.optimize.CommonsChunkPlugin({
+    // split codemirror into its own file
+    new webpack.optimize.CommonsChunkPlugin({
       async: 'codemirror',
       minChunks(module) {
-        var context = module.context;
-        return context && (context.indexOf('codemirror') >= 0);
+        var context = module.context
+        return context && context.indexOf('codemirror') >= 0
       }
     }),
 
@@ -157,9 +162,7 @@ if (config.build.productionGzip) {
       asset: '[path].gz[query]',
       algorithm: 'gzip',
       test: new RegExp(
-        '\\.(' +
-        config.build.productionGzipExtensions.join('|') +
-        ')$'
+        '\\.(' + config.build.productionGzipExtensions.join('|') + ')$'
       ),
       threshold: 10240,
       minRatio: 0.8
@@ -168,7 +171,8 @@ if (config.build.productionGzip) {
 }
 
 if (config.build.bundleAnalyzerReport) {
-  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+    .BundleAnalyzerPlugin
   webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 

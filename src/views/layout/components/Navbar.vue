@@ -59,10 +59,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
-import LangSelect from '@/components/LangSelect'
-import ThemePicker from '@/components/ThemePicker'
 import ShortCut from './ShortCut'
 import { getImageUrl } from '@/utils'
 import { checkAbility } from '@/utils/permission'
@@ -71,10 +68,7 @@ export default {
   components: {
     Breadcrumb,
     Hamburger,
-    ErrorLog,
     Screenfull,
-    LangSelect,
-    ThemePicker,
     ShortCut
   },
   data() {

@@ -39,10 +39,10 @@ import { isvalidUsername } from '@/utils/validate'
 // import LangSelect from '@/components/LangSelect'
 import openMessage from '@/utils/message.js'
 import { loginByUsername } from '@/api/login'
-import {  setToken } from '@/utils/auth'
+import { setToken } from '@/utils/auth'
 
 export default {
-  components: {  },
+  components: { },
   name: 'login',
   data() {
     const validateUsername = (rule, value, callback) => {
@@ -89,11 +89,10 @@ export default {
             this.loading = false
             this.$router.push({ path: '/' })
           }).catch((res) => {
-            console.log(res,'login catch ......')
+            // console.log(res,'login catch ......')
             openMessage(res)
             this.loading = false
           })
-
         } else {
           console.log('error submit!!')
           return false
@@ -111,7 +110,7 @@ export default {
 
   },
   mounted() {
-  
+
   }
 }
 

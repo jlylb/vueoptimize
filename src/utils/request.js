@@ -147,10 +147,16 @@ service.interceptors.response.use(
     if (res.status === 403) {
       errorMsg = '用户没有权限'
     }
+    if (res.status === 404) {
+      errorMsg = '页面不存在'
+    }
+    if (res.status === 504) {
+      errorMsg = '请求超时'
+    }
     if (res.status === 500) {
       errorMsg = '服务器程序运行异常,请联系管理员'
     }
-    console.log('err' + error) // for debug
+    console.log('err', error, errorMsg) // for debug
     Message({
       message: errorMsg,
       type: 'error',
