@@ -140,7 +140,9 @@ service.interceptors.response.use(
       for (const msgKey in res.data) {
         errorMsg = Array.isArray(res.data[msgKey])
           ? res.data[msgKey][0]
-          : res.data[msgKey]
+          : res.data.msg
+            ? res.data.msg
+            : res.data[msgKey]
         break
       }
     }
