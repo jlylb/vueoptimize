@@ -79,12 +79,12 @@
 <script>
 import lists from '../mixins/lists'
 import SearchForm from './searchForm'
-// import stable from "@/directive/stable";
+import stable from '@/directive/stable'
 
 export default {
   mixins: [lists],
   components: { SearchForm },
-  directives: {},
+  directives: { stable },
   props: {
     customColumns: {
       type: Object,

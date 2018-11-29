@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 export default {
   bind: (el, binding, vnode) => {
-    const { data } = vnode.context
+    // const { data } = vnode.context
     console.log(vnode)
 
     Vue.nextTick(() => {

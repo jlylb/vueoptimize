@@ -48,7 +48,7 @@ export default {
           this.data = res.data.data.data
           this.total = res.data.data.total
           this.labels = res.data.desc
-          this.columns = this.labels
+          this.columns = this.labels ? this.labels : {}
           console.log(this.data)
         })
         .catch(res => {})
