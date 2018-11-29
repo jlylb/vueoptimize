@@ -1,53 +1,37 @@
 <template>
-    <div>
-        <table-list
-        :custom-columns='columns'
-        :form-columns='searchColumns'
-        :table-data='data'
-        :table-props='formProps'
-        :table-on-events='tableEvents'
-        :total='total'
-        :search-data='search'
-        @list-data='getList'
-        :hide-action='true'
-        :is-export='false'
-        :show-expand='false'>
-        <template  slot='add_search_button'>
-            <el-button
-            type="primary"
-            icon='el-icon-circle-check-outline'
-            @click="handleSave">保存</el-button>
-        </template>
+  <div>
+    <table-list
+      :custom-columns="columns"
+      :form-columns="searchColumns"
+      :table-data="data"
+      :table-props="formProps"
+      :table-on-events="tableEvents"
+      :total="total"
+      :search-data="search"
+      @list-data="getList"
+      :hide-action="true"
+      :is-export="false"
+      :show-expand="false"
+    >
+      <template slot="add_search_button">
+        <el-button type="primary" icon="el-icon-circle-check-outline" @click="handleSave">保存</el-button>
+      </template>
 
-        <template slot-scope="{ data }" slot='area'>
-            {{ data.area.AreaName }}
-        </template>
+      <template slot-scope="{ data }" slot="area">{{ data.area ? data.area.AreaName: '' }}</template>
 
-        <template slot-scope="{ data }" slot='sms'>
+      <template slot-scope="{ data }" slot="sms">
+        <el-checkbox v-model="data.sms" @change="selectCheckbox(data, $event, 'sms')"></el-checkbox>
+      </template>
 
-           <el-checkbox 
-           v-model="data.sms"
-           @change='selectCheckbox(data, $event, "sms")'>
-           </el-checkbox>
-        </template>
+      <template slot-scope="{ data }" slot="email">
+        <el-checkbox v-model="data.email" @change="selectCheckbox(data, $event, 'email')"></el-checkbox>
+      </template>
 
-        <template slot-scope="{ data }" slot='email'>
-           <el-checkbox 
-           v-model="data.email" 
-           @change='selectCheckbox(data, $event, "email")'>
-           </el-checkbox>
-        </template>
-
-        <template slot-scope="{ data }" slot='audio'>
-           <el-checkbox 
-           v-model="data.audio"
-           @change='selectCheckbox(data, $event, "audio")'>
-           </el-checkbox>
-        </template>
-
-        </table-list>
-
-    </div>
+      <template slot-scope="{ data }" slot="audio">
+        <el-checkbox v-model="data.audio" @change="selectCheckbox(data, $event, 'audio')"></el-checkbox>
+      </template>
+    </table-list>
+  </div>
 </template>
 
 <script>
@@ -69,17 +53,15 @@ export default {
       data: [],
       sms: false,
       email: false,
-      audio: false, 
+      audio: false,
       fields: {
         sms: 1,
         email: 2,
-        audio: 4,
+        audio: 4
       },
-      formColumns: [
-
-      ],
+      formColumns: [],
       searchColumns: [
-        { name: 'pdi_code', label: '设备编号', props: { clearable: true }},
+        { name: 'pdi_code', label: '设备编号', props: { clearable: true }}
       ],
 
       formProps: {
@@ -98,7 +80,7 @@ export default {
         area: {
           label: '区域名称',
           columnKey: 'area',
-          filters: null
+          filters: []
         },
         sms: {
           label: '短信',
@@ -124,7 +106,7 @@ export default {
         action: {
           'min-width': '150',
           label: '操作'
-        },
+        }
       },
       total: 0,
       search: {
@@ -140,55 +122,53 @@ export default {
   },
   watch: {
     areaName(newVal) {
-      console.log(newVal,'watch newVal.....')
+      console.log(newVal, 'watch newVal.....')
     },
     saveData: {
       handler(newVal) {
-        console.log(newVal,'watch save data.....')
-      },
-    },
+        console.log(newVal, 'watch save data.....')
+      }
+    }
   },
   methods: {
-    filterArea(c){
-      this.search = Object.assign({}, this.search, c);
+    filterArea(c) {
+      this.search = Object.assign({}, this.search, c)
       this.getList()
     },
     getList(query) {
       this.reset()
-      fetchList(query || this.search).then((res) => {
-        this.data = this.formatData(res.data.data.data)
-        this.total = res.data.data.total
-        if(!this.areaName) {
-          this.areaName = res.data.areaName
-          let columns = this.columns
-          columns.area.filters = this.areaName
-          this.columns = columns
-        }
-
-      }).catch((res) => {
-
-      })
+      fetchList(query || this.search)
+        .then(res => {
+          this.data = this.formatData(res.data.data.data)
+          this.total = res.data.data.total
+          if (!this.areaName) {
+            this.areaName = res.data.areaName
+            const columns = this.columns
+            columns.area.filters = this.areaName
+            this.columns = columns
+          }
+        })
+        .catch(res => {})
     },
     formatColumn(field) {
-      this.data = this.data.map((item) => {
-        item[field] = this[field];
+      this.data = this.data.map(item => {
+        item[field] = this[field]
         return item
       })
     },
     selectCheckbox(data, bVal, field) {
-      let index = this.data.indexOf(data)
-      let curData = [ ...this.data ]
+      const index = this.data.indexOf(data)
+      const curData = [...this.data]
       curData[index][field] = bVal
       this.data = curData
-      let selectedLength = this.data.filter((item) => item[field] > 0 )
+      const selectedLength = this.data.filter(item => item[field] > 0)
 
-      this[field] = ( this.data.length === selectedLength.length )
-
+      this[field] = this.data.length === selectedLength.length
     },
     handleSave() {
-      const data = this.data.map((item)=>{
-         let {pdi_index, sms=false, email=false, audio=false} = item
-         return { pdi_index, type: {sms, email, audio} }
+      const data = this.data.map(item => {
+        const { pdi_index, sms = false, email = false, audio = false } = item
+        return { pdi_index, type: { sms, email, audio }}
       })
       this.$confirm('是否保存告警设置?', '提示', {
         confirmButtonText: '确定',
@@ -196,7 +176,7 @@ export default {
         type: 'info'
       })
         .then(() => {
-          saveWarnSetting({ data, uid: this.uid }).then((res)=>{
+          saveWarnSetting({ data, uid: this.uid }).then(res => {
             openMessage(res)
           })
         })
@@ -206,10 +186,9 @@ export default {
             message: '已取消保存'
           })
         })
-
     },
     reset() {
-      for(let field in this.fields) {
+      for (const field in this.fields) {
         this[field] = false
       }
       this.data = []
@@ -217,44 +196,48 @@ export default {
     render(h, column) {
       const field = column.property
       const vm = this
-      return h('el-checkbox', {
-        props: 
-          {
-            value: vm[field],
+      return h(
+        'el-checkbox',
+        {
+          props: {
+            value: vm[field]
           },
-        on: {
-          change: function(bVal, ev) {
-            vm.$emit('change', bVal);
-            vm[field] = bVal
-            vm.formatColumn(field)
+          on: {
+            change: function(bVal, ev) {
+              vm.$emit('change', bVal)
+              vm[field] = bVal
+              vm.formatColumn(field)
+            }
           }
         },
-      }, column.label)
+        column.label
+      )
     },
     formatData(data) {
-      if(data.length === 0 ) return []
-      let fieldLen = {}
-      data = data.map((item) => {
-        let val = +item.Wn_notifytype
-        for(let field in this.fields) {
+      if (data.length === 0) return []
+      const fieldLen = {}
+      data = data.map(item => {
+        const val = +item.Wn_notifytype
+        for (const field in this.fields) {
           fieldLen[field] = fieldLen[field] || 0
-          let isBool = (val & this.fields[field]) > 0
+          const isBool = (val & this.fields[field]) > 0
           item[field] = isBool
-          if(isBool) fieldLen[field] += 1 
+          if (isBool) fieldLen[field] += 1
         }
         return item
       })
-      let total = data.length
-      for(let field in this.fields) {
+      const total = data.length
+      for (const field in this.fields) {
         this[field] = fieldLen[field] === total
       }
       console.log(this.sms, this.email, this.audio, 'formating ....')
       return data
-    },
-
+    }
   },
   created() {
-    this.search = Object.assign({}, this.search, this.$route.params, {uid: this.uid});
+    this.search = Object.assign({}, this.search, this.$route.params, {
+      uid: this.uid
+    })
     this.getList()
   }
 }
