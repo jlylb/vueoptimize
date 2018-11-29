@@ -77,67 +77,67 @@
 </template>
 
 <script>
-import lists from "../mixins/lists";
-import SearchForm from "./searchForm";
-import stable from "@/directive/stable";
+import lists from '../mixins/lists'
+import SearchForm from './searchForm'
+// import stable from "@/directive/stable";
 
 export default {
   mixins: [lists],
   components: { SearchForm },
-  directives: { stable },
+  directives: {},
   props: {
     customColumns: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     },
     labels: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     },
     tableProps: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     },
     tableOnEvents: {
       type: Object,
       default() {
-        return {};
+        return {}
       }
     },
     formColumns: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     tableData: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     total: {
       type: Number,
       default() {
-        return 0;
+        return 0
       }
     },
     columnLength: {
       type: Number,
       default() {
-        return 8;
+        return 8
       }
     },
     pageSizes: {
       type: Array,
       default() {
-        return [10, 20, 30, 50];
+        return [10, 20, 30, 50]
       }
     },
     searchData: {
@@ -146,7 +146,7 @@ export default {
         return {
           page: 1,
           pageSize: 10
-        };
+        }
       }
     },
     hideAction: {
@@ -168,21 +168,21 @@ export default {
   },
   watch: {
     tableData(newval) {
-      console.log(newval, "table list ....");
-      this.data = newval;
-      this.loadingText = newval.length > 0 ? "数据加载中...." : "没有数据";
-      this.setColumns();
+      console.log(newval, 'table list ....')
+      this.data = newval
+      this.loadingText = newval.length > 0 ? '数据加载中....' : '没有数据'
+      this.setColumns()
     },
     searchData(newval) {
-      this.search = newval;
-      console.log(this.search, "muted search");
+      this.search = newval
+      console.log(this.search, 'muted search')
     }
   },
   created() {
-    console.log(this.tableData, "created list .....");
-    this.setColumns();
+    console.log(this.tableData, 'created list .....')
+    this.setColumns()
   }
-};
+}
 </script>
 <style lang="scss">
 .page-container {

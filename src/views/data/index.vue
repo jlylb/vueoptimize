@@ -1,22 +1,20 @@
 <template>
-    <div class='table-layout'>
-        <table-list
-        :custom-columns='columns'
-        :form-columns='searchColumns'
-        :table-data='data'
-        :total='total'
-        :labels='labels'
-        :search-data='search'
-        :hide-action='true'
-        @list-data='getList'>
-            <template  slot='add_search_button'>
-                <el-button
-                type="primary"
-                icon='el-icon-back'
-                @click="handleBack">返回</el-button>
-            </template>
-        </table-list>
-    </div>
+  <div class="table-layout">
+    <table-list
+      :custom-columns="columns"
+      :form-columns="searchColumns"
+      :table-data="data"
+      :total="total"
+      :labels="labels"
+      :search-data="search"
+      :hide-action="true"
+      @list-data="getList"
+    >
+      <template slot="add_search_button">
+        <el-button type="primary" icon="el-icon-back" @click="handleBack">返回</el-button>
+      </template>
+    </table-list>
+  </div>
 </template>
 
 <script>
@@ -30,48 +28,33 @@ export default {
       data: [],
       searchColumns: [
         { name: 'pdi_index', label: '设备编号', props: { clearable: true }},
-        { name: 'rd_updatetime', label: '时间', type: 'date'},
+        { name: 'rd_updatetime', label: '时间', type: 'date' }
       ],
 
-      columns: {
-
-      },
+      columns: {},
       total: 0,
       search: {
         page: 1,
         pageSize: 10
       },
 
-      labels: {
-
-      },
+      labels: {}
     }
   },
   methods: {
-
     getList() {
-      
-      fetchList({...this.search, ...this.$route.params}).then((res) => {
-        this.data = res.data.data.data
-        this.total = res.data.data.total
-        this.labels = res.data.desc
-        
-        console.log(this.data)
-      }).catch((res) => {
-
-      })
-    },
-    formatLabel(descs) {
-        let tableArr = this.$route.params.table.split('_')
-        let prefix = tableArr[1] === 'realdata' ? 'rd' : 'hd'
-        descs.forEach((item) => {
-            let field = prefix + '_' + item.dp_paramname
-            let label = item.dp_paramdesc
-            this.labels[field] = { label }
+      fetchList({ ...this.search, ...this.$route.params })
+        .then(res => {
+          this.data = res.data.data.data
+          this.total = res.data.data.total
+          this.labels = res.data.desc
+          this.columns = this.labels
+          console.log(this.data)
         })
+        .catch(res => {})
     },
     handleBack() {
-        this.$router.go(-1)
+      this.$router.go(-1)
     }
   },
   created() {
