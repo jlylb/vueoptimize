@@ -108,6 +108,7 @@ export default {
 .running-status {
   color: #ccc;
   padding-left: 20px;
+  width: 50%;
 }
 .running-desc {
   // position: absolute;

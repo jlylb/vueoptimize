@@ -40,7 +40,7 @@
 
 import SearchForm from '@/views/common/components/searchForm'
 import { fetchList, fetchDevice, fetchDeviceData } from '@/api/monitor'
-import DeviceFilter from '@/views/common/components/deviceFilter'
+import DeviceFilter from '@/views/common/components/deviceFilterFive'
 import ChartStatistic from './chart.vue'
 // import EmptyText from '@/views/common/components/empty'
 

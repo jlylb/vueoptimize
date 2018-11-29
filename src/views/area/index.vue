@@ -8,6 +8,7 @@
         :search-data='search'
         @list-data='getList'
         @list-edit='handleEdit'
+        :column-length='9'
         @list-delete='handleDelete'>
         <template  slot='add_search_button'>
             <el-button
@@ -97,6 +98,7 @@ export default {
           ]
         },
         { name: 'area', label: '区域名称', hidden: true },
+        { name: 'area_text', label: '区域描述' },
         { name: 'area_manager', label: '管理者' },
         { name: 'connect_phone', label: '联系电话' },
       ],
@@ -123,6 +125,9 @@ export default {
         },
         AreaName: {
           label: '区域名称'
+        },
+        area_text: {
+          label: '区域描述'
         },
         area_manager: {
            label: '管理者'

@@ -28,7 +28,8 @@ module.exports = {
     echarts: 'echarts',
     vue: 'Vue',
     xlsx: 'XLSX',
-    'v-distpicker': 'VDistpicker'
+    'v-distpicker': 'VDistpicker',
+    swfobject: 'swfobject'
   },
   output: {
     path: config.build.assetsRoot,
@@ -79,7 +80,7 @@ module.exports = {
         }
       },
       {
-        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+        test: /\.(mp4|webm|ogg|mp3|wav|flac|aac|swf)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,

@@ -38,6 +38,20 @@ export default {
             formModel: {},
             formColumns: [
             { 
+                name: 'company',
+                label: '选择公司:',
+                type: 'select',
+                props: {
+                    class: 'select-dropdown',
+                    placeholder: '请选择公司',
+                    filterable: true,
+                },
+                events: {
+                    change: this.selectCompnay,
+                },
+                data: [] 
+            },
+            { 
                 name: 'pro',
                 label: '选择区域:',
                 type: 'select',
@@ -85,6 +99,9 @@ export default {
             currentDeviceType: null,
             devices: [],
             AreaDevices: {},
+            company: [],
+            companyProvince: null,
+            currentCompany: null,
         }
     },
     methods: {
@@ -92,21 +109,28 @@ export default {
         handleFilter(data) {
             this.$emit('filter', data)
         },
+        selectCompnay(val){
+            this.currentCompany = val
+            const columns = this.formColumns
+            columns.map((item) => {
+                return this.setColumns(item)
+            })
+            this.formColumns = columns
+        },
         selectChange(val) {
+            console.log(val, 'log............', this.city[val])
             if(val in this.city){
                 this.dapeng = this.city[val]||[]
                 this.currentDapeng = this.getDataValue(this.dapeng, [0, 'value']);
-                const columns = this.formColumns
-                columns.map((item) => {
-                    return this.setColumns(item)
-                })
-                this.formColumns = columns
-
             }else{
                 this.dapeng = []
-                this.devices = {}
-
+                this.currentDapeng = null
             }
+            const columns = this.formColumns
+            columns.map((item) => {
+                return this.setColumns(item, ['dapeng', 'device'])
+            })
+            this.formColumns = columns
         },
         selectDapeng(val) {
             this.currentDapeng = val
@@ -118,10 +142,16 @@ export default {
         },
 
         setColumns(item, fields) {
-            fields = fields || ['dapeng', 'device'];
+            fields = fields || ['pro','dapeng', 'device'];
+            if (fields.indexOf(item.name) > -1 && item.name == 'pro') {
+                item.data = this.getDataValue(this.companyProvince, [this.currentCompany], [])
+                this.$set(this.formModel, 'pro', this.getValueFirst(item.data))
+                this.dapeng = this.city[this.formModel.pro]
+            }
             if (fields.indexOf(item.name) > -1 && item.name == 'dapeng') {
                 item.data = this.dapeng||[]
                 this.$set(this.formModel, 'dapeng', this.getValueFirst(item.data))
+                this.currentDapeng = this.getValueFirst(item.data)
             }
             if (fields.indexOf(item.name) > -1 && item.name == 'device') {
                 item.data = this.getDataValue(this.devices, [this.currentDapeng], [])
@@ -150,7 +180,10 @@ export default {
         fetchList({mtype: this.mtype}).then((res) => {
             console.log(res)
             const data = res.data
-            const province = data.province || []
+            this.company = data.company || []
+            this.currentCompany = this.getDataValue(this.company, [0, 'value'])
+            this.companyProvince = data.company_province || []
+            const province = this.getDataValue(this.companyProvince, [this.currentCompany])
             this.city = data.city || []
             let first = this.getDataValue(province, [0, 'value'])
             this.dapeng = this.city[first]||[]
@@ -159,6 +192,10 @@ export default {
             this.devices = data.areaDevice
             const columns = this.formColumns
             columns.map((item) => {
+                if (item.name == 'company') {
+                    item.data = this.company
+                    this.$set(this.formModel, 'company', this.currentCompany)
+                }
                 if (item.name == 'pro') {
                     item.data = province
                     this.$set(this.formModel, 'pro', first)

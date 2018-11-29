@@ -82,7 +82,7 @@
 <script>
 
 import SearchForm from '@/views/common/components/searchForm'
-import DeviceFilter from '@/views/common/components/deviceFilter'
+import DeviceFilter from '@/views/common/components/deviceFilterFive'
 import { fetchList, fetchDeviceRealData } from '@/api/monitor'
 
 import MonitorChart from './chart1'

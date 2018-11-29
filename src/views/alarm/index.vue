@@ -28,7 +28,7 @@
 import SearchForm from '@/views/common/components/searchForm'
 import {  fetchDeviceRealData } from '@/api/monitor'
 // import DeviceFilter from '@/views/common/components/deviceFilter'
-import DeviceFilterThree from '@/views/common/components/deviceFilterThree'
+import DeviceFilterThree from '@/views/common/components/deviceFilterFive'
 import AlarmChart from './chart.vue'
 
 export default {

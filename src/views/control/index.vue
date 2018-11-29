@@ -1,99 +1,65 @@
 <template>
     <div class='table-layout'>
-        <div v-if='formColumns.length > 0' class="search-form-layout">
-            <search-form 
-                :form-columns='formColumns'
-                :pform-model='formModel'
-                :is-export='false'
-                :is-search='false' 
-                @search-form='handleFilter'>
-            </search-form>  
-        </div>
+
+        <device-filter-three ref='deviceFilter' @filter='getData' mtype='2'></device-filter-three>
 
         <div class='table-layout-inner'>
 
-            <device-card class='running-custom'>
-                <!-- <div class='running-type-custom'>选择大棚: </div> -->
-                <device-component
-                    v-for='(item, index) in dapeng' 
-                    :key='item.AreaName'  
-                    :is-active='index==current'
-                    :icon-name="'dapeng'" 
-                    @click.native='handleClick(index, item)'>
+            <el-carousel trigger="click" height="600px" :autoplay='autoplay' ref='pages' arrow='never'>
 
-                    <template slot='params'>
-                        <p>
-                            NO.{{ index+1 }}
-                        </p>
-                        <p> 
-                            {{ (index+1) + '号大棚' }}
-                        </p>
-                    </template>
-                    
-                </device-component>
-        
-            </device-card>
-
-            <device-card class='running-custom'>
-                <!-- <div class='running-type-custom' >选择类型: </div> -->
-                <device-component
-                    v-for='(item, index) in deviceCurrentType' 
-                    :key='index'  
-                    :is-active='index==deviceIndex'
-                    :icon-name="typeIcon[item.dt_typeid]" 
-                    @click.native='handleDevice(index, item)'>
-
-                    <template slot='params'>
-                        <p>
-                            {{ item.dt_typename }}
-                        </p>
-                        <p> 
-                            {{ item.dt_typememo }}
-                        </p>
-                    </template>
-                    
-                </device-component>
-
-                <div class='running-type-custom' v-if='isEmptyObject(deviceCurrentType)'> 无数据</div>
-        
-            </device-card>
-
-        
-            <device-card>
+                <el-carousel-item name='device_in'>
+                    <device-card v-if='deviceData' class='device-control'>
+                    <input-card 
+                        :select-menu='deviceData.in[1].tu_SubTypeId'
+                        :type-icon='deviceData.in[1].status == 0?"auto":"manual"'
+                        :status='deviceData.in[1].bStatus?"success":"error"'>
+                        <p> {{ deviceData.in[1].status == 0 ? "自动":"手动" }}</p>
+                    </input-card>
+                        <input-card 
+                            :menus='index==1?autoMenu:outMenu'
+                            v-for='(items, index) in deviceData.in' 
+                            v-if='index > 1'
+                            :key='index'
+                            :ref='"input"+index'
+                            :select-menu='items.tu_SubTypeId'
+                            :status='items.bStatus?"success":"error"' 
+                            :origin-title='items.dp_paramdesc'
+                            :title='items.dp_paramdesc'
+                            @select-menu='inputSelect($event, items, index)'
+                            @save-name='inputSave($event, items, index)'>
+                        </input-card>
+                    </device-card>    
+                </el-carousel-item>
                 
-                <device-component 
-                v-for='(item, index) in currentDevice' 
-                :key='index'
-                size='medium' 
-                :status='getRunningStatusClass(deviceData[item.pdi_index])'
-                :is-active='getRunningStatusClass(deviceData[item.pdi_index])==="success"' 
-                :icon-name="typeIcon[deviceType]">
-                    <template slot='params'>
-                        <p> 运行状态:
-                            <el-switch
-                                :key='item.pdi_index + "running_status"'
-                                @change="runningChange($event, deviceData[item.pdi_index])"
-                                :active-value='0'
-                                :inactive-value='1'
-                                v-model="(deviceData[item.pdi_index]||{}).running_status">
-                            </el-switch>
-                        </p>
-                        <p> 设备状态:
-                        <el-switch
-                            :key='item.pdi_index + "device_status"'
-                            @change="deviceChange($event, deviceData[item.pdi_index])"
-                            :active-value='0'
-                            :inactive-value='1'
-                            v-model="(deviceData[item.pdi_index]||{}).device_status">
-                        </el-switch>
-                        </p>
-                    </template>
-                     设备编号: {{ item.pdi_index }}
-                </device-component>
-            </device-card>
+                <el-carousel-item name='device_out'>
+                    <device-card v-if='deviceData' class='device-control-status'>
+                        <input-card 
+                            :menus='outMenu'
+                            v-for='(items, index) in deviceData.out' 
+                            :ref='"out"+index'
+                            :key='"out_"+index+(+new Date())'
+                            :disabled='!isAuto'
+                            :select-menu='items.length > 0 ? items[0].tu_SubTypeId : 0' 
+                            @select-menu='outSelect($event, items, index)'
+                            @save-name='outSave($event, items, index)'>
+                            <template slot='append'>
+                                <switch-control
+                                    :is-auto='isAuto' 
+                                    :data='items' 
+                                    :pdi='pdiIndex'>
+                                </switch-control>
+                            </template>
+                        </input-card>
+                    </device-card>
+                </el-carousel-item>
 
-
-
+            </el-carousel>
+            <div class='tool-bar'>
+                <el-button-group>
+                    <el-button type="success" @click='prev' icon="el-icon-d-arrow-left">输入</el-button>
+                    <el-button type="success" @click='next'>输出<i class="el-icon-d-arrow-right el-icon--right"></i></el-button>
+                </el-button-group>
+            </div>
         </div>
         
     </div>    
@@ -101,264 +67,172 @@
 
 <script>
 
-import SearchForm from '@/views/common/components/searchForm'
-import { fetchList } from '@/api/monitor'
-import { updateStatus, fetchDevice, fetchDeviceData } from '@/api/control'
-import DeviceComponent from '@/components/deviceComponent'
+import { fetchDeviceData, saveSwitch, saveOut } from '@/api/control'
 import DeviceCard from '@/components/device'
 import openMessage from '@/utils/message.js'
-import MyForm from '../common/components/myform'
+import DeviceFilterThree from '@/views/common/components/deviceFilterFive'
+import InputCard from './inputcard'
+import SwitchControl from './switchControl'
+
 
 export default {
-    components: {  SearchForm, DeviceComponent, MyForm, DeviceCard },
+    components: { DeviceCard, DeviceFilterThree, InputCard, SwitchControl },
     data() {
         return {
-            dapeng: [],
-            province: [],
-            city: [],
-            formModel: {},
-            formColumns: [
-            { 
-                name: 'pro',
-                label: '选择区域:',
-                type: 'select',
-                props: {
-                    class: 'select-dropdown',
-                    placeholder: '请选择区域',
-                    filterable: true,
-                    // clearable: true,
-                },
-            events: {
-                change: this.selectChange,
-                clear: this.selectClear
-            },
-                data: [] }
-            ],
-            current: 0,
-            currentDapeng: {},
-            deviceIndex: 0,
-            devices: [],
-            deviceData: {},
-            deviceType: 0, //设备分类当前类型
-            deviceTypeArr: {}, //设备分类
-            deviceCurrentType: {}, //设备分类
-            currentDevice: {},
-            timer: null,
-            typeIcon: {
-
-            },
-
-            deviceTitle: ''
+            deviceData: null,
+            current: 1,
+            autoplay: false,
+            pdiIndex: null,
+            deviceType: null,
         }
     },
     computed: {
-
+        outMenu() {
+            return this.deviceData.sub.filter((item)=>{
+                return ![7, 8].includes(item.ts_typeid)
+            })
+        },
+        autoMenu() {
+            return this.deviceData.sub.filter((item)=>{
+                return [7, 8].includes(item.ts_typeid)
+            }) 
+        },
+        isAuto() {
+            return this.deviceData.in[1].status == 0
+        }
     },
     methods: {
-        handleFilter() {
-
-        },
-        selectChange(val) {
-            this.current = 0
-            this.deviceIndex = 0
-            if(val in this.city){
-                this.dapeng = this.city[val]
-                this.currentDapeng = this.dapeng[0]
-                this.getDevice(this.dapeng[0])
-
-            }else{
-                this.dapeng = []
-                this.devices = []
-                this.deviceData = {}
-                this.currentDapeng = {}
-                this.currentDevice = {}
-            }
-        },
-        selectClear() {
-
-        },
-        handleClick(index, item) {
-            this.current = index
-            if(item.value===this.currentDapeng.value) {
-                return
-            }
-            this.currentDapeng = item
-            this.catchError()
-            // this.selectDevice(item)
-            this.getDevice(this.currentDapeng)
-        },
-        handleDevice(index, item) {
-            this.deviceIndex = index
-            if(item.dt_typeid===this.deviceType) {
-                return
-            }
-            this.deviceType = item.dt_typeid
-            this.currentDevice = this.devices[this.currentDapeng.value][item.dt_typeid]
-            // this.catchError()
-            this.getData()
-
-        },
-        selectDevice(item) {
-            const areaId = item.value
-            if(this.deviceTypeArr[areaId]) {
-                this.deviceCurrentType = this.deviceTypeArr[areaId]
-                const deviceType = Object.keys(this.deviceCurrentType)[0]
-                this.deviceType = deviceType
-                this.deviceIndex = deviceType
-                this.currentDevice = this.devices[areaId][deviceType]
-            }else{
-                this.deviceCurrentType = {}
-                this.deviceType = 0
-                this.deviceIndex = 0
-                this.currentDevice = {}
-            }
-
-        },
-        getDevice(data) {
-            console.log(data, 'device')
-            fetchDevice(data).then((ress) => {
-                console.log(ress)
-                const data = ress.data
-                this.devices = data.devices
-                this.deviceTypeArr = data.types
-                this.typeIcon = data.icon
-                if(this.isEmptyObject(this.devices)) {
-                    this.deviceType = 0
-                    this.currentDevice = {}
-                    this.deviceTypeArr = {}
-                    this.deviceCurrentType = {}
-                    
-                }else{
-                    this.selectDevice(this.currentDapeng)
-                }
-                
-            }).then((res) => {
-                console.log(res,'get device data.....')
-                if(this.isEmptyObject(this.currentDevice)) {
-                    this.deviceData = {}
-                    this.catchError()
-                    return 
-                }
-                this.getData()
-            }).catch(this.catchError)
-        },
-        getData() {
-            let pdiIndex = []
-            this.currentDevice.forEach((item)=>{
-                pdiIndex.push(item.pdi_index)
-            })
-            let params = {
-                dpt_id: this.deviceType,
-                pdi_index: pdiIndex
-            }
-            fetchDeviceData(params)
-            .then((res)=>{
-                const data = res.data
-                console.log(data, 'get data .......')
-                this.deviceData = data.devicesData
+        getData(data) {
+            const { device: pdi_index, device_type: dpt_id } = data
+            this.pdiIndex = pdi_index
+            this.deviceType = dpt_id
+            fetchDeviceData({ pdi_index, dpt_id })
+            .then((res2) => {
+                this.deviceData = res2.data.devicesData
+                // this.isAuto = (deviceData.in[1].status==1)
             }).catch(()=>{
-                this.deviceData = {}
+                this.deviceData = null
             })
         },
-        isEmptyObject(obj) {
-            if(!obj) return false;
-            return Object.keys(obj).length === 0;
-        },
-        catchError() {
-            console.log(this.timer, 66666666666)
-            if (this.timer) {
-                clearInterval(this.timer)
-                this.timer = null
-            } 
-        },
-        startTimer() {
 
-        },
-        handleButton() {
-            if(!this.currentDevice) {
-                return
-            }
-            this.getData(this.currentDevice)
-        },
-        getRunningStatus(device) {
-            return device.running_status==0?'正常':'停止'
-        },
-        getRunningStatusClass(device) {
-            console.log(device, 'device status .....')
-            return device && device.running_status==0?'success':'error'
-        },
-        changeStatus(val, item, typeStatus) {
-            this.$confirm('确定更改, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
+        inputSelect(menuItem, data, index) {
+            console.log(menuItem, data)
+            const { Dp_id: dp_id, dp_paramdesc: desc } = data
+            const { ts_typeid: subtype = 0 } = menuItem
+            let loading = this.$loading({
+                target: this.$refs['input'+index][0].$el,
+                lock: true,
+                text: '正在处理中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.8)'
             })
-            .then(() => {
-                this.updateStatus({pdi_index: item.pdi_index, value: val, field: typeStatus, dpt_id: this.deviceType}, item)
-            })
-            .catch(() => {
-                item[typeStatus] = val==0 ? 1 : 0
+            saveSwitch({ 
+                sindex: index,
+                pdi_index: this.pdiIndex,
+                dp_id,
+                subtype,
+                desc
+            }).then((res) => {
                 this.$message({
-                    type: 'info',
-                    message: '取消更改状态'
+                    type: 'success',
+                    message: res.data.msg
                 })
+              //  this.isAuto = (deviceData.in[1].status==1)
+                loading.close()
+            }).catch(()=>{
+                loading.close()
             })
         },
-        runningChange(val, item) {
-            this.changeStatus(val, item, 'running_status')
-        },
-        deviceChange(val, item) {
-            this.changeStatus(val, item, 'device_status')
-        },
-        updateStatus(params, item) {
-            console.log(params, 'params .....')
-            updateStatus(params)
-            .then((res) => {
-                openMessage(res)
-                .then(()=>{})
-                .catch(()=>{
-                    item[params.field] = params.value==0 ? 1 : 0
+        inputSave(menuItem,  data, index) {
+            console.log(menuItem,  data, 'saveName....')
+            let desc, subtype
+            const { Dp_id: dp_id, dp_paramdesc: sdesc } = data
+            desc = sdesc
+            if(menuItem.desc) {
+                desc = menuItem.desc
+                data.dp_paramdesc = desc
+            }
+            if(menuItem.item) {
+                const { ts_typeid: ssubtype } = menuItem.item
+                subtype = ssubtype
+            }else{
+                subtype = 0
+            } 
+            let loading = this.$loading({
+                target: this.$refs['input'+index][0].$el,
+                lock: true,
+                text: '正在处理中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.8)'
+            })
+            saveSwitch({ 
+                sindex: index,
+                pdi_index: this.pdiIndex,
+                dp_id,
+                subtype,
+                desc
+            }).then((res) => {
+                this.$message({
+                    type: 'success',
+                    message: res.data.msg
                 })
-            })
-            .catch((err)=>{
-                item[params.field] = params.value==0 ? 1 : 0
+                if(this.subtype==7) {
+                    this.isAuto = true
+                }
+                loading.close()
+            }).catch(()=>{
+                loading.close()
             })
         },
-
+        outSelect(menuItem, items, index) {
+            console.log(menuItem, index, items)
+            const dpId = []
+            items.forEach((item)=>{
+                dpId.push(item.tu_Warnid)
+            })
+            const { ts_typeid: subtype = 0 } = menuItem
+            let loading = this.$loading({
+                target: this.$refs['out'+index][0].$el,
+                lock: true,
+                text: '正在处理中...',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.8)'
+            })
+            saveOut({ 
+                pdi_index: this.pdiIndex,
+                subtype,
+                dp_id: dpId
+            }).then((res) => {
+                fetchDeviceData({ pdi_index: this.pdiIndex, dpt_id: this.deviceType })
+                .then((res2) => {
+                    this.deviceData = res2.data.devicesData
+                   // this.isAuto = (deviceData.in[1].status==1)
+                    loading.close()
+                }).catch(()=>{
+                    this.deviceData = null
+                    loading.close()
+                })
+                this.$message({
+                    type: 'success',
+                    message: res.data.msg
+                })
+            }).catch(()=>{
+                loading.close()
+            })
+        },
+        outSave(menuItem, index) {
+            console.log(menuItem, index)
+        },
+        prev() {
+            this.$refs.pages.setActiveItem('device_in')
+        },
+        next() {
+            this.$refs.pages.setActiveItem('device_out')
+        }
     },
     created() {
-        fetchList().then((res) => {
-            console.log(res)
-            const data = res.data
-            const province = data.province || []
-            this.city = data.city || []
-            let first = province[0].value
-            this.dapeng = this.city[first]
-            const columns = this.formColumns
-            columns.map((item) => {
-                if (item.name == 'pro') {
-                    item.data = province
-                    this.$set(this.formModel, 'pro', first)
-                }
-                return item
-            })
-            this.formColumns = columns
-            this.currentDapeng = this.dapeng[0]
-            return this.dapeng[0]
-        })
-        .then((res) => {
-            this.getDevice(res)
-        })
-        .catch(this.catchError)
 
-        this.startTimer()
     },
-    destoryed() {
-        this.catchError();
-    },
-    beforeDestroy() {
-        this.catchError();
-    }
 
 }
 </script>
@@ -373,32 +247,32 @@ $activeColor: #e6a23c;
   position: relative;
 }
 
-.running-type-custom {
-  color: #000;
-}
-
-.running-setting {
-  text-align: right;
-  padding: 5px;
-  cursor: pointer;
-}
-
 .running-custom /deep/ .running-type-item {
   &.active,
   &:hover {
     background-color: $activeColor;
   }
 }
-.test-class {
-  width: 200px;
-  height: 50px;
+.device-control {
+  justify-content: space-between;
+  /deep/ .normal {
+    width: 300px;
+    min-height: 120px;
+  }
 }
-// @for $i from 1 through 10 {
-//     .test-class-#{$i} {
-//         @extend .test-class;
-//         @warn random();
-//        // background-color: desaturate($baseColor1, percentage($i * 10/100 ));
-//         background-color: scale-color(hsl(90, 50%, 50%), $saturation: percentage($i * 10/100 ), $alpha: 50%);
-//     }
-//   }
+.device-control-status {
+  justify-content: flex-start;
+  width: 95%;
+  margin: 0 auto;
+  /deep/ .normal {
+    width: 300px;
+    min-height: 160px;
+  }
+}
+.el-dropdown-link {
+  color: #fff;
+}
+.tool-bar {
+  text-align: center;
+}
 </style>

@@ -103,7 +103,7 @@ export default {
   },
   filters: {
     warnTxt(val) {
-      return warnLevel()[val]['lvl']
+      return warnLevel()[val] && warnLevel()[val]['lvl'] || ''
     }
   },
   created() {
