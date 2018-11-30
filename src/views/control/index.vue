@@ -62,12 +62,12 @@
 </template>
 
 <script>
-import { fetchDeviceData, saveSwitch, saveOut } from "@/api/control";
-import DeviceCard from "@/components/device";
-import openMessage from "@/utils/message.js";
-import DeviceFilterThree from "@/views/common/components/deviceFilterFive";
-import InputCard from "./inputcard";
-import SwitchControl from "./switchControl";
+import { fetchDeviceData, saveSwitch, saveOut } from '@/api/control'
+import DeviceCard from '@/components/device'
+import openMessage from '@/utils/message.js'
+import DeviceFilterThree from '@/views/common/components/deviceFilterFive'
+import InputCard from './inputcard'
+import SwitchControl from './switchControl'
 
 export default {
   components: { DeviceCard, DeviceFilterThree, InputCard, SwitchControl },
@@ -78,49 +78,49 @@ export default {
       autoplay: false,
       pdiIndex: null,
       deviceType: null
-    };
+    }
   },
   computed: {
     outMenu() {
       return this.deviceData.sub.filter(item => {
-        return ![7, 8].includes(item.ts_typeid);
-      });
+        return ![7, 8].includes(item.ts_typeid)
+      })
     },
     autoMenu() {
       return this.deviceData.sub.filter(item => {
-        return [7, 8].includes(item.ts_typeid);
-      });
+        return [7, 8].includes(item.ts_typeid)
+      })
     },
     isAuto() {
-      return this.deviceData.in[1].status == 0;
+      return this.deviceData.in[1].status == 0
     }
   },
   methods: {
     getData(data) {
-      const { device: pdi_index, device_type: dpt_id } = data;
-      this.pdiIndex = pdi_index;
-      this.deviceType = dpt_id;
+      const { device: pdi_index, device_type: dpt_id } = data
+      this.pdiIndex = pdi_index
+      this.deviceType = dpt_id
       fetchDeviceData({ pdi_index, dpt_id })
         .then(res2 => {
-          this.deviceData = res2.data.devicesData;
+          this.deviceData = res2.data.devicesData
           // this.isAuto = (deviceData.in[1].status==1)
         })
         .catch(() => {
-          this.deviceData = null;
-        });
+          this.deviceData = null
+        })
     },
 
     inputSelect(menuItem, data, index) {
-      console.log(menuItem, data);
-      const { Dp_id: dp_id, dp_paramdesc: desc } = data;
-      const { ts_typeid: subtype = 0 } = menuItem;
-      let loading = this.$loading({
-        target: this.$refs["input" + index][0].$el,
+      console.log(menuItem, data)
+      const { Dp_id: dp_id, dp_paramdesc: desc } = data
+      const { ts_typeid: subtype = 0 } = menuItem
+      const loading = this.$loading({
+        target: this.$refs['input' + index][0].$el,
         lock: true,
-        text: "正在处理中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.8)"
-      });
+        text: '正在处理中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.8)'
+      })
       saveSwitch({
         sindex: index,
         pdi_index: this.pdiIndex,
@@ -130,38 +130,38 @@ export default {
       })
         .then(res => {
           this.$message({
-            type: "success",
+            type: 'success',
             message: res.data.msg
-          });
+          })
           //  this.isAuto = (deviceData.in[1].status==1)
-          loading.close();
+          loading.close()
         })
         .catch(() => {
-          loading.close();
-        });
+          loading.close()
+        })
     },
     inputSave(menuItem, data, index) {
-      console.log(menuItem, data, "saveName....");
-      let desc, subtype;
-      const { Dp_id: dp_id, dp_paramdesc: sdesc } = data;
-      desc = sdesc;
+      console.log(menuItem, data, 'saveName....')
+      let desc, subtype
+      const { Dp_id: dp_id, dp_paramdesc: sdesc } = data
+      desc = sdesc
       if (menuItem.desc) {
-        desc = menuItem.desc;
-        data.dp_paramdesc = desc;
+        desc = menuItem.desc
+        data.dp_paramdesc = desc
       }
       if (menuItem.item) {
-        const { ts_typeid: ssubtype } = menuItem.item;
-        subtype = ssubtype;
+        const { ts_typeid: ssubtype } = menuItem.item
+        subtype = ssubtype
       } else {
-        subtype = 0;
+        subtype = 0
       }
-      let loading = this.$loading({
-        target: this.$refs["input" + index][0].$el,
+      const loading = this.$loading({
+        target: this.$refs['input' + index][0].$el,
         lock: true,
-        text: "正在处理中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.8)"
-      });
+        text: '正在处理中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.8)'
+      })
       saveSwitch({
         sindex: index,
         pdi_index: this.pdiIndex,
@@ -171,32 +171,32 @@ export default {
       })
         .then(res => {
           this.$message({
-            type: "success",
+            type: 'success',
             message: res.data.msg
-          });
+          })
           if (this.subtype == 7) {
-            this.isAuto = true;
+            this.isAuto = true
           }
-          loading.close();
+          loading.close()
         })
         .catch(() => {
-          loading.close();
-        });
+          loading.close()
+        })
     },
     outSelect(menuItem, items, index) {
-      console.log(menuItem, index, items);
-      const dpId = [];
+      console.log(menuItem, index, items)
+      const dpId = []
       items.forEach(item => {
-        dpId.push(item.tu_Warnid);
-      });
-      const { ts_typeid: subtype = 0 } = menuItem;
-      let loading = this.$loading({
-        target: this.$refs["out" + index][0].$el,
+        dpId.push(item.tu_Warnid)
+      })
+      const { ts_typeid: subtype = 0 } = menuItem
+      const loading = this.$loading({
+        target: this.$refs['out' + index][0].$el,
         lock: true,
-        text: "正在处理中...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.8)"
-      });
+        text: '正在处理中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.8)'
+      })
       saveOut({
         pdi_index: this.pdiIndex,
         subtype,
@@ -205,35 +205,35 @@ export default {
         .then(res => {
           fetchDeviceData({ pdi_index: this.pdiIndex, dpt_id: this.deviceType })
             .then(res2 => {
-              this.deviceData = res2.data.devicesData;
+              this.deviceData = res2.data.devicesData
               // this.isAuto = (deviceData.in[1].status==1)
-              loading.close();
+              loading.close()
             })
             .catch(() => {
-              this.deviceData = null;
-              loading.close();
-            });
+              this.deviceData = null
+              loading.close()
+            })
           this.$message({
-            type: "success",
+            type: 'success',
             message: res.data.msg
-          });
+          })
         })
         .catch(() => {
-          loading.close();
-        });
+          loading.close()
+        })
     },
     outSave(menuItem, index) {
-      console.log(menuItem, index);
+      console.log(menuItem, index)
     },
     prev() {
-      this.$refs.pages.setActiveItem("device_in");
+      this.$refs.pages.setActiveItem('device_in')
     },
     next() {
-      this.$refs.pages.setActiveItem("device_out");
+      this.$refs.pages.setActiveItem('device_out')
     }
   },
   created() {}
-};
+}
 </script>
 
 <style lang='scss' scoped>

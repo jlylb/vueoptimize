@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { getDataValue, parseTime } from "@/utils";
+import { getDataValue, parseTime } from '@/utils'
 
 export default {
   components: {},
@@ -16,62 +16,62 @@ export default {
       legend: [],
       series: [],
       optonsData: [],
-      colors: ["#5793f3", "#d14a61", "#675bba"],
+      colors: ['#5793f3', '#d14a61', '#675bba'],
       chart: null,
       chartData: {}
-    };
+    }
   },
   props: {
     data: {
       type: [Object, Array],
       default() {
-        return {};
+        return {}
       }
     }
   },
   watch: {
     data: {
       handler(newval) {
-        console.log(newval, "newval", Object.keys(newval));
-        this.handlerData(newval);
+        console.log(newval, 'newval', Object.keys(newval))
+        this.handlerData(newval)
       }
     }
   },
   methods: {
     afterConfig(options) {
       // return this.getData()
-      return options;
+      return options
     },
     getXField(data) {
-      let name = data.name;
-      let num = data.num;
-      let names = [];
+      const name = data.name
+      const num = data.num
+      const names = []
       for (let i = 1; i <= num; i++) {
-        names.push(name + i);
+        names.push(name + i)
       }
-      return names;
+      return names
     },
     getFields(data) {
-      this.yfield = [];
-      this.series = [];
-      this.legend = [];
-      this.xfield = [];
-      this.optonsData = [];
-      const colors = this.colors;
-      const postions = ["left", "right"];
-      const keys = Object.keys(data.surfix);
-      const num = data.num;
-      for (let xkey in keys) {
-        let curKey = keys[xkey];
-        let name = data.surfix[curKey];
+      this.yfield = []
+      this.series = []
+      this.legend = []
+      this.xfield = []
+      this.optonsData = []
+      const colors = this.colors
+      const postions = ['left', 'right']
+      const keys = Object.keys(data.surfix)
+      const num = data.num
+      for (const xkey in keys) {
+        const curKey = keys[xkey]
+        const name = data.surfix[curKey]
         this.yfield.push({
-          type: "value",
+          type: 'value',
           name: name,
-          min: "dataMin",
-          max: "dataMax",
+          min: 'dataMin',
+          max: 'dataMax',
           position: postions[xkey],
           axisLabel: {
-            formatter: "{value} " + data.unit[curKey]
+            formatter: '{value} ' + data.unit[curKey]
           },
           axisLine: {
             show: true,
@@ -85,115 +85,115 @@ export default {
           // splitLine: {
           //   show: false,
           // }
-        });
-        this.legend.push(name);
+        })
+        this.legend.push(name)
         this.series.push({
           name: name,
-          type: "bar",
+          type: 'bar',
           yAxisIndex: 0,
           itemStyle: {
             normal: {
               color: colors[xkey]
             }
           }
-        });
+        })
       }
       for (let i = 1; i <= num; i++) {
-        let item = {};
-        item.title = { text: data.name + i, show: false };
-        item.series = [];
-        for (let key in data.surfix) {
-          let dataKey = key + i;
-          let dataItem = getDataValue(data.items, [key, dataKey], []);
-          this.xfield = Object.keys(dataItem);
+        const item = {}
+        item.title = { text: data.name + i, show: false }
+        item.series = []
+        for (const key in data.surfix) {
+          const dataKey = key + i
+          const dataItem = getDataValue(data.items, [key, dataKey], [])
+          this.xfield = Object.keys(dataItem)
           item.series.push({
             data: Object.values(dataItem)
-          });
+          })
         }
-        this.optonsData.push(item);
+        this.optonsData.push(item)
       }
 
       this.xfield = this.xfield
         .map(item => {
-          return item;
+          return item
         })
         .sort()
-        .reverse();
+        .reverse()
     },
     handlerData(data) {
       if (Object.keys(data).length === 0) {
-        this.xfield = [];
-        this.timeField = [];
-        this.yfield = [];
-        this.legend = [];
-        this.series = [];
-        if (this.chart) this.chart.clear();
+        this.xfield = []
+        this.timeField = []
+        this.yfield = []
+        this.legend = []
+        this.series = []
+        if (this.chart) this.chart.clear()
       } else {
-        this.timeField = this.getXField(data);
-        this.getFields(data);
+        this.timeField = this.getXField(data)
+        this.getFields(data)
       }
 
-      this.echartsData = this.getData();
+      this.echartsData = this.getData()
     },
     getData() {
-      let option = {
+      const option = {
         baseOption: {
           timeline: {
             data: this.timeField,
-            left: "10%",
-            right: "10%",
+            left: '10%',
+            right: '10%',
             // top: '5%',
-            bottom: "10%",
+            bottom: '10%',
             height: 50,
-            axisType: "category",
+            axisType: 'category',
             show: true,
             autoPlay: false,
             playInterval: 1000,
             checkpointStyle: {
-              color: "#04a5f1",
-              borderColor: "rgba(4, 165, 261, .5)"
+              color: '#04a5f1',
+              borderColor: 'rgba(4, 165, 261, .5)'
             },
             label: {
               normal: {
                 formatter: function(v) {
-                  var _txt = v.replace(/\//gim, "\n");
-                  return _txt;
+                  var _txt = v.replace(/\//gim, '\n')
+                  return _txt
                 },
                 // rotate:-30, //角度
-                position: "bottom"
+                position: 'bottom'
               }
             },
             itemStyle: {
               normal: {
-                color: "#04a5f1"
+                color: '#04a5f1'
               },
               emphasis: {
-                color: "#04a5f1"
+                color: '#04a5f1'
               }
             },
             lineStyle: {
-              color: "#ddd"
+              color: '#ddd'
             },
             controlStyle: {
               show: false
             }
           },
           tooltip: {
-            trigger: "axis",
+            trigger: 'axis',
             axisPointer: {
-              type: "cross",
+              type: 'cross',
               label: {
-                backgroundColor: "rgba(255,255,255,0.8)",
-                extraCssText: "box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);",
+                backgroundColor: 'rgba(255,255,255,0.8)',
+                extraCssText: 'box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);',
                 textStyle: {
-                  color: "#666"
+                  color: '#666'
                 }
               }
             },
-            backgroundColor: "rgba(255,255,255,0.8)",
-            extraCssText: "box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);",
+            backgroundColor: 'rgba(255,255,255,0.8)',
+            extraCssText: 'box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);',
             textStyle: {
-              color: "#666"
+              color: '#666'
             }
           },
           toolbox: {
@@ -201,7 +201,7 @@ export default {
             feature: {
               magicType: {
                 show: true,
-                type: ["bar", "line"]
+                type: ['bar', 'line']
               },
               restore: {
                 show: true
@@ -216,11 +216,11 @@ export default {
           },
           grid: [
             {
-              left: "3%",
-              right: "3%",
-              top: "8%",
-              height: "72%",
-              bottom: "20%",
+              left: '3%',
+              right: '3%',
+              top: '8%',
+              height: '72%',
+              bottom: '20%',
               containLabel: true
             }
           ],
@@ -231,20 +231,20 @@ export default {
         },
 
         options: [...this.optonsData]
-      };
+      }
 
       if (this.xfield.length > 0) {
         option.baseOption.xAxis = [
           {
-            type: "category",
+            type: 'category',
             data: this.xfield,
             axisLabel: {
-              //坐标轴刻度标签的相关设置。
-              interval: 0, //设置为 1，表示『隔一个标签显示一个标签』
-              //rotate:-30,
+              // 坐标轴刻度标签的相关设置。
+              interval: 0, // 设置为 1，表示『隔一个标签显示一个标签』
+              // rotate:-30,
               textStyle: {
-                color: "#666",
-                fontStyle: "normal"
+                color: '#666',
+                fontStyle: 'normal'
               }
             },
             axisLabel: {
@@ -252,68 +252,68 @@ export default {
               rotate: 30
             },
             axisLine: {
-              //坐标轴轴线相关设置
+              // 坐标轴轴线相关设置
               show: true,
               lineStyle: {
-                color: "#666",
+                color: '#666',
                 opacity: 1
               }
             },
             splitLine: {
-              //坐标轴在 grid 区域中的分隔线。
+              // 坐标轴在 grid 区域中的分隔线。
               show: false
             }
           }
-        ];
+        ]
         option.baseOption.dataZoom = [
           {
-            type: "inside",
+            type: 'inside',
             show: true,
             xAxisIndex: [0],
             start: 0,
             end: 35
           },
           {
-            type: "slider",
+            type: 'slider',
             show: true,
             xAxisIndex: [0],
             start: 0,
-            end: "50%",
+            end: '50%',
             handleSize: 8,
             bottom: 0,
-            left: "10%",
-            right: "10%",
-            handleColor: "#ddd",
-            fillerColor: "#5793f3",
+            left: '10%',
+            right: '10%',
+            handleColor: '#ddd',
+            fillerColor: '#5793f3',
             // labelFormatter: (value) => {
             //   console.log(value)
             //   return this.xfield[value].replace(/\s/, '\n');
             // },
             handleStyle: {
-              borderColor: "#cacaca",
-              borderWidth: "1",
+              borderColor: '#cacaca',
+              borderWidth: '1',
               shadowBlur: 2,
-              background: "#ddd",
-              shadowColor: "#ddd"
+              background: '#ddd',
+              shadowColor: '#ddd'
             }
           }
-        ];
+        ]
       } else {
-        option.baseOption.xAxis = [];
-        option.baseOption.dataZoom = [];
+        option.baseOption.xAxis = []
+        option.baseOption.dataZoom = []
       }
-      console.log(option, "option");
-      return option;
+      console.log(option, 'option')
+      return option
     }
   },
   created() {},
   mounted() {
-    this.handlerData(this.data);
+    this.handlerData(this.data)
   },
   destroyed() {
-    this.chart = null;
+    this.chart = null
   }
-};
+}
 </script>
 
 <style>
