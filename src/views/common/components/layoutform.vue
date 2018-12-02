@@ -14,10 +14,11 @@
     :key='layout'>
       <form-box 
       v-for='(column, tabindex) in groups'
+      :collapse='getCollapse(tabLabel[tabindex])'
       :class='tabindex + " box-card"' 
       :key='tabindex'>
         <template slot="headerTitle">
-          <span>{{ tabLabel[tabindex]||tabindex }}</span>
+          <span>{{ tabLabel[tabindex]?tabLabel[tabindex].label:tabindex }}</span>
         </template>
         <slot :name='"group-" + tabindex' :pics='pics' :form-model='formModel' :column='column'>
           <my-formitem
@@ -52,7 +53,10 @@ export default {
 
   },
   methods: {
-
+    getCollapse(item){
+      return item ? item.collapse : true
+    }
+    
   },
   created() {
     console.log(this.$refs)

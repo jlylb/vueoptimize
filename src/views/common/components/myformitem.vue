@@ -7,7 +7,7 @@
       v-if='myitem.type!=="formbutton"' 
       :key='myitem.name'
       :class='"form-box-item form-box-" + myitem.name' 
-      :prop='myitem.name'>
+      :prop='myitem.name' v-bind='myitem.formitem||{}'>
 
       <slot 
       :name='myitem.name' 

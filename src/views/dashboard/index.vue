@@ -2,6 +2,7 @@
   <div class="dashboard-container">
     <component :is="currentRole"></component>
   </div>
+  
 </template>
 
 <script>

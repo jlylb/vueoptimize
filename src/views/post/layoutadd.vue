@@ -57,6 +57,8 @@ export default {
         { name: 'content', label: '内容', type: 'richtext', tab: 'content' },
 
         { name: 'comment_status', label: '是否允许评论', type: 'switch', tab: 'content' },
+
+
         {
           name: 'action',
           type: 'formbutton',
@@ -82,7 +84,7 @@ export default {
         },
         {
           name: 'first_img',
-          label: '封面图',
+          label: '',
           type: 'upload',
           props: {
             action: '/api/upload',
@@ -93,11 +95,14 @@ export default {
             }
           },
           tab: 'first_img',
-          layout: 'seo'
+          layout: 'seo',
+          formitem: {
+            labelWidth: '0'
+          }
         },
-        { name: 'seo_title', label: 'seo标题', tab: 'seo', layout: 'seo' },
-        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo', layout: 'seo' },
-        { name: 'seo_desc', label: 'seo描述', tab: 'seo', layout: 'seo' }
+        { name: 'seo_title', label: 'seo标题', tab: 'seo', layout: 'addseo' },
+        { name: 'seo_keyword', label: 'seo关键字', tab: 'seo', layout: 'addseo' },
+        { name: 'seo_desc', label: 'seo描述', tab: 'seo', layout: 'addseo' },
       ],
 
       formRules: {
@@ -115,10 +120,10 @@ export default {
       // isAdd: true,
       tabactive: '',
       tabLabel: {
-        action: '发布',
-        content: '内容',
-        seo: 'seo优化',
-        first_img: '封面图'
+        action: { label: '发布' },
+        content: { label: '内容' },
+        seo: { label: 'seo优化', collapse: false },
+        first_img: { label: '封面图' }
       }
     }
   },
@@ -207,20 +212,37 @@ export default {
 }
 </script>
 <style lang="scss">
+  .table-layout {
+    overflow: hidden;
+  }
+
    .table-layout .my-form .el-input{
         width: 50%;
     }
     .cascader-category_id {
       width: 100%;
     }
+    .my-form /deep/ .layout-form {
+      display: block;
+      width: 100%;
+    }
+    .my-form /deep/ .form-box-first_img {
+      text-align: center;
+    }
     .my-form /deep/ .layout-form-bottom {
       width: 100%;
     }
     .my-form /deep/ .layout-form-default {
       width: 70%;
+      float: left;
+    }
+    .my-form /deep/ .layout-form-addseo {
+      width: 70%;
+      float: left;
     }
     .my-form /deep/ .layout-form-seo {
       width: 30%;
+      float: right;
     }
 </style>
 

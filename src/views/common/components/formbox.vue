@@ -24,8 +24,14 @@
 export default {
   data() {
     return {
-      isShow: true,
+      isShow: this.collapse,
       icon: 'el-icon-minus'
+    }
+  },
+  props:{
+    collapse: {
+        type: Boolean,
+        default: true
     }
   },
   methods: {
