@@ -1,21 +1,20 @@
 <template>
-    <div :class='["running-type-wrapper", `running-${status}`, { [activeClass]: isActive }]'>
-      <div class='running-type-header'>
-        <slot name='header'></slot>
-      </div> 
-      <div  :class='["running-type-item", direction, size, { [activeClass]: isActive }]'>
-          <div class='running-icon' v-if='$slots.icon||iconName'>
-            <svg-icon v-if='iconName' :icon-class="iconName"  class='running-icon-panel'/>
-            <slot name='icon'>
-            </slot>  
-          </div>
-          <div class='running-status'>
-            <slot name='params'></slot>
-          </div>
+  <div :class="['running-type-wrapper', `running-${status}`, { [activeClass]: isActive }]">
+    <div class="running-type-header">
+      <slot name="header"></slot>
+    </div>
+    <div :class="['running-type-item', direction, size, { [activeClass]: isActive }]">
+      <div class="running-icon" v-if="$slots.icon||iconName">
+        <svg-icon v-if="iconName" :icon-class="iconName" class="running-icon-panel"/>
+        <slot name="icon"></slot>
       </div>
-      <div class='running-desc' v-if='$slots.default'>
-        <slot></slot>
+      <div class="running-status">
+        <slot name="params"></slot>
       </div>
+    </div>
+    <div class="running-desc" v-if="$slots.default">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -24,19 +23,19 @@ export default {
   props: {
     iconName: {
       type: String,
-      default: ''
+      default: ""
     },
     status: {
       type: String,
-      default: 'success'
+      default: "success"
     },
     direction: {
       type: String,
-      default: 'row'
+      default: "row"
     },
     size: {
       type: String,
-      default: 'normal'
+      default: "normal"
     },
     isActive: {
       type: Boolean,
@@ -44,10 +43,10 @@ export default {
     },
     activeClass: {
       type: String,
-      default: 'active'
-    },
+      default: "active"
+    }
   }
-}
+};
 </script>
 
 <style lang='scss' scoped>
@@ -95,16 +94,17 @@ export default {
   height: 80px;
   border: 5px solid rgba(255, 255, 255, 0.3);
   position: relative;
+  /deep/ .running-icon-panel {
+    width: 50px;
+    height: 50px;
+    fill: #ccc;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
 }
-.running-icon-panel {
-  width: 50px;
-  height: 50px;
-  fill: #ccc;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate3d(-50%, -50%, 0);
-}
+
 .running-status {
   color: #ccc;
   padding-left: 20px;

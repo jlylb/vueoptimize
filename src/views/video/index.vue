@@ -6,20 +6,20 @@
     </f-button>
     <div class="table-inner">
       <div class="video">
-        <div v-cloak v-video="item" v-for="(item, index) in data" :key="index" class="video-item"></div>
+        <div v-cloak v-nvideo="item" v-for="(item, index) in data" :key="index" class="video-item"></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import video from "@/directive/video";
+import nvideo from "@/directive/video";
 import fButton from "@/views/common/components/flatbutton";
 import { fetchList } from "@/api/video";
 
 export default {
   components: { fButton },
-  directives: { video },
+  directives: { nvideo },
   data() {
     return {
       data: [],

@@ -67,6 +67,7 @@ module.exports = {
   build: {
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),
+    title: '武汉盛世奈特科技有限公司',
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
