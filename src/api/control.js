@@ -29,20 +29,20 @@ export function saveCommand(data) {
   return request({
     url: '/control/command',
     method: 'post',
-    params: data
+    data
   })
 }
 export function saveSwitch(data) {
   return request({
     url: '/control/switch',
     method: 'post',
-    params: data
+    data
   })
 }
 export function saveOut(data) {
   return request({
     url: '/control/out',
     method: 'post',
-    params: data
+    data
   })
 }

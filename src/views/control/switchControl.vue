@@ -1,11 +1,14 @@
 <template>
   <div>
     <el-switch
-      v-model="item.bStatus"
-      :disabled="item.bStatus || !isAuto"
+      v-model="item.status"
+      :disabled="!isAuto"
       class="switch-margin"
       v-for="(item, index) in data"
-      :active-text="data.length>2?three[index]:two[index]"
+      :active-text="index==0?(data.length>1?three[0]:two[0]):'落'"
+      :inactive-text="index==0?(data.length>1?three[1]:two[1]):'停'"
+      :active-value="1"
+      :inactive-value="0"
       @change="changeControl($event, item, index)"
       :key="item.tu_Warnid"
     ></el-switch>
@@ -18,7 +21,7 @@ export default {
   data() {
     return {
       two: ["开", "关"],
-      three: ["起", "停", "落"]
+      three: ["起", "停"]
     };
   },
   props: {
@@ -40,38 +43,48 @@ export default {
   methods: {
     changeControl(val, current, index) {
       console.log(val);
-      if (val) {
-        let loading = this.$loading({
-          target: this.$parent.$el,
-          lock: true,
-          text: "正在处理中...",
-          spinner: "el-icon-loading",
-          background: "rgba(0, 0, 0, 0.8)"
-        });
-        const { tu_Warnid: dpId } = current;
-        saveCommand({ status: 1, dp_id: dpId, pdi_index: this.pdi })
-          .then(res => {
-            this.data = this.data.map(item => {
-              if (item.tu_Warnid != dpId) {
-                item.bStatus = false;
-              }
-              return item;
-            });
+      let loading = this.$loading({
+        target: this.$parent.$el,
+        lock: true,
+        text: "正在处理中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.8)"
+      });
+      const { tu_Warnid: dpId } = current;
+      const params = [];
+      params.push({ status: val, dp_id: dpId });
+      this.data.map(item => {
+        if (item.tu_Warnid != dpId) {
+          params.push({
+            status: 0,
+            dp_id: item.tu_Warnid
+          });
+        }
+      });
+      saveCommand({ params, pdi_index: this.pdi })
+        .then(res => {
+          this.data = this.data.map(item => {
+            if (item.tu_Warnid != dpId) {
+              item.status = 0;
+            }
+            return item;
+          });
+          setTimeout(() => {
             loading.close();
             this.$message({
               type: "success",
               message: res.data.msg
             });
-          })
-          .catch(() => {
-            current.bStatus = !val;
-            loading.close();
-            this.$message({
-              type: "info",
-              message: "已取消更改"
-            });
+          }, 3000);
+        })
+        .catch(() => {
+          current.status = val == 0 ? 1 : 0;
+          loading.close();
+          this.$message({
+            type: "info",
+            message: "更改失败"
           });
-      }
+        });
     }
   },
   created() {}
