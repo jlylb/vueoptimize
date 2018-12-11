@@ -28,7 +28,7 @@
         >{{generateTitle(item.children[0].meta.title)}}</span>
       </el-menu-item>
     </router-link>
-    <router-link v-else-if="hasShowingChildren(item.children) && item.always_show"></router-link>
+    <router-link v-else-if="hasShowingChildren(item.children) && item.always_show" to="#"></router-link>
     <el-submenu v-else :index="item.name||item.path" class="custom">
       <template slot="title">
         <svg-icon v-if="item.meta&&item.meta.icon" :icon-class="item.meta.icon"></svg-icon>

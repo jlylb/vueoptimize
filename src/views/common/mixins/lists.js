@@ -52,13 +52,18 @@ export default {
     setColumns() {
       this.columns = []
       this.showColumns = []
-
+      const defaultProp = {
+        align: 'center',
+        'header-align': 'center'
+      }
       if (Object.keys(this.customColumns).length === 0) {
         const firstData = this.data[0] || {}
         const extract = {}
         let i = 1
         for (const item in firstData) {
           const column = Object.assign(
+            {},
+            defaultProp,
             { prop: item, label: item },
             extract,
             getDataValue(this.labels, [item], {})
@@ -75,6 +80,8 @@ export default {
         for (const item in this.customColumns) {
           if (this.customColumns[item].hidden !== true && item !== 'action') {
             const column = Object.assign(
+              {},
+              defaultProp,
               { prop: item },
               this.customColumns[item],
               getDataValue(this.labels, [item], {})
@@ -96,6 +103,11 @@ export default {
         return
       }
       const action = Object.assign(
+        {},
+        {
+          align: 'center',
+          'header-align': 'center'
+        },
         { prop: 'action', label: 'action' },
         this.customColumns['action'] || {}
       )

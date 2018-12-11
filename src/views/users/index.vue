@@ -78,8 +78,8 @@
 </template>
 
 <script>
-import tableList from '../common/components/tableList'
-import MyForm from '../common/components/myform'
+import tableList from "../common/components/tableList";
+import MyForm from "../common/components/myform";
 import {
   fetchList,
   fetchRoles,
@@ -88,111 +88,61 @@ import {
   updateUser,
   deleteUser,
   getCompany
-} from '@/api/users'
-import axios from 'axios'
-import { getImageUrl } from '@/utils'
-import openMessage from '@/utils/message.js'
+} from "@/api/users";
+import axios from "axios";
+import { getImageUrl } from "@/utils";
+import openMessage from "@/utils/message.js";
+import { mapGetters } from "vuex";
 
 export default {
   components: { tableList, MyForm },
+  computed: {
+    ...mapGetters(["isSuper"])
+  },
   data() {
     return {
       data: [],
       logo: [],
-      formColumns: [
-        { name: 'username', label: '用户名' },
-        { name: 'userphone', label: '用户电话' },
-        {
-          name: 'userpwd',
-          label: '密码',
-          inputType: 'password',
-          type: 'input'
-        },
-        {
-          name: 'userpwd_confirmation',
-          label: '确认密码',
-          inputType: 'password',
-          type: 'input'
-        },
-        {
-          name: 'company_name',
-          label: '所属公司',
-          type: 'select',
-          props: {
-            filterable: true,
-            remote: true,
-            remoteMethod: this.remoteRoute,
-            placeholder: '请输入公司名称',
-            class: 'select-dropdown',
-            clearable: true,
-            allowCreate: false
-          },
-          events: {
-            change: this.editChange
-          },
-          data: []
-        }
-      ],
-      editFormColumns: [
-        { name: 'username', label: '用户名' },
-        { name: 'userphone', label: '用户电话' },
-        {
-          name: 'company_name',
-          label: '所属公司',
-          type: 'select',
-          props: {
-            filterable: true,
-            remote: true,
-            remoteMethod: this.remoteEditRoute,
-            placeholder: '请输入公司名称',
-            class: 'select-dropdown',
-            clearable: true,
-            allowCreate: false
-          },
-          events: {
-            change: this.editChange
-          },
-          data: []
-        }
-      ],
+      formColumns: [],
+      editFormColumns: [],
       searchColumns: [
-        { name: 'name', label: '用户名', props: { clearable: true }},
+        { name: "name", label: "用户名", props: { clearable: true } },
         {
-          name: 'created_at',
-          label: '创建时间',
-          type: 'date'
+          name: "created_at",
+          label: "创建时间",
+          type: "date"
         }
       ],
       formRules: null,
       editFormRules: null,
       columns: {
         userid: {
-          label: '编号'
+          label: "编号"
         },
         username: {
-          label: '用户名称'
+          label: "用户名称"
         },
         avatar: {
-          label: '用户头像'
+          label: "用户头像"
         },
-        'userinfo.userphone': {
-          label: '手机号'
+        "userinfo.userphone": {
+          label: "手机号"
         },
-        Co_ID: {
-          label: '公司编号'
-        },
+        // Co_ID: {
+        //   label: '公司编号'
+        // },
         company: {
-          label: '所属公司'
+          label: "所属公司"
         },
         created_at: {
-          label: '创建时间'
+          label: "创建时间"
         },
         updated_at: {
-          label: '更新时间'
+          label: "更新时间"
         },
         action: {
-          'min-width': '150',
-          label: '操作'
+          "min-width": "150",
+          label: "操作"
         }
       },
       total: 0,
@@ -208,194 +158,241 @@ export default {
       editUserFormModel: {},
       roleColumns: [
         {
-          name: 'roles',
-          label: '角色',
-          type: 'checkboxgroup',
+          name: "roles",
+          label: "角色",
+          type: "checkboxgroup",
           data: []
         }
       ],
-      dialogTitle: '',
+      dialogTitle: "",
       company_id: null,
       isAdd: true
-    }
+    };
   },
   methods: {
     getImageUrl,
     handleAdd(data) {
-      this.addDialog = true
-      this.dialogTitle = '添加'
-      this.userFormModel = {}
-      this.isAdd = true
-      this.editId = 0
+      this.addDialog = true;
+      this.dialogTitle = "添加";
+      this.userFormModel = {};
+      this.isAdd = true;
+      this.editId = 0;
     },
     handleDelete(data) {
       deleteUser(data)
         .then(res => {
           openMessage(res).then(() => {
-            this.getList()
-          })
+            this.getList();
+          });
         })
         .catch(err => {
-          console.log(err)
-        })
+          console.log(err);
+        });
     },
     handleEdit(data) {
-      console.log(data, 999997)
-      this.editDialog = true
-      this.isAdd = false
-      this.dialogTitle = '编辑'
-      console.log(data.company)
-      this.company_id = data.Co_ID
-      data.company_name = (data.company && data.company.Co_Name) || ''
-      data.userphone = (data.userinfo && data.userinfo.userphone) || ''
-      this.editUserFormModel = data
-      this.$nextTick(() => {})
+      console.log(data, 999997);
+      this.editDialog = true;
+      this.isAdd = false;
+      this.dialogTitle = "编辑";
+      console.log(data.company);
+      this.company_id = data.Co_ID;
+      data.company_name = (data.company && data.company.Co_Name) || "";
+      data.userphone = (data.userinfo && data.userinfo.userphone) || "";
+      this.editUserFormModel = data;
+      this.$nextTick(() => {});
     },
     getList(query) {
-      console.log(query)
+      console.log(query);
 
       fetchList(query || this.search)
         .then(res => {
-          this.data = res.data.data.data
-          this.total = res.data.data.total
+          this.data = res.data.data.data;
+          this.total = res.data.data.total;
         })
-        .catch(res => {})
+        .catch(res => {});
     },
     saveData(data) {
-      const method = this.isAdd === false ? updateUser : createUser
-      data.Co_ID = this.company_id
+      const method = this.isAdd === false ? updateUser : createUser;
+      data.Co_ID = this.company_id;
       method(data)
         .then(res => {
-          console.log(res)
+          console.log(res);
           openMessage(res).then(() => {
-            this.addDialog = false
-            this.editDialog = false
-            this.getList()
-          })
+            this.addDialog = false;
+            this.editDialog = false;
+            this.getList();
+          });
         })
         .catch(res => {
-          console.log(res)
-        })
+          console.log(res);
+        });
     },
     dialogOpen(val) {
-      this.company_id = null
+      this.company_id = null;
       this.$nextTick(() => {
-        this.$refs.dialogForm.clearValidate()
-      })
+        this.$refs.dialogForm.clearValidate();
+      });
     },
     editDialogOpen(val) {
       this.$nextTick(() => {
-        this.$refs.editDialogForm.clearValidate()
-      })
+        this.$refs.editDialogForm.clearValidate();
+      });
     },
     handleRole(data) {
-      this.roleDialog = true
-      this.roleFormModel = {}
+      this.roleDialog = true;
+      this.roleFormModel = {};
       fetchRoles(data.userid)
         .then(res => {
-          const columns = this.roleColumns
-          columns[0].data = res.data.data.allRoles
-          this.roleColumns = columns
+          const columns = this.roleColumns;
+          columns[0].data = res.data.data.allRoles;
+          this.roleColumns = columns;
           this.roleFormModel = {
             roles: res.data.data.myRoles,
             id: data.userid
-          }
+          };
         })
         .catch(res => {
-          console.log(res)
-        })
+          console.log(res);
+        });
     },
     roleDialogOpen() {
       this.$nextTick(() => {
-        this.$refs.roleForm.clearValidate()
-      })
+        this.$refs.roleForm.clearValidate();
+      });
     },
     saveRoleData(data) {
-      console.log(data, 99999955)
+      console.log(data, 99999955);
       saveRoles(data)
         .then(res => {
           openMessage(res).then(() => {
-            this.roleDialog = false
-            this.getList()
-          })
+            this.roleDialog = false;
+            this.getList();
+          });
         })
         .catch(res => {
-          console.log(res)
-        })
+          console.log(res);
+        });
     },
     remoteRoute(query) {
       getCompany(query, {})
         .then(res => {
-          console.log(res)
-          const columns = this.formColumns
+          console.log(res);
+          const columns = this.formColumns;
           columns.map(item => {
-            if (item.name == 'company_name') {
-              item.data = res.data.data
-              return item
+            if (item.name == "company_name") {
+              item.data = res.data.data;
+              return item;
             }
-          })
-          this.formColumns = columns
+          });
+          this.formColumns = columns;
         })
         .catch(res => {
-          console.log(res)
-        })
+          console.log(res);
+        });
     },
     remoteEditRoute(query) {
       getCompany(query, {})
         .then(res => {
-          console.log(res)
-          const columns = this.editFormColumns
+          console.log(res);
+          const columns = this.editFormColumns;
           columns.map(item => {
-            if (item.name == 'company_name') {
-              item.data = res.data.data
-              return item
+            if (item.name == "company_name") {
+              item.data = res.data.data;
+              return item;
             }
-          })
-          this.editFormColumns = columns
+          });
+          this.editFormColumns = columns;
         })
         .catch(res => {
-          console.log(res)
-        })
+          console.log(res);
+        });
     },
     editChange(val) {
       if (val == null || val == undefined) {
-        this.company_id = null
+        this.company_id = null;
       } else {
-        this.company_id = val
+        this.company_id = val;
       }
     }
   },
   mounted() {
     const checkPhone = (rule, value, callback) => {
       if (/^1[3578]\d{9}$/.test(value)) {
-        callback()
+        callback();
       } else {
-        callback(new Error('手机号格式不正确'))
+        callback(new Error("手机号格式不正确"));
       }
     };
 
     (this.formRules = {
-      username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-      userpwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+      username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+      userpwd: [{ required: true, message: "请输入密码", trigger: "blur" }],
       userphone: [
-        { required: true, message: '请输入用户电话', trigger: 'blur' },
-        { validator: checkPhone, trigger: 'blur' }
+        { required: true, message: "请输入用户电话", trigger: "blur" },
+        { validator: checkPhone, trigger: "blur" }
       ]
     }),
-    (this.editFormRules = {
-      username: [
-        { required: true, message: '请输入用户名', trigger: 'blur' }
-      ],
-      userphone: [
-        { required: true, message: '请输入用户电话', trigger: 'blur' },
-        { validator: checkPhone, trigger: 'blur' }
-      ]
-    })
+      (this.editFormRules = {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" }
+        ],
+        userphone: [
+          { required: true, message: "请输入用户电话", trigger: "blur" },
+          { validator: checkPhone, trigger: "blur" }
+        ]
+      });
   },
   created() {
-    this.getList()
+    const company = {
+      name: "company_name",
+      label: "所属公司",
+      type: "select",
+      props: {
+        filterable: true,
+        remote: true,
+        remoteMethod: this.remoteRoute,
+        placeholder: "请输入公司名称",
+        class: "select-dropdown",
+        clearable: true,
+        allowCreate: false
+      },
+      events: {
+        change: this.editChange
+      },
+      data: []
+    };
+    const formColumns = [
+      { name: "username", label: "用户名" },
+      { name: "userphone", label: "用户电话" },
+      {
+        name: "userpwd",
+        label: "密码",
+        inputType: "password",
+        type: "input"
+      },
+      {
+        name: "userpwd_confirmation",
+        label: "确认密码",
+        inputType: "password",
+        type: "input"
+      }
+    ];
+
+    const editFormColumns = [
+      { name: "username", label: "用户名" },
+      { name: "userphone", label: "用户电话" }
+    ];
+
+    if (this.isSuper) {
+      this.formColumns = [...formColumns, company];
+      this.editFormColumns = [...editFormColumns, company];
+    } else {
+      this.formColumns = formColumns;
+      this.editFormColumns = editFormColumns;
+    }
+    this.getList();
   }
-}
+};
 </script>
 <style lang="scss">
 .table-layout .role-form .el-checkbox {

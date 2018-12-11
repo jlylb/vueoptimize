@@ -68,64 +68,23 @@ import {
 } from "@/api/deviceinfo";
 import openMessage from "@/utils/message.js";
 import { searchCompany } from "@/api/company";
+import { mapGetters } from "vuex";
 
 export default {
   components: { tableList, MyForm },
+  computed: {
+    ...mapGetters({
+      isSuper: "isSuper",
+      companyName: "companyName",
+      cid: "companyId"
+    })
+  },
   data() {
     return {
       data: [],
       logo: [],
       dialogTitle: "",
-      formColumns: [
-        { name: "pdi_name", label: "设备名称" },
-        { name: "pdi_code", label: "设备编号" },
-        {
-          name: "dpt_id",
-          label: "设备分类",
-          type: "select",
-          props: {
-            class: "select-dropdown",
-            placeholder: "请输入设备分类",
-            filterable: true,
-            clearable: true
-          },
-          data: []
-        },
-        {
-          name: "coname",
-          label: "公司",
-          type: "select",
-          props: {
-            filterable: true,
-            remote: true,
-            remoteMethod: this.remoteRoute,
-            placeholder: "请输入公司名称",
-            class: "select-dropdown",
-            clearable: true
-          },
-          events: {
-            change: this.selectChange,
-            clear: this.selectClear
-          },
-          data: []
-        },
-        {
-          name: "areaname",
-          label: "区域",
-          type: "select",
-          props: {
-            filterable: true,
-            placeholder: "请选择区域",
-            class: "select-dropdown",
-            clearable: true
-          },
-          events: {
-            change: this.areaSelectChange,
-            clear: this.areaSelectClear
-          },
-          data: []
-        }
-      ],
+      formColumns: [],
       searchColumns: [
         { name: "pdi_code", label: "设备编号", props: { clearable: true } }
       ],
@@ -198,6 +157,16 @@ export default {
         dt_isenable: 1
       };
       this.editId = 0;
+      if (!this.isSuper) {
+        this.companyId = this.cid;
+        const data = {
+          coname: this.companyName,
+          dt_isenable: 1
+        };
+        this.$nextTick(() => {
+          this.userFormModel = data;
+        });
+      }
     },
     handleDelete(data) {
       deleteDeviceinfo(data)
@@ -293,6 +262,7 @@ export default {
       this.$refs.dialogForm.validateField("areaname");
     },
     setArea(cid) {
+      console.log(cid, "area......");
       if (cid == null || cid == undefined) {
         return;
       }
@@ -327,6 +297,57 @@ export default {
   },
   created() {
     this.search = Object.assign({}, this.search, this.$route.params);
+    this.formColumns = [
+      { name: "pdi_name", label: "设备名称" },
+      { name: "pdi_code", label: "设备编号" },
+      {
+        name: "dpt_id",
+        label: "设备分类",
+        type: "select",
+        props: {
+          class: "select-dropdown",
+          placeholder: "请输入设备分类",
+          filterable: true,
+          clearable: true
+        },
+        data: []
+      },
+      {
+        name: "coname",
+        label: "公司",
+        type: "select",
+        props: {
+          filterable: true,
+          remote: true,
+          remoteMethod: this.remoteRoute,
+          placeholder: "请输入公司名称",
+          class: "select-dropdown",
+          clearable: true,
+          disabled: !this.isSuper
+        },
+        events: {
+          change: this.selectChange,
+          clear: this.selectClear
+        },
+        data: []
+      },
+      {
+        name: "areaname",
+        label: "区域",
+        type: "select",
+        props: {
+          filterable: true,
+          placeholder: "请选择区域",
+          class: "select-dropdown",
+          clearable: true
+        },
+        events: {
+          change: this.areaSelectChange,
+          clear: this.areaSelectClear
+        },
+        data: []
+      }
+    ];
     this.getList();
   }
 };

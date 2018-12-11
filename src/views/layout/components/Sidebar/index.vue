@@ -14,8 +14,8 @@
         <img :src="logo()" v-else>
       </div>
       <sidebar-item
-        v-for="route in permission_routers"
-        :key="route.name"
+        v-for="(route, index) in permission_routers"
+        :key="`route_${index}`"
         :item="route"
         :base-path="route.path"
       ></sidebar-item>

@@ -21,6 +21,7 @@ const getters = {
   isget: state => state.user.isget,
   notification: state => state.user.notification,
   companyId: state => state.user.companyId,
-  company: state => state.user.company
+  company: state => state.user.company,
+  isSuper: state => state.user.isSuper
 }
 export default getters

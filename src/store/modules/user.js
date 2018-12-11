@@ -19,7 +19,8 @@ const user = {
     isget: false,
     notification: 0,
     company: null,
-    companyId: null
+    companyId: null,
+    isSuper: false
   },
 
   mutations: {
@@ -66,6 +67,9 @@ const user = {
     },
     SET_COMPANY_ID: (state, val) => {
       state.companyId = val
+    },
+    IS_SUPER: (state, val) => {
+      state.isSuper = val
     }
   },
 
@@ -74,59 +78,66 @@ const user = {
     LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        loginByUsername(username, userInfo.password).then(response => {
-          console.log(response)
-          const data = response.data
-          console.log(data, 'Login By Username.....')
-          if (data.status === 0) {
-            reject(response)
-          } else {
-            commit('SET_TOKEN', data.token)
-            setToken(response.data.token)
-            resolve()
-          }
-        }).catch(error => {
-          reject(error)
-        })
+        loginByUsername(username, userInfo.password)
+          .then(response => {
+            console.log(response)
+            const data = response.data
+            console.log(data, 'Login By Username.....')
+            if (data.status === 0) {
+              reject(response)
+            } else {
+              commit('SET_TOKEN', data.token)
+              setToken(response.data.token)
+              resolve()
+            }
+          })
+          .catch(error => {
+            reject(error)
+          })
       })
     },
 
     // 获取用户信息
     GetUserInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getUserInfo(state.token).then(response => {
-          console.log(response)
-          if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-            reject('error')
-          }
-          const data = response.data.user
+        getUserInfo(state.token)
+          .then(response => {
+            console.log(response)
+            if (!response.data) {
+              // 由于mockjs 不支持自定义状态码只能这样hack
+              reject('error')
+            }
+            const data = response.data.user
 
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
-          } // else {
-          //   reject('getInfo: roles must be a non-null array !')
-          // }
-          let logo, cname
-          if (!data.company) {
-            logo = null
-            cname = null
-          } else {
-            logo = data.company.Co_Logo
-            cname = data.company.Co_Name
-          }
-          commit('SET_IS_GET', true)
-          commit('SET_NAME', data.username)
-          commit('SET_AVATAR', data.avatar)
-          commit('SET_INTRODUCTION', data.introduction)
-          commit('SET_NOTIFICATION', data.notification)
-          commit('SET_COMPANY', data.company)
-          commit('SET_COMPANY_LOGO', logo)
-          commit('SET_COMPANY_NAME', cname)
-          commit('SET_COMPANY_ID', data.Co_ID)
-          resolve(response)
-        }).catch(error => {
-          reject(error)
-        })
+            if (data.roles && data.roles.length > 0) {
+              // 验证返回的roles是否是一个非空数组
+              commit('SET_ROLES', data.roles)
+            } // else {
+            //   reject('getInfo: roles must be a non-null array !')
+            // }
+            let logo, cname
+            if (!data.company) {
+              logo = null
+              cname = null
+            } else {
+              logo = data.company.Co_Logo
+              cname = data.company.Co_Name
+            }
+            commit('SET_IS_GET', true)
+            commit('SET_NAME', data.username)
+            commit('SET_AVATAR', data.avatar)
+            commit('SET_INTRODUCTION', data.introduction)
+            commit('SET_NOTIFICATION', data.notification)
+            commit('SET_COMPANY', data.company)
+            commit('SET_COMPANY_LOGO', logo)
+            commit('SET_COMPANY_NAME', cname)
+            commit('SET_COMPANY_ID', data.Co_ID)
+            commit('IS_SUPER', data.isSuper)
+            resolve(response)
+          })
+          .catch(error => {
+            reject(error)
+          })
       })
     },
 
@@ -147,14 +158,16 @@ const user = {
     // 登出
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
-          removeToken()
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        logout(state.token)
+          .then(() => {
+            commit('SET_TOKEN', '')
+            commit('SET_ROLES', [])
+            removeToken()
+            resolve()
+          })
+          .catch(error => {
+            reject(error)
+          })
       })
     },
 
