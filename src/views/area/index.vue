@@ -1,68 +1,77 @@
 <template>
-    <div class='table-layout'>
-        <table-list
-        :custom-columns='columns'
-        :form-columns='searchColumns'
-        :table-data='data'
-        :total='total'
-        :search-data='search'
-        @list-data='getList'
-        @list-edit='handleEdit'
-        :column-length='9'
-        @list-delete='handleDelete'>
-        <template  slot='add_search_button'>
-            <el-button
-            type="primary"
-            icon='el-icon-circle-plus-outline'
-            @click="handleAdd">添加</el-button>
+  <div class="table-layout">
+    <table-list
+      :custom-columns="columns"
+      :form-columns="searchColumns"
+      :table-data="data"
+      :total="total"
+      :search-data="search"
+      @list-data="getList"
+      @list-edit="handleEdit"
+      :column-length="9"
+      @list-delete="handleDelete"
+    >
+      <template slot="add_search_button">
+        <el-button type="primary" icon="el-icon-circle-plus-outline" @click="handleAdd">添加</el-button>
+      </template>
+      <template slot-scope="{ data }" slot="dt_issupportext">
+        <el-tag
+          :type="data.dt_issupportext==1?'success':'info'"
+        >{{ data.dt_issupportext==1?'支持':'不支持' }}</el-tag>
+      </template>
+      <template
+        slot-scope="{ data }"
+        slot="parent_area_name"
+      >{{ data.parent_area_name ? data.parent_area_name.AreaName : '' }}</template>
+    </table-list>
+    <el-dialog
+      :title="dialogTitle"
+      :visible.sync="editDialog"
+      @open="dialogOpen"
+      :close-on-click-modal="false"
+      class="dialog"
+    >
+      <my-form
+        class="my-form"
+        ref="dialogForm"
+        @do-form="saveData"
+        :form-rules="formRules"
+        :pform-model="userFormModel"
+        :form-props="formProps"
+        :pform-columns="formColumns"
+      >
+        <template slot="area">
+          <v-distpicker
+            :only-province="onlyProvince"
+            :hide-area="hideArea"
+            :province="selectarea.province"
+            :city="selectarea.city"
+            :disabled="areaDisabled"
+            @province="selectProvince"
+            @city="selectCity"
+            @selected="onSelected"
+          ></v-distpicker>
         </template>
-        <template slot-scope="{ data }" slot='dt_issupportext'>
-            <el-tag :type='data.dt_issupportext==1?"success":"info"'> {{ data.dt_issupportext==1?'支持':'不支持' }} </el-tag>
-        </template>
-        <template slot-scope="{ data }" slot='parent_area_name'>
-            {{ data.parent_area_name ? data.parent_area_name.AreaName : '' }}
-        </template>
-        </table-list>
-        <el-dialog :title="dialogTitle" :visible.sync="editDialog" @open='dialogOpen' :close-on-click-modal='false' class='dialog'>
-            <my-form
-                class="my-form"
-                ref='dialogForm'
-                @do-form='saveData'
-                :form-rules='formRules'
-                :pform-model='userFormModel'
-                :form-props='formProps'
-                :pform-columns='formColumns'>
-                  <template slot='area'>
-                    <v-distpicker
-                    :only-province='onlyProvince'
-                    :hide-area='hideArea' 
-                    :province="selectarea.province" 
-                    :city="selectarea.city"
-                    :disabled='areaDisabled' 
-                    @province='selectProvince'
-                    @city='selectCity' 
-                    @selected="onSelected"></v-distpicker>
-                  </template>
 
-                  <template slot='coname' slot-scope='{ data, fmodel }'>
-                    <el-select 
-                    v-model="fmodel[data.name]" 
-                    @change='selectChange($event,data.data)'
-                    @clear='selectClear'
-                    :disabled='companyDisabled' 
-                    v-bind='data.props||{}'>
-                        <el-option
-                        v-for="item in data.data"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                        </el-option>
-                    </el-select>
-                  </template>
-
-                </my-form>
-        </el-dialog>
-    </div>
+        <template slot="coname" slot-scope="{ data, fmodel }">
+          <el-select
+            v-model="fmodel[data.name]"
+            @change="selectChange($event,data.data)"
+            @clear="selectClear"
+            :disabled="!isSuper"
+            v-bind="data.props||{}"
+          >
+            <el-option
+              v-for="item in data.data"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </template>
+      </my-form>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -72,16 +81,24 @@ import { fetchList, createArea, updateArea, deleteArea } from '@/api/area'
 import openMessage from '@/utils/message.js'
 import VDistpicker from 'v-distpicker'
 import { searchCompany } from '@/api/company'
+import { mapGetters } from 'vuex'
 
 export default {
   components: { tableList, MyForm, VDistpicker },
+  computed: {
+    ...mapGetters({
+      isSuper: 'isSuper',
+      companyName: 'companyName',
+      cid: 'companyId'
+    })
+  },
   data() {
     return {
       data: [],
       logo: [],
       dialogTitle: '',
       formColumns: [
-        { 
+        {
           name: 'coname',
           label: '公司',
           type: 'select',
@@ -93,22 +110,18 @@ export default {
             class: 'select-dropdown',
             clearable: true
           },
-          data: [
-
-          ]
+          data: []
         },
         { name: 'area', label: '区域名称', hidden: true },
         { name: 'area_text', label: '区域描述' },
         { name: 'area_manager', label: '管理者' },
-        { name: 'connect_phone', label: '联系电话' },
+        { name: 'connect_phone', label: '联系电话' }
       ],
       searchColumns: [
-        { name: 'AreaName', label: '区域名称', props: { clearable: true }},
+        { name: 'AreaName', label: '区域名称', props: { clearable: true }}
       ],
       formRules: {
-        coname: [
-          {required: true, trigger: 'change', message: '请输入公司'}
-        ]
+        coname: [{ required: true, trigger: 'change', message: '请输入公司' }]
       },
       formProps: {
         labelWidth: '120px'
@@ -130,7 +143,7 @@ export default {
           label: '区域描述'
         },
         area_manager: {
-           label: '管理者'
+          label: '管理者'
         },
         connect_phone: {
           label: '联系电话'
@@ -144,7 +157,7 @@ export default {
         action: {
           'min-width': '150',
           label: '操作'
-        },
+        }
       },
       total: 0,
       search: {
@@ -152,51 +165,63 @@ export default {
         pageSize: 10
       },
       editDialog: false,
-      userFormModel: {
-      },
+      userFormModel: {},
       isAdd: true,
       selectarea: {
         province: '',
-        city: '',
+        city: ''
       },
       onlyProvince: false,
       hideArea: true,
       areaDisabled: false,
-      companyDisabled: false
+      companyDisabled: false,
+      companyId: null
     }
   },
   methods: {
     handleAdd(data) {
       this.setRules()
       this.editDialog = true
-     // this.onlyProvince = true
+      // this.onlyProvince = true
       this.isAdd = true
       this.dialogTitle = '添加'
       // this.areaDisabled = false
       // this.companyDisabled = false
-      const columns = this.formColumns
-      columns.map((item) => {
-        if (item.name == 'coname') {
-          item.data = []
-          return item
-        }
-      })
-      this.formColumns = columns
+      let coname
+      if (this.isSuper) {
+        const columns = this.formColumns
+        columns.map(item => {
+          if (item.name == 'coname') {
+            item.data = []
+            return item
+          }
+        })
+        this.formColumns = columns
+        this.companyId = null
+        coname = null
+      } else {
+        this.companyId = this.cid
+        coname = this.companyName
+      }
 
       this.userFormModel = {
         Fid: null,
-        Co_ID: null
+        Co_ID: this.companyId,
+        coname: coname
       }
-      this.selectarea = { province: "", city: "" }
+
+      this.selectarea = { province: '', city: '' }
     },
     handleDelete(data) {
-      deleteArea(data).then((res) => {
-        openMessage(res).then(() => {
-          this.getList()
+      deleteArea(data)
+        .then(res => {
+          openMessage(res).then(() => {
+            this.getList()
+          })
         })
-      }).catch((err) => {
-        console.log(err)
-      })
+        .catch(err => {
+          console.log(err)
+        })
     },
     handleEdit(data) {
       console.log(data)
@@ -207,16 +232,16 @@ export default {
       // this.areaDisabled = true
       // this.companyDisabled = true
       data.coname = data.Co_Name
+      this.companyId = data.Co_ID
 
       let { AreaName } = data
       let province
-      if(data.parent_area_name) {
-         province = data.parent_area_name.AreaName
-      }else{
+      if (data.parent_area_name) {
+        province = data.parent_area_name.AreaName
+      } else {
         province = AreaName
         AreaName = ''
       }
-      
 
       this.selectarea = { province, city: AreaName }
       this.$nextTick(() => {
@@ -225,28 +250,31 @@ export default {
     },
     getList(query) {
       console.log(query)
-      fetchList(query || this.search).then((res) => {
-        this.data = res.data.data.data
-        this.total = res.data.data.total
-      }).catch((res) => {
-
-      })
+      fetchList(query || this.search)
+        .then(res => {
+          this.data = res.data.data.data
+          this.total = res.data.data.total
+        })
+        .catch(res => {})
     },
     saveData(data) {
       const method = this.isAdd !== true ? updateArea : createArea
-      let postData = {...data}
+      const postData = { ...data }
       console.log(this.selectarea)
-      let { province, city} = this.selectarea
-      postData.AreaName = city||province
+      const { province, city } = this.selectarea
+      postData.AreaName = city || province
       postData.province = province
-      method(postData).then((res) => {
-        openMessage(res).then(() => {
-          this.editDialog = false
-          this.getList()
+      postData.Co_ID = this.companyId
+      method(postData)
+        .then(res => {
+          openMessage(res).then(() => {
+            this.editDialog = false
+            this.getList()
+          })
         })
-      }).catch((res) => {
-        console.log(res)
-      })
+        .catch(res => {
+          console.log(res)
+        })
     },
     dialogOpen(val) {
       this.$nextTick(() => {
@@ -259,63 +287,66 @@ export default {
     },
     setArea(data) {
       return {
-        province: data.province.code ? data.province.value : '' ,
-        city: data.city.code ? data.city.value : '',
+        province: data.province.code ? data.province.value : '',
+        city: data.city.code ? data.city.value : ''
       }
     },
     selectProvince(val) {
       console.log(val)
-      this.selectarea.province = val.code?val.value:''
+      this.selectarea.province = val.code ? val.value : ''
       this.$refs.dialogForm.validateField('area')
     },
     selectCity(val) {
       console.log(val)
-      this.selectarea.city = val.code?val.value:''
+      this.selectarea.city = val.code ? val.value : ''
       this.$refs.dialogForm.validateField('area')
     },
     setRules() {
       var validArea = (rule, value, callback) => {
         console.log(this.selectarea)
-        if(this.selectarea.province && this.selectarea.city){
+        if (this.selectarea.province && this.selectarea.city) {
           callback()
         } else {
           callback(new Error('请选择区域'))
         }
-        
       }
       this.formRules.area = [
-        {required: true, trigger: 'blur', validator: validArea}
+        { required: true, trigger: 'blur', validator: validArea }
       ]
     },
     remoteRoute(query) {
-      searchCompany(query).then((res) => {
-        const columns = this.formColumns
-        columns.map((item) => {
-          if (item.name == 'coname') {
-            item.data = res.data.data
-            return item
-          }
+      searchCompany(query)
+        .then(res => {
+          const columns = this.formColumns
+          columns.map(item => {
+            if (item.name == 'coname') {
+              item.data = res.data.data
+              return item
+            }
+          })
+          this.formColumns = columns
         })
-        this.formColumns = columns
-      }).catch((res) => {
-        console.log(res)
-      })
+        .catch(res => {
+          console.log(res)
+        })
     },
     selectChange(val, data) {
       console.log(val, data)
       const formModel = this.$refs.dialogForm.getFormModel()
       this.$set(formModel, 'Co_ID', val)
+      this.companyId = val
       this.userFormModel = formModel
     },
     selectClear() {
       const formModel = this.$refs.dialogForm.getFormModel()
       this.$set(formModel, 'Co_ID', null)
+      this.companyId = null
       this.userFormModel = formModel
-    },
+    }
   },
   created() {
     this.search = Object.assign({}, this.search, this.$route.params)
-    console.log(this.search,this.$route.params, 'search ......')
+    console.log(this.search, this.$route.params, 'search ......')
     this.getList()
   }
 }
