@@ -8,7 +8,7 @@ export const warnLevel = () => {
 }
 
 export const warnClass = val => {
-  return warnLevel()[val] && warnLevel()[val]['class'] || ''
+  return (warnLevel()[val] && warnLevel()[val]['class']) || ''
 }
 
 export default {}

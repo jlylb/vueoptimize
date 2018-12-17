@@ -6,6 +6,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 import '@/styles/index.scss' // global css
 
+import globalConfig from '@/utils/global' // global css
+
 // import 'animate.css'
 
 import App from './App'
@@ -36,6 +38,8 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+
+Vue.prototype.$appConfig = globalConfig
 
 new Vue({
   el: '#app',
