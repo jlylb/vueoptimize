@@ -49,14 +49,20 @@ export default {
       default() {
         return {}
       }
+    },
+    isCustomButton: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
     formRules(newVal) {
+      console.log(newVal,'watch rules...........')
       this.rules = newVal
       this.$nextTick(() => {
+        console.log(this.$refs[this.formName],'form next ticking.....')
         this.$refs[this.formName].fields.forEach((item) => {
-          console.log(item.getRules())
+          console.log(item.getRules(),'rule fields.....')
           const rules = item.getRules()
           if (rules.length || item.required !== undefined) {
             item.$on('el.form.blur', item.onFieldBlur)
@@ -78,6 +84,7 @@ export default {
   },
   methods: {
     onSubmit() {
+      console.log(this.formModel,'submit.....')
       this.$refs[this.formName].validate((valid) => {
         if (valid) {
           this.$emit('do-form', this.formModel)

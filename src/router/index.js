@@ -55,6 +55,18 @@ export const constantRouterMap = [
     }]
   },
   {
+    path: '/flash',
+    component: Layout,
+    redirect: '/flash/index',
+    hidden: true,
+    children: [{
+      path: 'index/:cid',
+      component: () => import('@/views/flash/index'),
+      name: 'api.flash.index',
+      meta: { title: 'flash', icon: 'flash' }
+    }]
+  },
+  {
     path: '/notice',
     component: Layout,
     redirect: '/notice/index',

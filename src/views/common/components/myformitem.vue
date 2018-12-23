@@ -182,16 +182,24 @@ export default {
       this.pics = newVal
     }
   },
+  inject: ['tabform', 'refname'],
   methods: {
     uploadSuccess(file, props) {
       const fieldName = props.name || 'file'
       console.log(file)
+      console.log('upload......', this.tabform, this.refname)
       this.formModel[fieldName] = file.data.location
+      if(this.tabform) {
+        this.tabform[this.refname].validateField(fieldName)
+      }
     },
     removeSuccess(file, props) {
       const fieldName = props.name || 'file'
       this.formModel[fieldName] = ''
       this.pics = []
+      if(this.tabform) {
+        this.tabform[this.refname].validateField(fieldName)
+      }
     },
     setFormModel(data) {
       this.formModel = Object.assign({}, this.formModel, data)
@@ -208,7 +216,7 @@ export default {
   },
   created() {
     const items = {}
-    console.log(this.formColumns, 'created')
+    console.log(this.formColumns, 'created', this.tabform)
     this.formColumns.forEach((item) => {
       if (!item.hidden || item.type !== 'formbutton') {
         items[item.name] = item.default || ''

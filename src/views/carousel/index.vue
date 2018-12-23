@@ -15,6 +15,13 @@
             icon='el-icon-circle-plus-outline'
             @click="handleAdd">添加</el-button>
         </template>
+        <template  slot='actionExtra' slot-scope="{ data }">
+            <el-button
+            type="primary"
+            icon='el-icon-circle-plus-outline'
+            size="small"
+            @click="imgManager(data)">图片</el-button>
+        </template>
         </table-list>
     </div>
 </template>
@@ -80,7 +87,7 @@ export default {
           label: '更新时间'
         },
         action: {
-          'min-width': '150',
+          'min-width': '240',
           label: '操作'
         }
       },
@@ -94,6 +101,9 @@ export default {
   methods: {
     handleAdd(data) {
       this.$router.push({ name: 'api.carousel.add' })
+    },
+    imgManager(data){
+      this.$router.push({ name: 'api.flash.index', params: { cid: data.id } })
     },
     handleDelete(data) {
       deleteCarousel(data).then((res) => {

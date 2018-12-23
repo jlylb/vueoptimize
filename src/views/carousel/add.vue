@@ -111,7 +111,7 @@ export default {
       // isAdd: true,
       tabactive: '',
       tabLabel: {
-        content: '内容',
+        content: { label: '内容' },
       }
     }
   },

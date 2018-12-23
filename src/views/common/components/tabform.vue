@@ -11,7 +11,7 @@
     </el-tabs>
 
     <el-form-item>
-        <el-button type="primary" @click="onSubmit">保存</el-button>
+        <el-button type="primary" @click="onSubmit" v-if="!isCustomButton">保存</el-button>
     </el-form-item>
 
     </el-form>
@@ -39,6 +39,13 @@ export default {
       }
     }
   },
+  provide(){
+    return {
+      tabform: this.$refs,
+      refname: this.formName
+    }
+    
+  },
   watch: {
 
   },
@@ -54,7 +61,11 @@ export default {
       if (!item.hidden) {
         items[item.name] = item.default || ''
       }
-
+      if (item.type === 'formbutton') {
+        if (item.buttons && item.buttons.save) {
+          item.buttons.save.events.click = this.onSubmit
+        }
+      }
       if (item.tab) {
         curTab = item.tab
       }
