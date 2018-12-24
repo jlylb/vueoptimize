@@ -58,6 +58,13 @@ export default {
     }
     
   },
+    provide(){
+    return {
+      tabform: this.$refs,
+      refname: this.formName
+    }
+    
+  },
   created() {
     console.log(this.$refs)
     const items = {}

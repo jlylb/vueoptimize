@@ -15,6 +15,12 @@
             icon='el-icon-circle-plus-outline'
             @click="handleAdd">添加</el-button>
         </template>
+        <template  slot='actionExtra' slot-scope="{ data }">
+            <el-button
+            type="primary"
+            icon='el-icon-circle-plus-outline'
+            @click="handleAddComment(data)">添加评论</el-button>
+        </template>
         <template slot-scope="{ data }" slot='status'>
             <el-tag> {{ data.status }} </el-tag>
         </template>
@@ -212,6 +218,9 @@ export default {
   },
   methods: {
     getImageUrl,
+    handleAddComment(data) {
+      this.$router.push({ name: 'api.comment.index', params: { postid: data.id } })
+    },
     handleAdd(data) {
       // this.addDialog = true
       // this.dialogTitle = '添加'

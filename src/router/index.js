@@ -63,9 +63,21 @@ export const constantRouterMap = [
       path: 'index/:cid',
       component: () => import('@/views/flash/index'),
       name: 'api.flash.index',
-      meta: { title: 'flash', icon: 'flash' }
+      meta: { title: '图片', icon: 'flash' }
     }]
   },
+  // {
+  //   path: '/comment',
+  //   component: Layout,
+  //   redirect: '/comment/index',
+  //   hidden: true,
+  //   children: [{
+  //     path: 'index/:cid',
+  //     component: () => import('@/views/comment/index'),
+  //     name: 'api.comment.index',
+  //     meta: { title: '评论', icon: 'comment' }
+  //   }]
+  // },
   {
     path: '/notice',
     component: Layout,
