@@ -157,14 +157,16 @@ export default {
       this.isAdd = true;
       this.dialogTitle = "添加";
       this.userFormModel = {
-        dt_isenable: 1
+        dt_isenable: 1,
+        dpt_id: 0
       };
       this.editId = 0;
       if (!this.isSuper) {
         this.companyId = this.cid;
         const data = {
           coname: this.companyName,
-          dt_isenable: 1
+          dt_isenable: 1,
+          dpt_id: 0
         };
         this.$nextTick(() => {
           this.userFormModel = data;
