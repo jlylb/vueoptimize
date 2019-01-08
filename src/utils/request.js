@@ -105,6 +105,11 @@ service.interceptors.request.use(
 // respone interceptor
 service.interceptors.response.use(
   response => {
+    const token = response.headers.authorization
+    if (token) {
+      // 如果 header 中存在 token，那么触发 refreshToken 方法，替换本地的 token
+      store.dispatch('refreshToken', token.replace('Bearer ', ''))
+    }
     // const res = response.data
     // if (res.code !== 4001) {
     //   Message({
@@ -159,11 +164,14 @@ service.interceptors.response.use(
       errorMsg = '服务器程序运行异常,请联系管理员'
     }
     console.log('err', error, errorMsg) // for debug
-    Message({
-      message: errorMsg,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    if (errorMsg) {
+      Message({
+        message: errorMsg,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+
     return Promise.reject(error)
   }
 )

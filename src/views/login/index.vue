@@ -1,8 +1,14 @@
 <template>
   <div class="login-container">
-
-    <el-form class="login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
-
+    <el-form
+      class="login-form"
+      autocomplete="on"
+      :model="loginForm"
+      :rules="loginRules"
+      ref="loginForm"
+      label-position="left"
+      v-if="passwordLogin"
+    >
       <div class="title-container">
         <h3 class="title">{{$t('login.title')}}</h3>
         <!-- <lang-select class="set-language"></lang-select> -->
@@ -10,110 +16,203 @@
 
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
-        <el-input name="username" type="text" v-model="loginForm.username" autoComplete="on" :placeholder="$t('login.username')"
+        <el-input
+          name="username"
+          type="text"
+          v-model="loginForm.username"
+          autocomplete="on"
+          :placeholder="$t('login.username')"
         />
       </el-form-item>
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="password"/>
         </span>
-        <el-input name="password" :type="passwordType" @keyup.enter.native="handleLogin" v-model="loginForm.password" autoComplete="on"
-          :placeholder="$t('login.password')" />
+        <el-input
+          name="password"
+          :type="passwordType"
+          @keyup.enter.native="handleLogin"
+          v-model="loginForm.password"
+          autocomplete="on"
+          :placeholder="$t('login.password')"
+        />
         <span class="show-pwd" @click="showPwd">
-          <svg-icon icon-class="eye" />
+          <svg-icon icon-class="eye"/>
         </span>
       </el-form-item>
 
-      <el-button type="success" class='login-btn' style="width:100%;margin-bottom:30px;" :loading="loading" @click.native.prevent="handleLogin">{{$t('login.logIn')}}</el-button>
-
+      <el-button
+        type="success"
+        class="login-btn"
+        style="width:100%;margin-bottom:30px;"
+        :loading="loading"
+        @click.native.prevent="handleLogin"
+      >{{$t('login.logIn')}}</el-button>
+      <div class="tips">
+        <span @click="qrcodeSign">二维码登录</span>
+      </div>
     </el-form>
 
+    <div class="login-form login-qrcode" v-if="qrcodeLogin">
+      <div class="title-container">
+        <h3 class="title">{{$t('login.title')}}</h3>
+      </div>
+      <div class="qrimg">
+        <img :src="qrcodeImg" class="qrcode">
+        <div class="qrimg-cover" v-if="expireText">
+          <div class="qrimg-cover-content">
+            <p class="qrimg-tips">二维码已失效</p>
+            <p>
+              <el-button
+                type="success"
+                size="small"
+                @click="qrcodeSign"
+                :style="{ width: '96px'}"
+              >刷新</el-button>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="tips">
+        <span @click="passwordSign">密码登录</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate'
+import { isvalidUsername } from "@/utils/validate";
 // import LangSelect from '@/components/LangSelect'
-import openMessage from '@/utils/message.js'
-import { loginByUsername } from '@/api/login'
-import { setToken } from '@/utils/auth'
+import openMessage from "@/utils/message.js";
+import { loginByUsername } from "@/api/login";
+import { getQrcode, checkQrcode } from "@/api/qrcode1";
+import { setToken } from "@/utils/auth";
 
 export default {
-  components: { },
-  name: 'login',
+  components: {},
+  name: "login",
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
-        callback(new Error('请输入账号'))
+        callback(new Error("请输入账号"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('密码不得少于6位'))
+        callback(new Error("密码不得少于6位"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       loginForm: {
-        username: 'Cynthia Lindgren',
-        password: '123456'
+        username: "Cynthia Lindgren",
+        password: "123456"
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [
+          { required: true, trigger: "blur", validator: validateUsername }
+        ],
+        password: [
+          { required: true, trigger: "blur", validator: validatePassword }
+        ]
       },
-      passwordType: 'password',
+      passwordType: "password",
       loading: false,
-      showDialog: false
-    }
+      showDialog: false,
+      qrcodeImg: null,
+      passwordLogin: true,
+      qrcodeLogin: false,
+      expireText: false,
+      timerId: null,
+      timeLimit: 120
+    };
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = ''
+      if (this.passwordType === "password") {
+        this.passwordType = "";
       } else {
-        this.passwordType = 'password'
+        this.passwordType = "password";
       }
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          this.$store.dispatch('LoginByUsername', this.loginForm).then((res) => {
-            this.loading = false
-            this.$router.push({ path: '/' })
-          }).catch((res) => {
-            // console.log(res,'login catch ......')
-            openMessage(res)
-            this.loading = false
-          })
+          this.loading = true;
+          this.$store
+            .dispatch("LoginByUsername", this.loginForm)
+            .then(res => {
+              this.loading = false;
+              this.$router.push({ path: "/" });
+            })
+            .catch(res => {
+              // console.log(res,'login catch ......')
+              openMessage(res);
+              this.loading = false;
+            });
         } else {
-          console.log('error submit!!')
-          return false
+          console.log("error submit!!");
+          return false;
         }
-      })
+      });
     },
-    afterQRScan() {
-
+    afterQRScan() {},
+    passwordSign() {
+      this.passwordLogin = true;
+      this.qrcodeLogin = false;
+    },
+    qrcodeSign() {
+      this.passwordLogin = false;
+      this.qrcodeLogin = true;
+      clearInterval(this.timerId);
+      this.expireText = false;
+      getQrcode().then(res => {
+        const { status, msg, s } = res.data;
+        console.log(res, "qrcode......");
+        if (status == 1) {
+          this.qrcodeImg = msg;
+          this.checkQruuid(s);
+        }
+      });
+    },
+    checkQruuid(uuid) {
+      // let timeLimit = 120;
+      this.timerId = setInterval(() => {
+        checkQrcode({ s: uuid })
+          .then(res => {
+            const { status, data } = res.data;
+            if (status == 1) {
+              this.$store.dispatch("ScanLogin", data).then(() => {
+                this.$router.push({ path: "/", replace: true });
+              });
+              clearInterval(this.timerId);
+            } else {
+              if (this.timeLimit > 1) {
+                this.timeLimit -= 1;
+              } else {
+                this.timeLimit = 120;
+                this.expireText = true;
+                clearInterval(this.timerId);
+              }
+            }
+          })
+          .catch(() => {
+            this.timeLimit = 120;
+            clearInterval(this.timerId);
+          });
+      }, 1000);
     }
   },
-  created() {
-
-  },
-  destroyed() {
-
-  },
-  mounted() {
-
-  }
-}
-
+  created() {},
+  destroyed() {},
+  mounted() {}
+};
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
@@ -174,11 +273,40 @@ body {
     padding: 35px 35px 15px 35px;
     margin: 120px auto;
   }
+  .login-qrcode {
+    text-align: center;
+  }
+  .qrimg {
+    margin-bottom: 30px;
+    display: inline-block;
+    position: relative;
+    height: 200px;
+  }
+  .qrimg-cover {
+    display: inline-block;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+  }
+  .qrimg-cover-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+  .qrimg-tips {
+    color: #fff;
+  }
   .tips {
     font-size: 14px;
     color: #fff;
     margin-bottom: 10px;
+    text-align: center;
     span {
+      cursor: pointer;
       &:first-of-type {
         margin-right: 16px;
       }

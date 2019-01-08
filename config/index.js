@@ -22,6 +22,14 @@ module.exports = {
         pathRewrite: {
           '^/image': '/upload'
         }
+      },
+      '/lapi': {
+        target: 'http://app57.test',
+        secure: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/lapi': '/api'
+        }
       }
     },
 

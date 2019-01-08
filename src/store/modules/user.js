@@ -20,7 +20,8 @@ const user = {
     notification: 0,
     company: null,
     companyId: null,
-    isSuper: false
+    isSuper: false,
+    expireIn: 0
   },
 
   mutations: {
@@ -31,6 +32,9 @@ const user = {
       if (token) {
         state.token = token
       }
+    },
+    SET_EXPIRE: (state, expireTime) => {
+      state.expireIn = expireTime
     },
     SET_INTRODUCTION: (state, introduction) => {
       state.introduction = introduction
@@ -87,6 +91,7 @@ const user = {
               reject(response)
             } else {
               commit('SET_TOKEN', data.token)
+              // commit('SET_EXPIRE', data.expires_in)
               setToken(response.data.token)
               resolve()
             }
@@ -179,7 +184,20 @@ const user = {
         resolve()
       })
     },
-
+    ScanLogin({ commit }, token) {
+      return new Promise(resolve => {
+        commit('SET_TOKEN', token)
+        setToken(token)
+        resolve()
+      })
+    },
+    refreshToken({ commit }, token) {
+      return new Promise(resolve => {
+        commit('SET_TOKEN', token)
+        setToken(token)
+        resolve()
+      })
+    },
     // 动态修改权限
     ChangeRoles({ commit }, role) {
       return new Promise(resolve => {
