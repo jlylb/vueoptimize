@@ -1,51 +1,55 @@
 <template>
-  <device-component
-      :status='status'
-      v-loading='loading'
-      :icon-name="icon">
-      <template slot='params'>
-        <slot>
-          <p>
-            <el-dropdown @command='handlerCommand' trigger="click">
-              <span class="el-dropdown-link">
-                  {{ selectText }}<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item 
-                  :disabled='disabled'
-                  :command='subItem' 
-                  :class='{"active-menu": 
-                  activeIndex==subItem.ts_typeid }' 
-                  v-for='(subItem, index) in menuData' 
-                  :key='index'>{{ subItem.ts_TypeMo }}</el-dropdown-item>
-              </el-dropdown-menu>
+  <device-component :status="status" v-loading="loading" :icon-name="icon">
+    <template slot="params">
+      <slot>
+        <p>
+          <el-dropdown @command="handlerCommand" trigger="click">
+            <span class="el-dropdown-link">
+              {{ selectText }}
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                :disabled="disabled"
+                :command="subItem"
+                :class="{'active-menu': 
+                  activeIndex==subItem.ts_typeid }"
+                v-for="(subItem, index) in menuData"
+                :key="index"
+              >{{ subItem.ts_TypeMo }}</el-dropdown-item>
+            </el-dropdown-menu>
           </el-dropdown>
-          </p>
-          <p>
-              <el-popover
-                v-model="visible"
-                trigger="click">
-                <el-input v-model="inputText" :placeholder="originTitle" :style='{ width: "auto" }'></el-input>
-                <el-button type="danger" icon="el-icon-close" circle :style='{ "margin-left": "10px" }' @click='cancelName'></el-button>
-                <el-button type="success" icon="el-icon-check" circle @click='changeName'></el-button>
-                <p slot="reference">{{ title }}</p>
-              </el-popover>
-          </p>
-        </slot>
-        <p><slot name='append'></slot></p>
-      </template>
-      
+        </p>
+        <p>
+          <el-popover v-model="visible" trigger="click">
+            <el-input v-model="inputText" :placeholder="originTitle" :style="{ width: 'auto' }"></el-input>
+            <el-button
+              type="danger"
+              icon="el-icon-close"
+              circle
+              :style="{ 'margin-left': '10px' }"
+              @click="cancelName"
+            ></el-button>
+            <el-button type="success" icon="el-icon-check" circle @click="changeName"></el-button>
+            <p slot="reference">{{ title }}</p>
+          </el-popover>
+        </p>
+      </slot>
+      <p>
+        <slot name="append"></slot>
+      </p>
+    </template>
   </device-component>
 </template>
 
 <script>
-import DeviceComponent from '@/components/deviceComponent'
+import DeviceComponent from "@/components/deviceComponent";
 export default {
-  components: {  DeviceComponent },
+  components: { DeviceComponent },
   props: {
     status: {
       type: String,
-      default: 'success'
+      default: "success"
     },
     loading: {
       type: Boolean,
@@ -53,21 +57,21 @@ export default {
     },
     title: {
       type: String,
-      default: ''
+      default: ""
     },
     originTitle: {
       type: String,
-      default: ''
+      default: ""
     },
     menus: {
       type: Object,
       default() {
-        return {}
+        return {};
       }
     },
     menuDefault: {
       type: String,
-      default: '选择类型'
+      default: "选择类型"
     },
     selectMenu: {
       type: [String, Number],
@@ -79,59 +83,58 @@ export default {
     },
     typeIcon: {
       type: String,
-      default: 'control'
+      default: "control"
     }
   },
   computed: {
     menuData() {
-      return [ this.first ].concat(this.menus)
+      return [this.first].concat(this.menus);
     }
-    
   },
   data() {
     return {
       selectText: this.menuDefault,
       icon: this.typeIcon,
       first: {
-        ts_TypeMo: '选择类型',
-        ts_Icon: 'control',
+        ts_TypeMo: "选择类型",
+        ts_Icon: "control",
         tu_SubTypeId: 0
       },
       selectItem: null,
       activeIndex: this.selectMenu,
       inputText: this.title,
       visible: false
-    }
+    };
   },
   methods: {
     handlerCommand(item) {
-      console.log(item, 'command.......')
-      this.selectText = item.ts_TypeMo
-      this.icon = item.ts_Icon
-      this.selectItem = item
-      this.activeIndex = item.ts_typeid
-      this.$emit('select-menu', item)
+      console.log(item, "command.......");
+      this.selectText = item.ts_TypeMo;
+      this.icon = item.ts_Icon;
+      this.selectItem = item;
+      this.activeIndex = item.ts_typeid;
+      this.$emit("select-menu", item);
     },
     changeName() {
-       this.$emit('save-name', {item: this.selectItem, desc: this.inputText })
-       this.visible = false
+      this.$emit("save-name", { item: this.selectItem, desc: this.inputText });
+      this.visible = false;
     },
     cancelName() {
-      this.visible = false
-      this.inputText = this.title
+      this.visible = false;
+      this.inputText = this.title;
     }
   },
   created() {
-    this.menuData.forEach((item)=>{
-      if(item.ts_typeid==this.activeIndex) {
-        this.selectItem = item
-        this.selectText = item.ts_TypeMo
-        this.icon = item.ts_Icon
+    this.menuData.forEach(item => {
+      if (item.ts_typeid == this.activeIndex) {
+        this.selectItem = item;
+        this.selectText = item.ts_TypeMo;
+        this.icon = item.ts_Icon;
       }
-    })
+    });
     // this.activeIndex = item.ts_typeid
   }
-}
+};
 </script>
 
 <style scoped>
