@@ -90,6 +90,7 @@ import openMessage from "@/utils/message.js";
 import { loginByUsername } from "@/api/login";
 import { getQrcode, checkQrcode } from "@/api/qrcode1";
 import { setToken } from "@/utils/auth";
+import { getImageUrl } from "@/utils";
 
 export default {
   components: {},
@@ -176,7 +177,7 @@ export default {
         const { status, msg, s } = res.data;
         console.log(res, "qrcode......");
         if (status == 1) {
-          this.qrcodeImg = msg;
+          this.qrcodeImg = getImageUrl(msg);
           this.checkQruuid(s);
         }
       });
