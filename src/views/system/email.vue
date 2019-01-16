@@ -8,7 +8,7 @@
           </span>
           <my-form
             class="my-form email-form"
-            ref="roleForm"
+            ref="emailForm"
             @do-form="saveData"
             :form-rules="formRules"
             :pform-model="formModel"
@@ -179,15 +179,20 @@ export default {
       });
     },
     send() {
-      this.loading = true;
-      sendEmail()
-        .then(res => {
-          openMessage(res);
-          this.loading = false;
-        })
-        .catch(() => {
-          this.loading = false;
-        });
+      this.$refs.emailForm.getForm().validate(valid => {
+        if (!valid) {
+          return;
+        }
+        this.loading = true;
+        sendEmail()
+          .then(res => {
+            openMessage(res);
+            this.loading = false;
+          })
+          .catch(() => {
+            this.loading = false;
+          });
+      });
     },
     saveSmsData(data) {
       saveSms(data).then(res => {

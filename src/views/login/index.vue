@@ -165,6 +165,7 @@ export default {
     },
     afterQRScan() {},
     passwordSign() {
+      clearInterval(this.timerId);
       this.passwordLogin = true;
       this.qrcodeLogin = false;
     },
@@ -211,6 +212,9 @@ export default {
     }
   },
   created() {},
+  beforeDestroy() {
+    clearInterval(this.timerId);
+  },
   destroyed() {},
   mounted() {}
 };
