@@ -258,6 +258,7 @@ export default {
     uploadSuccess(file, props) {
       const fieldName = props.name || "file";
       this.formModel[fieldName] = file.data.location;
+      console.log(this.formModel);
     },
     uploadFail(file, field) {
       console.log(file);
