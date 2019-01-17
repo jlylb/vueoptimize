@@ -9,8 +9,7 @@
     "build:prod": "cross-env NODE_ENV=production env_config=prod node build/build.js",
     "build:sit": "cross-env NODE_ENV=production env_config=sit node build/build.js",
     "lint": "eslint --ext .js,.vue src",
-    "test": "npm run lint",
-    "precommit": "lint-staged"
+    "test": "npm run lint"
   },
   "lint-staged": {
     "src/**/*.{js,vue}": [
@@ -109,7 +108,7 @@
     "webpack-bundle-analyzer": "2.9.1",
     "webpack-dev-server": "2.9.7",
     "webpack-merge": "4.1.1",
-	"mockjs": "1.0.1-beta3"
+    "mockjs": "1.0.1-beta3"
   },
   "engines": {
     "node": ">= 4.0.0",

@@ -31,7 +31,7 @@
                 :default-files='logo'
                 :pform-model='formModel'
                 :pform-columns='formColumns'>
-                <template slot='area'>
+                <!-- <template slot='area'>
                   <v-distpicker 
                   :province="selectarea.province" 
                   :city="selectarea.city" 
@@ -40,7 +40,7 @@
                   @city='selectCity' 
                   @area='selectArea'
                   @selected="onSelected"></v-distpicker>
-                </template>
+                </template> -->
                 </my-form>
         </el-dialog>
     </div>
@@ -50,10 +50,10 @@
 import tableList from '../common/components/tableList'
 import MyForm from '../common/components/myform'
 import { fetchList, createCompany, updateCompany, deleteCompany } from '@/api/company'
-import VDistpicker from 'v-distpicker'
+// import VDistpicker from 'v-distpicker'
 import { getImageUrl } from '@/utils'
 export default {
-  components: { tableList, MyForm, VDistpicker },
+  components: { tableList, MyForm },
   data() {
     return {
       data: [],

@@ -34,7 +34,7 @@ function filterAsyncRouter(asyncRouterMap, roles) {
 const _import = require('@/utils/_import_development')
 
 function genRoutes(routes) {
-  routes.forEach((item) => {
+  routes.forEach(item => {
     if (item.component && typeof item.component === 'string') {
       item.component = _import(item.component)
     }

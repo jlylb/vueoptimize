@@ -6,19 +6,18 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://phpsite.cc', 
-        secure: false,  
+        target: 'http://phpsite.cc',
+        secure: false,
         changeOrigin: true
       },
       '/image': {
-        target: 'http://phpsite.cc', 
-        secure: false,  
+        target: 'http://phpsite.cc',
+        secure: false,
         changeOrigin: true,
         pathRewrite: {
           '^/image': '/upload'
@@ -30,7 +29,7 @@ module.exports = {
 
     // can be overwritten by process.env.HOST
     // if you want dev by ip, please set host: '0.0.0.0'
-    host: 'localhost',
+    host: '192.168.1.33',
     port: 9530, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: true,
     errorOverlay: true,
@@ -62,7 +61,7 @@ module.exports = {
     // (https://github.com/webpack/css-loader#sourcemaps)
     // In our experience, they generally work as expected,
     // just be aware of this issue when enabling this option.
-    cssSourceMap: false,
+    cssSourceMap: false
   },
 
   build: {
