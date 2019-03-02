@@ -50,7 +50,6 @@ import tableList from '../common/components/tableList'
 import MyForm from '../common/components/tabform'
 import { fetchList, createPost, updatePost, deletePost } from '@/api/post'
 import { fetchCategory } from '@/api/category'
-import axios from 'axios'
 import { getImageUrl } from '@/utils'
 import openMessage from '@/utils/message.js'
 

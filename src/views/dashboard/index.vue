@@ -1,6 +1,11 @@
 <template>
   <div class="dashboard-container">
     <component :is="currentRole"></component>
+    <dialog-page v-model="dvisible" :dialog-props="dialogProps">
+      <div>
+<posts></posts>
+      </div>
+    </dialog-page>
   </div>
   
 </template>
@@ -8,13 +13,20 @@
 <script>
 import { mapGetters } from 'vuex'
 import adminDashboard from './admin'
+import dialogPage from '@/views/common/components/dialogPage'
+import posts from '../post/layoutadd'
 
 export default {
   name: 'dashboard',
-  components: { adminDashboard },
+  components: { adminDashboard, dialogPage, posts },
   data() {
     return {
-      currentRole: 'adminDashboard'
+      currentRole: 'adminDashboard',
+      dvisible: true,
+      dialogProps: {
+       closeOnClickModal: false
+      },
+
     }
   },
   computed: {

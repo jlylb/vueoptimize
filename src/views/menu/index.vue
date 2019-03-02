@@ -204,7 +204,7 @@ export default {
            label: '更新时间'
         },
         action: {
-          'min-width': '200',
+          'min-width': '255',
           label: '操作'
         },
       },
