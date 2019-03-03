@@ -16,6 +16,21 @@
             @click="handleAdd">添加</el-button>
         </template>
         </table-list>
+        <select-item 
+        v-model="formmodel.company" 
+        :link="['pro','dapeng']" 
+        :data="company" 
+        ref="company"></select-item>
+          <select-item 
+          v-model="formmodel.pro" 
+          :source="companyP"
+          :link="['dapeng']" 
+          ref="pro"></select-item>
+                    <select-item 
+          v-model="formmodel.dapeng" 
+          :source="dapeng"
+          ref="dapeng"></select-item>
+          {{ formmodel }}
     </div>
 </template>
 
@@ -24,9 +39,10 @@
 import tableList from '../common/components/tableList'
 import { fetchList, deleteCategory } from '@/api/category'
 import openMessage from '@/utils/message.js'
+import SelectItem from '../common/components/selectitem'
 
 export default {
-  components: { tableList },
+  components: { tableList, SelectItem },
   data() {
     return {
       data: [],
@@ -70,6 +86,41 @@ export default {
       search: {
         page: 1,
         pageSize: 10
+      },
+      formmodel: {
+        company: 1,
+        pro: 24,
+        dapeng: 41
+      },
+      company: [
+        {label:"abc", value:1},
+         {label:"bbc", value:2},
+          {label:"dbc", value:3},
+           {label:"qbc", value:4},
+      ],
+      companyP:{
+        1:[
+          {label:"gz", value:22},
+          {label:"hz", value:23},
+          {label:"zz", value:24},
+        ],
+                2:[
+          {label:"wh", value:32},
+          {label:"tj", value:33},
+          {label:"hf", value:34},
+        ]
+      },
+            dapeng:{
+        24:[
+          {label:"agz", value:41},
+          {label:"bhz", value:42},
+          {label:"czz", value:43},
+        ],
+                33:[
+          {label:"cwh", value:52},
+          {label:"ctj", value:53},
+          {label:"chf", value:54},
+        ]
       }
     }
   },
