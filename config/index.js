@@ -29,7 +29,13 @@ module.exports = {
         }
       }
     },
+    second: {
+      filename: path.resolve(__dirname, '../../apilaravel/public/front.html'),
 
+      // Paths
+      template: path.resolve(__dirname, '../index.html'),
+      // assetsRoot: path.resolve(__dirname, '../dist'),
+    },
     // Various Dev Server settings
 
     // can be overwritten by process.env.HOST

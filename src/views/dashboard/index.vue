@@ -1,11 +1,6 @@
 <template>
   <div class="dashboard-container">
     <component :is="currentRole"></component>
-    <dialog-page v-model="dvisible" :dialog-props="dialogProps">
-      <div>
-<posts></posts>
-      </div>
-    </dialog-page>
   </div>
   
 </template>

@@ -71,7 +71,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       favicon: resolve('favicon.ico'),
       title: 'vue-element-admin',
       path: config.dev.assetsPublicPath + config.dev.assetsSubDirectory,
-      chunksSortMode: 'dependency'
+      chunksSortMode: 'dependency',
+      excludeChunks: ['front']
+    }),
+    new HtmlWebpackPlugin({
+      filename: config.dev.second.filename,
+      template: config.dev.second.template,
+      inject: true,
+      favicon: resolve('favicon.ico'),
+      title: 'vue-element-admin',
+      path: config.dev.assetsPublicPath + 'front',
+      chunksSortMode: 'dependency',
+      excludeChunks: ['app']
     }),
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting
