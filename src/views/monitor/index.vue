@@ -95,7 +95,7 @@
                 <el-row class="content-status-choose">
                   <el-col :span="12">
                     <span class="icon">
-                      <svg-icon icon-class="time" class="title-icon"/>
+                      <svg-icon icon-class="time" class="title-icon" />
                     </span>
                     更新时间
                   </el-col>
