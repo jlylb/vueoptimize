@@ -13,33 +13,49 @@
                     v-for="(field, fieldIndex) in  deviceData.fields"
                     :key="field"
                     v-if="field!=='consta'"
-                    class="content-status"
+                    type="flex"
+                    class="content-row"
                   >
                     <el-col :span="3">{{ item[field][field + '_name'] + (index+1) }}</el-col>
+
                     <el-col :span="3">
                       <el-tag>{{ item[field][field + '_value'] }} {{ deviceData.unit[field] }}</el-tag>
                     </el-col>
+
                     <el-col :span="3">{{ item[field]['hwarn_name'] }}</el-col>
+
                     <el-col :span="3">
                       <el-tag
                         :type="item[field]['hwarn_value']==0?'primary':'danger'"
                         size="mini"
                       >{{ item[field]['hwarn_value']==0?'正常':'过高' }}</el-tag>
                     </el-col>
+
                     <el-col :span="3">{{ item[field]['lwarn_name'] }}</el-col>
+
                     <el-col :span="3">
                       <el-tag
                         :type="item[field]['lwarn_value']==0?'primary':'danger'"
                         size="mini"
                       >{{ item[field]['lwarn_value']==0?'正常':'过低' }}</el-tag>
                     </el-col>
+
                     <el-col :span="3" v-if="fieldIndex==0">{{ item['consta']['consta_name'] }}</el-col>
+
                     <el-col :span="3" v-if="fieldIndex==0">
                       <el-tag
                         :type="item['consta']['consta_value']==0?'primary':'danger'"
                         size="mini"
                       >{{ item['consta']['consta_value']==0?'正常':'断线' }}</el-tag>
                     </el-col>
+                  </el-row>
+                  <el-row type="flex" class="content-row">
+                    <template v-for="(limits, limitIndex) in  item.limit">
+                      <el-col :span="3" :key="`ll_${limitIndex}`">{{ limits.name }}</el-col>
+                      <el-col :span="3" :key="`lv_${limitIndex}`">
+                        <el-tag>{{ limits.value }} {{ limits.unit }}</el-tag>
+                      </el-col>
+                    </template>
                   </el-row>
                 </div>
               </el-card>
@@ -75,7 +91,7 @@
                 <el-row
                   v-for="(params, idxParam) in  firstData"
                   :key="idxParam"
-                  v-if="idxParam!=='undefined' && idxParam!=='consta'"
+                  v-if="idxParam!=='undefined' && idxParam!=='consta' && idxParam!=='limit'"
                   class="content-status-choose"
                 >
                   <el-col :span="12">
@@ -295,4 +311,11 @@ export default {
   background-color: $light-blue;
 }
 </style>
+<style lang="scss">
+.content-row {
+  width: 100%;
+  flex-wrap: wrap;
+}
+</style>
+
 
