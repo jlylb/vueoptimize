@@ -5,9 +5,8 @@
         <el-button type="success" @click="save" :disabled="disabled">保存</el-button>
       </template>
     </device-filter-three>
-
     <div class="table-layout-inner custom-layout" v-if="deviceData">
-      <el-form ref="form" :model="form" label-width="100px" label-position="top">
+      <el-form ref="form" label-width="100px" label-position="top">
         <el-tabs type="border-card" v-model="currentTab" ref="tab_card">
           <el-tab-pane
             v-for="tabitem in tabs"
@@ -20,7 +19,7 @@
               <el-col :span="5" v-for="item in tabData" :key="item.dp_paramname">
                 <el-form-item class="row-item" :label="getLabel(item.dp_paramname)">
                   <el-input-number
-                    v-model.number="form[item.dp_paramname]"
+                    v-model.number="item.value"
                     :precision="2"
                     :step="0.1"
                     size="medium"
@@ -45,12 +44,7 @@ export default {
     return {
       deviceData: null,
       pdiIndex: null,
-      form: [
-        {
-          up: 0.0,
-          down: 0.0
-        }
-      ],
+
       deviceIndex: 10,
       tabs: [],
       tabDesc: {},
@@ -63,7 +57,7 @@ export default {
   },
   computed: {
     tabData() {
-      let items = {};
+      let items = [];
       Object.keys(this.deviceData).forEach(item => {
         let index = item.replace(/\D+/g, "");
         if (this.checkTab(this.currentTab, item)) {
@@ -83,6 +77,7 @@ export default {
         .then(res2 => {
           this.deviceData = res2.data.params;
           this.desc = res2.data.desc;
+          console.log(this.deviceData, res2, "device data.....");
           this.generateModel();
         })
         .catch(() => {
@@ -93,12 +88,18 @@ export default {
       if (!this.deviceData) return;
       this.disabled = true;
       this.formData = {};
-      Object.keys(this.form).forEach(item => {
-        let dpId = this.deviceData[item]["Dp_id"];
-        if (this.checkTab(this.currentTab, item)) {
-          this.formData[dpId] = this.form[item];
-        }
+      console.log(this.tabData, "tab data.....");
+      const itemKey = this.currentTab.replace(/^rd_/, "");
+      this.tabData.forEach((item, index) => {
+        let label = this.desc[itemKey].replace(/\d+/, index + 1);
+        this.formData[item.dp_paramname] = {
+          // field: item.dp_paramname,
+          label: label,
+          dp_id: item.Dp_id,
+          value: item.value
+        };
       });
+
       const loading = this.$loading({
         target: this.$refs["tab_card"].$el,
         lock: true,
@@ -135,23 +136,18 @@ export default {
       return this.desc[descField].replace(/\d+/g, index);
     },
     generateModel() {
-      let items = {};
       this.tabs = [];
       this.tabDesc = {};
-      if (!this.deviceData) return;
-      var data = this.deviceData;
-      Object.keys(data).forEach(item => {
-        let tabName = item.replace(/\d+/g, "");
-        items[item] = data[item]["value"];
 
-        if (!this.tabs.includes(tabName)) {
-          this.tabs.push(tabName);
-          let tabDesc = item.replace(/\d+/g, "").replace(/^rd_/, "");
-          this.tabDesc[tabName] = this.desc[tabDesc].replace(/\d+/g, "");
-        }
+      if (!this.deviceData) return;
+
+      Object.keys(this.desc).forEach(item => {
+        this.tabs.push(item);
+        let label = this.desc[item].replace(/\d+/g, "");
+        this.tabDesc[item] = label;
       });
-      this.form = items;
-      this.tabs = this.tabs.reverse();
+
+      // this.tabs = this.tabs.reverse();
       this.currentTab = this.tabs[0];
     }
   },
