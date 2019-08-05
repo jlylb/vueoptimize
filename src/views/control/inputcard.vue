@@ -2,7 +2,7 @@
   <device-component :status="status" v-loading="loading" :icon-name="icon">
     <template slot="params">
       <slot>
-        <p>
+        <p v-if="hasMenu">
           <el-dropdown @command="handlerCommand" trigger="click">
             <span class="el-dropdown-link">
               {{ selectText }}
@@ -20,7 +20,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </p>
-        <p>
+        <p v-if="hasMenu">
           <el-popover v-model="visible" trigger="click">
             <el-input v-model="inputText" :placeholder="originTitle" :style="{ width: 'auto' }"></el-input>
             <el-button
@@ -64,7 +64,7 @@ export default {
       default: ""
     },
     menus: {
-      type: Object,
+      type: [Object, Array],
       default() {
         return {};
       }
@@ -89,6 +89,9 @@ export default {
   computed: {
     menuData() {
       return [this.first].concat(this.menus);
+    },
+    hasMenu() {
+      return this.menus.length > 0;
     }
   },
   data() {

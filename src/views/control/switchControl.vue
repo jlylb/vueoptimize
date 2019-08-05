@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-switch
-      v-model="item.status"
+      v-model="item.value"
       :disabled="!isAuto"
       class="switch-margin"
       v-for="(item, index) in data"
@@ -50,22 +50,22 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(0, 0, 0, 0.8)"
       });
-      const { tu_Warnid: dpId } = current;
+      const { dp_id: dpId } = current;
       const params = [];
       params.push({ status: val, dp_id: dpId });
       this.data.map(item => {
-        if (item.tu_Warnid != dpId) {
+        if (item.dp_id != dpId) {
           params.push({
             status: 0,
-            dp_id: item.tu_Warnid
+            dp_id: item.dp_id
           });
         }
       });
       saveCommand({ params, pdi_index: this.pdi })
         .then(res => {
           this.data = this.data.map(item => {
-            if (item.tu_Warnid != dpId) {
-              item.status = 0;
+            if (item.dp_id != dpId) {
+              item.value = 0;
             }
             return item;
           });
