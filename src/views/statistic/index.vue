@@ -1,113 +1,135 @@
 <template>
-    <div class='table-layout'>
+  <div class="table-layout">
+    <device-filter
+      ref="deviceFilter"
+      @filter="getData"
+      :is-search="false"
+      v-model="filterParams"
+    ></device-filter>
 
-        <device-filter ref='deviceFilter' @filter='getData' :is-search='false'></device-filter>
+    <div class="search-form-layout">
+      <div style="padding: 0 5px;">
+        <el-radio-group
+          v-model="selectDate"
+          @change="changeDate"
+          class="selectDate"
+        >
+          <el-radio :label="'day'" border>当天</el-radio>
+          <el-radio :label="'week'" border>本周</el-radio>
+          <el-radio :label="'month'" border>本月</el-radio>
+          <el-radio :label="'year'" border>本年</el-radio>
+        </el-radio-group>
+        <el-date-picker
+          v-model="searchDate"
+          type="daterange"
+          :value-format="'yyyy-MM-dd'"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          @change="dateOnPick"
+          :picker-options="poption"
+          :default-time="['00:00:00', '23:59:59']"
+        >
+        </el-date-picker>
+        <el-button type="primary" @click="handleFilter">筛选</el-button>
+      </div>
+    </div>
 
-        <div  class="search-form-layout">
-            <div style='padding: 0 5px;'>
-                <el-radio-group v-model="selectDate" @change='changeDate' class='selectDate'>
-                    <el-radio :label="'day'" border>当天</el-radio>
-                    <el-radio :label="'week'" border>本周</el-radio>
-                    <el-radio :label="'month'" border>本月</el-radio>
-                    <el-radio :label="'year'" border>本年</el-radio>
-                </el-radio-group>
-                <el-date-picker
-                    v-model="searchDate"
-                    type="daterange"
-                    :value-format='"yyyy-MM-dd"'
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    @change='dateOnPick'
-                    :picker-options="poption"
-                    :default-time="['00:00:00', '23:59:59']">
-                </el-date-picker>
-                <el-button type='primary' @click='handleFilter'>筛选</el-button>
-            </div>
-        </div>
-
-        <div class='table-layout-inner' v-if='deviceData.items'>
-
-            <chart-statistic :data='deviceData' class='monitor-chart'></chart-statistic>
- 
-        </div>
-        <div class='table-layout-inner' v-else>
-            <empty-text></empty-text>
-        </div>
-    </div>    
+    <div class="table-layout-inner" v-if="deviceData.items">
+      <template v-if="filterParams.device_type != 87">
+        <chart-statistic
+          :data="deviceData"
+          class="monitor-chart"
+        ></chart-statistic>
+      </template>
+      <template v-if="filterParams.device_type == 87">
+        <chart2 :data="deviceData" class="monitor-chart"></chart2>
+      </template>
+    </div>
+    <div class="table-layout-inner" v-else>
+      <empty-text></empty-text>
+    </div>
+  </div>
 </template>
 
 <script>
-
-import SearchForm from '@/views/common/components/searchForm'
-import { fetchList, fetchDevice, fetchDeviceData } from '@/api/monitor'
-import DeviceFilter from '@/views/common/components/deviceFilterFive'
-import ChartStatistic from './chart.vue'
+import SearchForm from "@/views/common/components/searchForm";
+import { fetchList, fetchDevice, fetchDeviceData } from "@/api/monitor";
+import DeviceFilter from "@/views/common/components/deviceFilterFive";
+import ChartStatistic from "./chart.vue";
+import Chart2 from "./chart2.vue";
 // import EmptyText from '@/views/common/components/empty'
 
 export default {
-    components: {  
-        SearchForm, 
-        DeviceFilter,
-        ChartStatistic
-    },
-    data() {
-        return {
-            searchDate: [],
-            selectDate: 'day',
-            deviceData: {},
-            timer: null,
-            poption: {
-                onPick: this.onPick
-            },
-            searchParams: {},
-        }
-    },
-    methods: {
-        getData(data) {
-            console.log(this.showType, data, 'get data')
-            this.searchParams = {
-                ...data, 
-                selectDate: this.selectDate, 
-                searchDate: this.searchDate,  
-            };
-            fetchDeviceData(this.searchParams)
-            .then((res2) => {
-                console.log(res2)
-                this.deviceData = res2.data.devices
-            }).catch(this.catchError)
-            // this.startTimer()
-        },
-        handleFilter() {
-            this.$refs.deviceFilter.handleFilter(this.$refs.deviceFilter.formModel)
-        },
-        catchError() {
-
-        },
-
-        changeDate(val) {
-            this.searchDate = []
-        },
-        dateOnPick(val) {
-
-        },
-        onPick(dates) {
-            if(dates.maxDate) {
-                this.selectDate = null
-            }
-        },
-        resetDate() {
-            this.selectDate = 'day'
-            this.searchDate = []
-        }
-    },
-    created() {
-
+  components: {
+    SearchForm,
+    DeviceFilter,
+    ChartStatistic,
+    Chart2
+  },
+  data() {
+    return {
+      searchDate: [],
+      selectDate: "day",
+      deviceData: {},
+      timer: null,
+      poption: {
+        onPick: this.onPick
+      },
+      searchParams: {},
+      filterParams: {}
+    };
+  },
+  watch: {
+    filterParams: {
+      deep: true,
+      handler(nval) {
+        console.log(nval, "watch filter params.....");
+        this.deviceData = {};
+        this.catchError();
+        // this.getData(nval)
+      }
     }
+  },
+  methods: {
+    getData(data) {
+      console.log(this.showType, data, "get data");
+      this.searchParams = {
+        ...data,
+        selectDate: this.selectDate,
+        searchDate: this.searchDate
+      };
+      fetchDeviceData(this.searchParams)
+        .then(res2 => {
+          console.log(res2);
+          this.deviceData = res2.data.devices;
+        })
+        .catch(this.catchError);
+      // this.startTimer()
+    },
+    handleFilter() {
+      this.$refs.deviceFilter.handleFilter(this.$refs.deviceFilter.formModel);
+    },
+    catchError() {},
 
-}
+    changeDate(val) {
+      this.searchDate = [];
+    },
+    dateOnPick(val) {},
+    onPick(dates) {
+      if (dates.maxDate) {
+        this.selectDate = null;
+      }
+    },
+    resetDate() {
+      this.selectDate = "day";
+      this.searchDate = [];
+    }
+  },
+  created() {}
+};
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 $activeColor: #e6a23c;
 .table-layout-inner {
   background-color: #fff;
@@ -160,4 +182,3 @@ $activeColor: #e6a23c;
   min-height: 700px;
 }
 </style>
-

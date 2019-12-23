@@ -32,14 +32,30 @@ export default {
       type: Boolean,
       default: true
     },
+    isInit: {
+      type: Boolean,
+      default: true
+    },
     mtype: {
       type: [String, Number],
       default: 1
+    },
+    value: {
+      type: Object,
+      default() {
+        return {};
+      }
+    }
+  },
+  watch: {
+    formModel(nval) {
+      console.log(nval, "form model.......");
+      this.$emit("input", nval);
     }
   },
   data() {
     return {
-      formModel: {},
+      formModel: this.value,
       formColumns: [
         {
           name: "company",
@@ -224,7 +240,9 @@ export default {
         this.formColumns = columns;
       })
       .then(() => {
-        this.handleFilter(this.formModel);
+        if (this.isInit) {
+          this.handleFilter(this.formModel);
+        }
       });
   },
   destoryed() {},
@@ -232,5 +250,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

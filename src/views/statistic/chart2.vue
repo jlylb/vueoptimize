@@ -48,11 +48,9 @@ export default {
       return options;
     },
     getXField(data) {
-      const name = data.name;
-      const num = data.num;
       const names = [];
-      for (let i = 1; i <= num; i++) {
-        names.push(name + i);
+      for (let x in data.surfix) {
+        names.push(data.surfix[x]);
       }
       return names;
     },
@@ -63,65 +61,55 @@ export default {
       this.xfield = [];
       this.optonsData = [];
       const colors = this.colors;
-      const postions = ["left", "right"];
       const keys = Object.keys(data.surfix);
-      const num = data.num;
-      for (const xkey in keys) {
-        const curKey = keys[xkey];
-        const name = data.surfix[curKey];
-        this.yfield.push({
+
+      for (const key in data.surfix) {
+        let item = {};
+        let name = data.surfix[key];
+        item.title = { text: name, show: false };
+
+        item.yAxis = {
           type: "value",
           name: name,
           // min: 'dataMin',
           max: value => {
             return value.max + 10;
           },
-          position: postions[xkey],
+          position: "left",
           axisLabel: {
-            formatter: "{value} " + data.unit[curKey]
+            formatter: "{value} " + data.unit[key]
           },
           axisLine: {
             show: true,
             lineStyle: {
-              color: colors[xkey]
+              // color: colors[xkey%3]
             }
           }
-          // axisTick:{
-          //   show: false
-          // },
-          // splitLine: {
-          //   show: false,
-          // }
-        });
-        this.legend.push(name);
-        this.series.push({
-          name: name,
-          type: "bar",
-          barWidth: "20%",
-          yAxisIndex: 0,
-          itemStyle: {
-            normal: {
-              color: colors[xkey]
-            }
-          }
-        });
-      }
-      for (let i = 1; i <= num; i++) {
-        const item = {};
-        item.title = { text: data.name + i, show: false };
+        };
         item.series = [];
-        for (const key in data.surfix) {
-          const dataKey = key + i;
-          const dataItem = getDataValue(data.items, [key, dataKey], []);
-          // this.xfield = Object.keys(dataItem);
-          this.xfield = Object.keys(dataItem)
+        item.legend = { data: [] };
+        const dataItems = getDataValue(data.items, [key], []);
+        for (let dataItem in dataItems) {
+          let curData = dataItems[dataItem];
+          this.xfield = Object.keys(curData)
             .sort()
             .reverse();
           let itemData = this.xfield.map(xkey => {
-            return dataItem[xkey];
+            return curData[xkey];
           });
+          let idx = dataItem.replace(key, "");
+          item.legend.data.push(name + idx);
           item.series.push({
-            data: Object.values(dataItem)
+            name: name + idx,
+            type: "bar",
+            barWidth: "20%",
+            // yAxisIndex: 0,
+            itemStyle: {
+              normal: {
+                color: colors[(idx - 1) % 3]
+              }
+            },
+            data: itemData
           });
         }
         this.optonsData.push(item);
@@ -218,9 +206,9 @@ export default {
               }
             }
           },
-          legend: {
-            data: this.legend
-          },
+          // legend: {
+          //   data: this.legend
+          // },
           grid: [
             {
               left: "3%",
@@ -233,8 +221,30 @@ export default {
           ],
           xAxis: [],
           dataZoom: [],
-          yAxis: this.yfield,
-          series: this.series
+          yAxis: [
+            {
+              type: "value",
+              // min: 'dataMin',
+              max: value => {
+                return value.max + 10;
+              },
+              position: "left",
+
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  // color: colors[xkey]
+                }
+              }
+            }
+          ],
+          //series: this.series
+          series: [
+            {
+              type: "bar",
+              barWidth: "20%"
+            }
+          ]
         },
 
         options: [...this.optonsData]
@@ -315,6 +325,7 @@ export default {
   },
   created() {},
   mounted() {
+    console.log(this.data, "mounted chart2.....");
     this.handlerData(this.data);
   },
   destroyed() {

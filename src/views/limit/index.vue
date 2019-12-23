@@ -2,7 +2,9 @@
   <div class="table-layout">
     <device-filter-three ref="deviceFilter" @filter="getData" mtype="1">
       <template slot="button">
-        <el-button type="success" @click="save" :disabled="disabled">保存</el-button>
+        <el-button type="success" @click="save" :disabled="disabled"
+          >保存</el-button
+        >
       </template>
     </device-filter-three>
     <div class="table-layout-inner custom-layout" v-if="deviceData">
@@ -16,8 +18,15 @@
           >
             <span slot="label">{{ tabDesc[tabitem] }}</span>
             <el-row type="flex" class="row" :gutter="10">
-              <el-col :span="5" v-for="item in tabData" :key="item.dp_paramname">
-                <el-form-item class="row-item" :label="getLabel(item.dp_paramname)">
+              <el-col
+                :span="5"
+                v-for="item in tabData"
+                :key="item.dp_paramname"
+              >
+                <el-form-item
+                  class="row-item"
+                  :label="getLabel(item.dp_paramname)"
+                >
                   <el-input-number
                     v-model.number="item.value"
                     :precision="2"
@@ -60,11 +69,12 @@ export default {
       let items = [];
       Object.keys(this.deviceData).forEach(item => {
         let index = item.replace(/\D+/g, "");
+        let itemIndex = index ? index - 1 : 0;
         if (this.checkTab(this.currentTab, item)) {
-          items[index - 1] = this.deviceData[item];
+          items[itemIndex] = this.deviceData[item];
         }
       });
-
+      console.log(items, "log........");
       return items;
     }
   },
@@ -169,4 +179,3 @@ export default {
   padding: 0;
 }
 </style>
-
